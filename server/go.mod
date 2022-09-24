@@ -2,7 +2,10 @@ module github.com/digicon-hack-07/ez-toon/server
 
 go 1.19
 
-require github.com/labstack/echo/v4 v4.9.0
+require (
+	github.com/labstack/echo/v4 v4.9.0
+	github.com/oklog/ulid/v2 v2.1.0
+)
 
 require (
 	github.com/labstack/gommon v0.3.1 // indirect
