@@ -1,0 +1,49 @@
+{
+  "parserOptions": {
+    "parser": "@typescript-eslint/parser"
+  },
+  "extends": [
+    "eslint:recommended",
+    "plugin:@typescript-eslint/recommended",
+    "plugin:vue/vue3-recommended",
+    "@vue/typescript",
+    "prettier"
+  ],
+  "plugins": ["unused-imports"],
+  "rules": {
+    "indent": ["error", 2],
+    "linebreak-style": ["error", "unix"],
+    "no-console": "warn",
+    "vue/block-lang": [
+      "error",
+      {
+        "script": { "lang": "ts" }
+      }
+    ],
+    "@typescript-eslint/consistent-type-imports": "error",
+    "@typescript-eslint/no-unused-vars": "off",
+    "@typescript-eslint/member-delimiter-style": [
+      "error",
+      {
+        "multiline": {
+          "delimiter": "none"
+        },
+        "singleline": {
+          "delimiter": "semi"
+        }
+      }
+    ],
+    "unused-imports/no-unused-imports": "warn",
+    "unused-imports/no-unused-vars": "off",
+    "vue/require-default-prop": "off",
+    "vue/no-v-html": "off",
+    "vue/component-api-style": ["error", ["script-setup"]],
+    "vue/component-name-in-template-casing": ["error", "kebab-case"],
+    "vue/custom-event-name-casing": ["error", "camelCase"],
+    "vue/v-on-event-hyphenation": ["error", "always", { "autofix": true }],
+    "vue/match-component-file-name": ["error", { "extensions": ["vue"] }],
+    "vue/v-on-function-call": "error",
+    "vue/require-emit-validator": "error",
+    "vue/no-template-target-blank": "error"
+  }
+}
