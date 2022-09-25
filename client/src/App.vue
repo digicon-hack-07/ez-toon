@@ -1,7 +1,7 @@
 <template>
   <div>
     <header>
-        <router-link to="/">Home</router-link>
+        <router-link to="/">Menu</router-link>
     </header>
     <router-view />
     <!-- <a href="https://vitejs.dev" target="_blank" rel="noopener noreferrer">
