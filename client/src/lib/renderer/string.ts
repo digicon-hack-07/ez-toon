@@ -16,13 +16,11 @@ export function drawString(ctx: CanvasRenderingContext2D, dat: StringRenderData)
 
     const hps_base = dat.right - dat.fontSize * (1 + (lineheight - 1) / 2);
     let hps =  hps_base;
-    const vps_base = dat.top + dat.fontSize;
+    const vps_base = dat.top;
     let vps = vps_base;
 
     ctx.textBaseline = "bottom";
     ctx.strokeRect(dat.left, dat.top, dat.right - dat.left, dat.bottom - dat.top);
-
-    let c = 0;
 
     for(let i = 0; i < dat.str.length; i++){
         ctx.font = `${dat.fontSize}px '${fontname}'`;
@@ -30,29 +28,26 @@ export function drawString(ctx: CanvasRenderingContext2D, dat: StringRenderData)
         const chr = dat.str.charAt(i);
         const next = dat.str.charAt(i+1);
         const isHalfChar = chr.match(/[A-Za-z0-9"'\.\, \[\]:;!\?]/);
-        const w = isHalfChar ? ctx.measureText(chr).width / dat.fontSize : 1;
+        const w = isHalfChar ? ctx.measureText(chr).width : dat.fontSize;
 
         if (chr == '\n' || vps + w > dat.bottom) {
             hps -= dat.fontSize * lineheight;
             vps = vps_base;
-            c = 0;
             if(chr == '\n')
                 continue;
-        } else {
-            vps = vps_base + (dat.fontSize * c);
         }
         if (isHalfChar) {
             ctx.save();
             ctx.setTransform(0, 1, -1, 0, 0, 0);
-            ctx.fillText(chr, vps - dat.fontSize * 1, -hps);
+            ctx.fillText(chr, vps, -hps);
             ctx.restore();
-            c += w;
+            vps += w;
         } else {
-            ctx.fillText(chr, hps, vps); // 通常描画
+            ctx.fillText(chr, hps, vps + dat.fontSize); // 通常描画
             if (chr.match(/、|。/) && next.match(/」|』/)){
-                c += 0.5;
+                vps += 0.5 * dat.fontSize;
             } else {
-                c++;
+                vps += dat.fontSize;
             }
         }
     }
