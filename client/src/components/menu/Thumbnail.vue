@@ -10,19 +10,22 @@
         {{ name }}
       </p>
       <span :class="[isHidden ? $style.overflow : $style.hide]">...</span>
+      <p :class="$style.name">{{ dateString }}</p>
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { onMounted, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 
 const isHidden = ref<boolean>(false)
 
-withDefaults(
+const props = withDefaults(
   defineProps<{
     name: string
     image: string
+    createdAt?: Date
+    updatedAt?: Date
   }>(),
   {
     name: 'noname',
@@ -31,11 +34,25 @@ withDefaults(
 )
 
 const nameRef = ref<HTMLElement>()
+
+const formatDate = (dt : Date) => {
+  var y = ('' + dt.getFullYear()).slice(-2);
+  var m = dt.getMonth()+1;
+  var d =  dt.getDate();
+  return (y + '/' + m + '/' + d);
+
+}
+
 onMounted(() => {
   const fontSize = getComputedStyle(document.documentElement).fontSize
   const remHeight = (nameRef.value?.clientHeight ?? 0) / parseFloat(fontSize)
   isHidden.value = remHeight > 3
   //alert(remHeight)
+})
+
+const dateString = computed(() => {
+  const displayDate = props.createdAt ?? new Date(0)
+  return formatDate(displayDate)
 })
 </script>
 
@@ -61,6 +78,7 @@ onMounted(() => {
 .name {
   line-height: 1.3rem;
   width: 8rem;
+  margin: 0;
 }
 
 .overflowName {
