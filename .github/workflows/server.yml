@@ -35,6 +35,7 @@ jobs:
         with:
           go-version-file: server/go.mod
           cache: true
+          cache-dependency-path: server/go.sum
       - name: Module Download
         if: steps.mod-cache.outputs.cache-hit != 'true'
         run: go mod download
@@ -50,6 +51,7 @@ jobs:
         with:
           go-version-file: server/go.mod
           cache: true
+          cache-dependency-path: server/go.sum
       - name: Build
         run: go build -o ez-toon *.go
   test:
@@ -64,5 +66,6 @@ jobs:
         with:
           go-version-file: server/go.mod
           cache: true
+          cache-dependency-path: server/go.sum
       - name: Test
         run: go test ./... -v
