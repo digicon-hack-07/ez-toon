@@ -1,7 +1,6 @@
-import { Ref } from 'vue'
-import { Line } from '../line'
-import { drawLine, drawPath, PathRenderData } from '../renderer/path'
-import { ToolHandlerInterface } from './ToolHandlerInterface'
+import { type Line } from '../line'
+import { drawLine } from '../renderer/path'
+import { type ToolHandlerInterface } from './ToolHandlerInterface'
 
 export class PenToolHandler implements ToolHandlerInterface {
   working_lines: Map<number, Line>

@@ -1,5 +1,5 @@
-import { Ref } from 'vue'
-import { ToolHandlerInterface } from './ToolHandlerInterface'
+import { type Ref } from 'vue'
+import { type ToolHandlerInterface } from './ToolHandlerInterface'
 
 export class MoveToolHandler implements ToolHandlerInterface {
   draggingData: {

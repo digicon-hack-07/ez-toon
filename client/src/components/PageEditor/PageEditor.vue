@@ -1,12 +1,11 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
-import { type PathRenderData, drawPath } from '../../lib/renderer/path'
 import { type Dialogue } from '../../lib/dialogue'
-import { ToolHandlerInterface } from '../../lib/edittools/ToolHandlerInterface'
+import { type ToolHandlerInterface } from '../../lib/edittools/ToolHandlerInterface'
 import { MoveToolHandler } from '../../lib/edittools/MoveToolHandler'
 import { DialogueToolHandler } from '../../lib/edittools/DialogueToolHandler'
 import { PenToolHandler } from '../../lib/edittools/PenToolHandler'
-import { Line } from '../../lib/line'
+import { type Line } from '../../lib/line'
 
 const workcanvas = ref<HTMLCanvasElement>()
 const canvas = ref<HTMLCanvasElement>()
@@ -73,44 +72,42 @@ const dialogues_display = computed(() => {
 
 class EraserToolHandler implements ToolHandlerInterface {
   pointerdown(e: PointerEvent): void {
-    throw new Error('Method not implemented.');
+    throw new Error('Method not implemented.')
   }
   pointermove(e: PointerEvent): void {
-    throw new Error('Method not implemented.');
+    throw new Error('Method not implemented.')
   }
   pointerup(e: PointerEvent): void {
-    throw new Error('Method not implemented.');
+    throw new Error('Method not implemented.')
   }
 }
 
 function getModeHandler(): ToolHandlerInterface {
-  switch(mode.value){
+  switch (mode.value) {
   case 'move':
     return new MoveToolHandler(canvasScrollX, canvasScrollY)
   case 'dialogue':
-    if(!canvas.value)
-      throw new Error('canvas not loaded')
+    if (!canvas.value) throw new Error('canvas not loaded')
     return new DialogueToolHandler(canvas.value, dialogues, props.pageID)
   case 'pen':
-    if(!canvas.value)
-        throw new Error('canvas not loaded')
-    if(!ctx.value || !workctx.value)
+    if (!canvas.value) throw new Error('canvas not loaded')
+    if (!ctx.value || !workctx.value)
       throw new Error('canvas context not loaded')
     return new PenToolHandler(canvas.value, ctx.value, workctx.value, lines)
   case 'eraser':
     return new EraserToolHandler()
   }
 }
-let handler: ToolHandlerInterface | null;
+let handler: ToolHandlerInterface | null
 
 const pointerdown = (e: PointerEvent) => {
-  if(handler) handler.pointerdown(e)
+  if (handler) handler.pointerdown(e)
 }
 const pointermove = (e: PointerEvent) => {
-  if(handler) handler.pointermove(e)
+  if (handler) handler.pointermove(e)
 }
 const pointerup = (e: PointerEvent) => {
-  if(handler) handler.pointerup(e)
+  if (handler) handler.pointerup(e)
 }
 
 const changeMode = (new_mode: EditMode) => {
@@ -141,10 +138,18 @@ const changeMode = (new_mode: EditMode) => {
       <canvas ref="workcanvas" :style="canvasCss"></canvas>
     </div>
     <div class="button-container">
-      <button :data-active="mode == 'move'" @click="changeMode('move')">移</button>
-      <button :data-active="mode == 'dialogue'" @click="changeMode('dialogue')">あ</button>
-      <button :data-active="mode == 'pen'" @click="changeMode('pen')">筆</button>
-      <button :data-active="mode == 'eraser'" @click="changeMode('eraser')">消</button>
+      <button :data-active="mode == 'move'" @click="changeMode('move')">
+        移
+      </button>
+      <button :data-active="mode == 'dialogue'" @click="changeMode('dialogue')">
+        あ
+      </button>
+      <button :data-active="mode == 'pen'" @click="changeMode('pen')">
+        筆
+      </button>
+      <button :data-active="mode == 'eraser'" @click="changeMode('eraser')">
+        消
+      </button>
     </div>
   </div>
 </template>
@@ -163,10 +168,10 @@ const changeMode = (new_mode: EditMode) => {
   overflow: hidden;
   flex-grow: 1;
   position: relative;
-  background-color: #CCC;
+  background-color: #ccc;
 }
 .store-canvas {
-  background-color: #FFF;
+  background-color: #fff;
 }
 .dialogue {
   position: absolute;

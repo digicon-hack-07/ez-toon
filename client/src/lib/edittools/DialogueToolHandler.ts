@@ -1,5 +1,5 @@
-import { Ref } from 'vue'
-import { ToolHandlerInterface } from './ToolHandlerInterface'
+import { type Ref } from 'vue'
+import { type ToolHandlerInterface } from './ToolHandlerInterface'
 import { type Dialogue } from '../dialogue'
 
 export class DialogueToolHandler implements ToolHandlerInterface {
@@ -40,7 +40,9 @@ export class DialogueToolHandler implements ToolHandlerInterface {
     }
     return
   }
-  pointermove(e: PointerEvent): void {}
+  pointermove(e: PointerEvent): void {
+    return
+  }
   pointerup(e: PointerEvent): void {
     const bx = this.canvas.getClientRects().item(0)?.left
     const by = this.canvas.getClientRects().item(0)?.top
