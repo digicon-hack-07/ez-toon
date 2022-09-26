@@ -2,6 +2,7 @@
 
 import { computed, onMounted, ref } from 'vue';
 import { PathRenderData, drawPath } from '../../lib/renderer/path';
+import { Dialogue } from '../../lib/dialogue';
 
 const canvas = ref<HTMLCanvasElement>();
 const ctx = ref<CanvasRenderingContext2D>();
@@ -50,7 +51,30 @@ let draggingData :{
 
 const paths :PathRenderData[] = [];
 const working_path = new Map<number, PathRenderData>();
+
+const dialogue_default_width = 100;
+const dialogue_default_height = 100;
+const dialogues = ref<Dialogue[]>([]);
+
+const dialogues_display = computed(() => {
+    return dialogues.value.map((dialogue) => {
+        return {
+            style: {
+                left: `${canvasScrollX.value + dialogue.left}px`,
+                top: `${canvasScrollY.value + dialogue.top}px`,
+                width: `${dialogue.right - dialogue.left}px`,
+                height: `${dialogue.bottom - dialogue.top}px`,
+            },
+            str: dialogue.dialogue,
+        };
+    });
+});
+
 const pointerdown = (e: PointerEvent) => {
+    const bx = canvas.value?.getClientRects().item(0)?.left;
+    const by = canvas.value?.getClientRects().item(0)?.top;
+    if(bx === undefined || by === undefined)
+        return;
     switch(mode.value){
         case 'move':
             if(draggingData)
@@ -64,18 +88,21 @@ const pointerdown = (e: PointerEvent) => {
             };
             break;
         case 'pen':
-            const bx = canvas.value?.getClientRects().item(0)?.left;
-            const by = canvas.value?.getClientRects().item(0)?.top;
-            if(bx === undefined || by === undefined)
-                return;
-
             working_path.set(e.pointerId, [{
                 x: e.clientX - bx,
                 y: e.clientY - by,
             }]);
             break;
         case 'dialogue':
-            
+            dialogues.value.push({
+                id: '',
+                pageID: '',
+                dialogue: '',
+                left: e.clientX - bx - dialogue_default_width,
+                top: e.clientY - by,
+                right: e.clientX - bx,
+                bottom: e.clientY - by + dialogue_default_height,
+            })
             break;
     }
 }
@@ -143,7 +170,7 @@ const selectModeEraser = () => {
 <template>
 <div class="pageeditor">
     <div class="canvas-container" :data-editmode="mode">
-        <div class="dialogue" contenteditable="true" :style="{left: `${canvasScrollX}px`, top: `${canvasScrollY}px`, transform: `scale(${canvasScale})`}">aaa</div>
+        <div v-for="dialogue_display in dialogues_display" class="dialogue" contenteditable="true" :style="dialogue_display.style">{{ dialogue_display.str }}</div>
         <canvas ref="canvas" @pointerdown="pointerdown" @pointermove="pointermove" @pointerup="pointerup" @pointerout="pointerup" :style="canvasCss"></canvas>
     </div>
     <div class="button-container">
@@ -179,6 +206,7 @@ const selectModeEraser = () => {
     word-break: break-all;
     font-family: 'EzTooN-SourceHanSerif', serif;
     z-index: -1;
+    text-align: start;
 }
 .canvas-container[data-editmode="dialogue"] .dialogue {
     z-index: 9999;
