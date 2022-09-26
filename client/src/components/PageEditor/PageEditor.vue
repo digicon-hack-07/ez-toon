@@ -6,6 +6,7 @@ import { ToolHandlerInterface } from '../../lib/edittools/ToolHandlerInterface'
 import { MoveToolHandler } from '../../lib/edittools/MoveToolHandler'
 import { DialogueToolHandler } from '../../lib/edittools/DialogueToolHandler'
 import { PenToolHandler } from '../../lib/edittools/PenToolHandler'
+import { Line } from '../../lib/line'
 
 const workcanvas = ref<HTMLCanvasElement>()
 const canvas = ref<HTMLCanvasElement>()
@@ -52,7 +53,7 @@ const canvasCss = computed(() => {
   }
 })
 
-const paths: PathRenderData[] = []
+const lines: Line[] = []
 const dialogues = ref<Dialogue[]>([])
 
 const dialogues_display = computed(() => {
@@ -95,7 +96,7 @@ function getModeHandler(): ToolHandlerInterface {
         throw new Error('canvas not loaded')
     if(!ctx.value || !workctx.value)
       throw new Error('canvas context not loaded')
-    return new PenToolHandler(canvas.value, ctx.value, workctx.value, paths)
+    return new PenToolHandler(canvas.value, ctx.value, workctx.value, lines)
   case 'eraser':
     return new EraserToolHandler()
   }

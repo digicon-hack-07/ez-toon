@@ -1,48 +1,57 @@
 import { Ref } from 'vue'
-import { drawPath, PathRenderData } from '../renderer/path'
+import { Line } from '../line'
+import { drawLine, drawPath, PathRenderData } from '../renderer/path'
 import { ToolHandlerInterface } from './ToolHandlerInterface'
 
 export class PenToolHandler implements ToolHandlerInterface {
-  working_path: Map<number, PathRenderData>
+  working_lines: Map<number, Line>
   canvas: HTMLElement
   ctx: CanvasRenderingContext2D
   workctx: CanvasRenderingContext2D
-  paths: PathRenderData[]
+  lines: Line[]
 
   constructor(
     canvas: HTMLElement,
     ctx: CanvasRenderingContext2D,
     workctx: CanvasRenderingContext2D,
-    paths: PathRenderData[]
+    lines: Line[]
   ) {
     this.canvas = canvas
     this.ctx = ctx
     this.workctx = workctx
-    this.working_path = new Map<number, PathRenderData>()
-    this.paths = paths
+    this.working_lines = new Map<number, Line>()
+    this.lines = lines
   }
   pointerdown(e: PointerEvent): void {
     const bx = this.canvas.getClientRects().item(0)?.left
     const by = this.canvas.getClientRects().item(0)?.top
     if (bx === undefined || by === undefined) return
-    this.working_path.set(e.pointerId, [
-      {
-        x: e.clientX - bx,
-        y: e.clientY - by
-      }
-    ])
+    this.working_lines.set(e.pointerId, {
+      brushSize: 5,
+      color: '#000000',
+      id: '', // TODO: generate ULID
+      pageID: '', // TODO: pageID
+      path: [
+        {
+          x: e.clientX - bx,
+          y: e.clientY - by,
+          force: e.pressure
+        }
+      ]
+    })
     return
   }
   pointermove(e: PointerEvent): void {
     const bx = this.canvas.getClientRects().item(0)?.left
     const by = this.canvas.getClientRects().item(0)?.top
     if (bx === undefined || by === undefined) return
-    const path = this.working_path.get(e.pointerId)
-    if (!path) return
+    const line = this.working_lines.get(e.pointerId)
+    if (!line) return
 
-    path.push({
+    line.path.push({
       x: e.clientX - bx,
-      y: e.clientY - by
+      y: e.clientY - by,
+      force: e.pressure
     })
     this.workctx.clearRect(
       0,
@@ -50,12 +59,12 @@ export class PenToolHandler implements ToolHandlerInterface {
       this.workctx.canvas.width,
       this.workctx.canvas.height
     )
-    drawPath(this.workctx, path)
+    drawLine(this.workctx, line)
     return
   }
   pointerup(e: PointerEvent): void {
-    const path = this.working_path.get(e.pointerId)
-    if (!path) return
+    const line = this.working_lines.get(e.pointerId)
+    if (!line) return
 
     this.workctx.clearRect(
       0,
@@ -63,9 +72,9 @@ export class PenToolHandler implements ToolHandlerInterface {
       this.workctx.canvas.width,
       this.workctx.canvas.height
     )
-    drawPath(this.ctx, path)
-    this.paths.push(path)
-    this.working_path.delete(e.pointerId)
+    drawLine(this.ctx, line)
+    this.lines.push(line)
+    this.working_lines.delete(e.pointerId)
     return
   }
 }
