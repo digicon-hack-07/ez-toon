@@ -224,6 +224,7 @@ const selectModeEraser = () => {
       @pointermove="pointermove"
       @pointerup="pointerup"
     >
+      <canvas ref="canvas" class="store-canvas" :style="canvasCss"></canvas>
       <div
         v-for="dialogue_display in dialogues_display"
         :key="dialogue_display.id"
@@ -233,7 +234,6 @@ const selectModeEraser = () => {
       >
         {{ dialogue_display.str }}
       </div>
-      <canvas ref="canvas" class="store-canvas" :style="canvasCss"></canvas>
       <canvas ref="workcanvas" :style="canvasCss"></canvas>
     </div>
     <div class="button-container">
@@ -276,7 +276,6 @@ const selectModeEraser = () => {
   line-height: 1.2;
   word-break: break-all;
   font-family: 'EzTooN-SourceHanSerif', serif;
-  z-index: -1;
   text-align: start;
 }
 .canvas-container[data-editmode='dialogue'] .dialogue {
