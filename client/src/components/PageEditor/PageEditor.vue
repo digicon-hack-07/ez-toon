@@ -1,6 +1,6 @@
 <script setup lang="ts">
 
-import { onMounted, ref } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import { PathRenderData, drawPath } from '../../lib/renderer/path';
 
 const canvas = ref<HTMLCanvasElement>();
@@ -21,14 +21,45 @@ onMounted(() => {
     }
 });
 
-type EditMode = 'pen' | 'dialogue' | 'eraser';
+type EditMode = 'move' | 'pen' | 'dialogue' | 'eraser';
 const mode = ref<EditMode>('pen');
+
+const canvasScrollX = ref<number>(10);
+const canvasScrollY = ref<number>(20);
+const canvasScale = ref<number>(1.0);
+
+const canvasCss = computed(() => {
+    return {
+        left: `${canvasScrollX.value}px`,
+        top: `${canvasScrollY.value}px`,
+        height: `${Math.floor(pageHeight * canvasScale.value)}px`,
+        width: `${Math.floor(pageWidth * canvasScale.value)}px`,
+    }
+});
+
+let draggingData :{
+    pointerId: number,
+    beginX: number,
+    beginY: number,
+    tgtBeginX: number,
+    tgtBeginY: number,
+} | null = null;
 
 const paths :PathRenderData[] = [];
 const working_path = new Map<number, PathRenderData>();
-
 const pointerdown = (e: PointerEvent) => {
     switch(mode.value){
+        case 'move':
+            if(draggingData)
+                break;
+            draggingData = {
+                pointerId: e.pointerId,
+                beginX: e.x,
+                beginY: e.y,
+                tgtBeginX: canvasScrollX.value,
+                tgtBeginY: canvasScrollY.value,
+            };
+            break;
         case 'pen':
             const bx = canvas.value?.getClientRects().item(0)?.left;
             const by = canvas.value?.getClientRects().item(0)?.top;
@@ -47,6 +78,12 @@ const pointerdown = (e: PointerEvent) => {
 }
 const pointermove = (e: PointerEvent) => {
     switch(mode.value){
+        case 'move':
+            if(!draggingData || draggingData.pointerId != e.pointerId)
+                break;
+            canvasScrollX.value = e.x - draggingData.beginX + draggingData.tgtBeginX;
+            canvasScrollY.value = e.y - draggingData.beginY + draggingData.tgtBeginY;
+            break;
         case 'pen':
             const path = working_path.get(e.pointerId);
             if(!path)
@@ -70,6 +107,9 @@ const pointermove = (e: PointerEvent) => {
 }
 const pointerup = (e: PointerEvent) => {
     switch(mode.value){
+        case 'move':
+            draggingData = null;
+            break;
         case 'pen':
             const path = working_path.get(e.pointerId);
             if(!path)
@@ -82,6 +122,9 @@ const pointerup = (e: PointerEvent) => {
     }
 }
 
+const selectModeMove = () => {
+    mode.value = 'move';
+}
 const selectModeDialogue = () => {
     mode.value = 'dialogue';
 }
@@ -97,10 +140,11 @@ const selectModeEraser = () => {
 <template>
 <div class="pageeditor">
     <div class="canvas-container" :data-editmode="mode">
-        <div class="dialogue" contenteditable="true">aaa</div>
-        <canvas ref="canvas" @pointerdown="pointerdown" @pointermove="pointermove" @pointerup="pointerup"></canvas>
+        <div class="dialogue" contenteditable="true" :style="{left: `${canvasScrollX}px`, top: `${canvasScrollY}px`, transform: `scale(${canvasScale})`}">aaa</div>
+        <canvas ref="canvas" @pointerdown="pointerdown" @pointermove="pointermove" @pointerup="pointerup" @pointerout="pointerup" :style="canvasCss"></canvas>
     </div>
     <div class="button-container">
+        <button :data-active="mode == 'move'" @click="selectModeMove">移</button>
         <button :data-active="mode == 'dialogue'" @click="selectModeDialogue">あ</button>
         <button :data-active="mode == 'pen'" @click="selectModePen">筆</button>
         <button :data-active="mode == 'eraser'" @click="selectModeEraser">消</button>
@@ -134,15 +178,12 @@ const selectModeEraser = () => {
     z-index: -1;
 }
 .canvas-container[data-editmode="dialogue"] .dialogue {
-    z-index: auto;
+    z-index: 9999;
 }
 canvas {
+    position: absolute;
     touch-action: none;
     border: 1px solid;
-    z-index: -1;
-}
-.canvas-container[data-editmode="pen"] canvas {
-    z-index: auto;
 }
 .button-container {
     height: 6rem;
