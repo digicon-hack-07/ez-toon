@@ -95,7 +95,9 @@ const pointerdown = (e: PointerEvent) => {
     break
   case 'dialogue':
     dialogues.value.push({
-      id: `${dialogues.value.length ? dialogues.value.slice(-1)[0].id + 1 : 0}`,  // TODO: generate ULID
+      id: `${
+        dialogues.value.length ? dialogues.value.slice(-1)[0].id + 1 : 0
+      }`, // TODO: generate ULID
       pageID: '', // TODO: pageID
       dialogue: '',
       left: e.clientX - bx - dialogue_default_width,
@@ -117,16 +119,18 @@ const pointermove = (e: PointerEvent) => {
     canvasScrollX.value = e.x - draggingData.beginX + draggingData.tgtBeginX
     canvasScrollY.value = e.y - draggingData.beginY + draggingData.tgtBeginY
     break
-  case 'pen': {
-    const path = working_path.get(e.pointerId)
-    if (!path) return
+  case 'pen':
+    {
+      const path = working_path.get(e.pointerId)
+      if (!path) return
 
-    path.push({
-      x: e.clientX - bx,
-      y: e.clientY - by
-    })
-    if (ctx.value) drawPath(ctx.value, path)
-  } break
+      path.push({
+        x: e.clientX - bx,
+        y: e.clientY - by
+      })
+      if (ctx.value) drawPath(ctx.value, path)
+    }
+    break
   case 'dialogue':
     break
   }
@@ -136,13 +140,15 @@ const pointerup = (e: PointerEvent) => {
   case 'move':
     draggingData = null
     break
-  case 'pen':{
-    const path = working_path.get(e.pointerId)
-    if (!path) return
+  case 'pen':
+    {
+      const path = working_path.get(e.pointerId)
+      if (!path) return
 
-    paths.push(path)
-    working_path.delete(e.pointerId)
-  } break
+      paths.push(path)
+      working_path.delete(e.pointerId)
+    }
+    break
   case 'dialogue':
     break
   }
@@ -164,7 +170,13 @@ const selectModeEraser = () => {
 
 <template>
   <div class="pageeditor">
-    <div class="canvas-container" :data-editmode="mode">
+    <div
+      class="canvas-container"
+      :data-editmode="mode"
+      @pointerdown="pointerdown"
+      @pointermove="pointermove"
+      @pointerup="pointerup"
+    >
       <div
         v-for="dialogue_display in dialogues_display"
         :key="dialogue_display.id"
@@ -174,14 +186,7 @@ const selectModeEraser = () => {
       >
         {{ dialogue_display.str }}
       </div>
-      <canvas
-        ref="canvas"
-        :style="canvasCss"
-        @pointerdown="pointerdown"
-        @pointermove="pointermove"
-        @pointerup="pointerup"
-        @pointerout="pointerup"
-      ></canvas>
+      <canvas ref="canvas" :style="canvasCss"></canvas>
     </div>
     <div class="button-container">
       <button :data-active="mode == 'move'" @click="selectModeMove">移</button>
