@@ -94,17 +94,24 @@ const pointerdown = (e: PointerEvent) => {
     ])
     break
   case 'dialogue':
-    dialogues.value.push({
-      id: `${
-        dialogues.value.length ? dialogues.value.slice(-1)[0].id + 1 : 0
-      }`, // TODO: generate ULID
-      pageID: '', // TODO: pageID
-      dialogue: '',
-      left: e.clientX - bx - dialogue_default_width,
-      top: e.clientY - by,
-      right: e.clientX - bx,
-      bottom: e.clientY - by + dialogue_default_height
-    })
+    if (
+      dialogues.value.find(dialogue => {
+        return (
+          dialogue.left <= e.clientX - bx &&
+          e.clientX - bx <= dialogue.right &&
+          dialogue.top <= e.clientY - by &&
+          e.clientY - by <= dialogue.bottom
+        )
+      })
+    )
+      break
+    draggingData = {
+      pointerId: e.pointerId,
+      beginX: e.x - bx,
+      beginY: e.y - by,
+      tgtBeginX: 0,
+      tgtBeginY: 0
+    }
     break
   }
 }
@@ -136,6 +143,10 @@ const pointermove = (e: PointerEvent) => {
   }
 }
 const pointerup = (e: PointerEvent) => {
+  const bx = canvas.value?.getClientRects().item(0)?.left
+  const by = canvas.value?.getClientRects().item(0)?.top
+  if (bx === undefined || by === undefined) return
+
   switch (mode.value) {
   case 'move':
     draggingData = null
@@ -150,6 +161,28 @@ const pointerup = (e: PointerEvent) => {
     }
     break
   case 'dialogue':
+    if (!draggingData || draggingData.pointerId != e.pointerId) break
+    {
+      const left = Math.min(e.clientX - bx, draggingData.beginX)
+      const right = Math.max(e.clientX - bx, draggingData.beginX)
+      const top = Math.min(e.clientY - by, draggingData.beginY)
+      const bottom = Math.max(e.clientY - by, draggingData.beginY)
+      if(right - left < 24 || bottom - top < 24)
+        break;
+
+      dialogues.value.push({
+        id: `${
+          dialogues.value.length ? dialogues.value.slice(-1)[0].id + 1 : 0
+        }`, // TODO: generate ULID
+        pageID: '', // TODO: pageID
+        dialogue: '',
+        left,
+        top,
+        right,
+        bottom
+      })
+    }
+    draggingData = null
     break
   }
 }
