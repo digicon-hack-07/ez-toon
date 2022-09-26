@@ -58,8 +58,6 @@ let draggingData: {
 const paths: PathRenderData[] = []
 const working_path = new Map<number, PathRenderData>()
 
-const dialogue_default_width = 100
-const dialogue_default_height = 100
 const dialogues = ref<Dialogue[]>([])
 
 const dialogues_display = computed(() => {
