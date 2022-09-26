@@ -75,13 +75,15 @@ const dialogues_display = computed(() => {
   })
 })
 
-const pointerdown = (e: PointerEvent) => {
-  const bx = canvas.value?.getClientRects().item(0)?.left
-  const by = canvas.value?.getClientRects().item(0)?.top
-  if (bx === undefined || by === undefined) return
-  switch (mode.value) {
-  case 'move':
-    if (draggingData) break
+interface PointerHandler {
+  pointerdown(e: PointerEvent): void
+  pointermove(e: PointerEvent): void
+  pointerup(e: PointerEvent): void
+}
+
+class MoveToolHandler implements PointerHandler {
+  pointerdown(e: PointerEvent): void {
+    if (draggingData) return
     draggingData = {
       pointerId: e.pointerId,
       beginX: e.x,
@@ -89,16 +91,27 @@ const pointerdown = (e: PointerEvent) => {
       tgtBeginX: canvasScrollX.value,
       tgtBeginY: canvasScrollY.value
     }
-    break
-  case 'pen':
-    working_path.set(e.pointerId, [
-      {
-        x: e.clientX - bx,
-        y: e.clientY - by
-      }
-    ])
-    break
-  case 'dialogue':
+    return
+  }
+  pointermove(e: PointerEvent): void {
+    if (!draggingData || draggingData.pointerId != e.pointerId) return
+    canvasScrollX.value = e.x - draggingData.beginX + draggingData.tgtBeginX
+    canvasScrollY.value = e.y - draggingData.beginY + draggingData.tgtBeginY
+    return
+  }
+  pointerup(e: PointerEvent): void {
+    if (!draggingData || draggingData.pointerId != e.pointerId) return
+    canvasScrollX.value = e.x - draggingData.beginX + draggingData.tgtBeginX
+    canvasScrollY.value = e.y - draggingData.beginY + draggingData.tgtBeginY
+    draggingData = null
+    return
+  }
+}
+class DialogueToolHandler implements PointerHandler {
+  pointerdown(e: PointerEvent): void {
+    const bx = canvas.value?.getClientRects().item(0)?.left
+    const by = canvas.value?.getClientRects().item(0)?.top
+    if (bx === undefined || by === undefined) return
     if (
       dialogues.value.find(dialogue => {
         return (
@@ -109,7 +122,7 @@ const pointerdown = (e: PointerEvent) => {
         )
       })
     )
-      break
+      return
     draggingData = {
       pointerId: e.pointerId,
       beginX: e.x - bx,
@@ -117,70 +130,21 @@ const pointerdown = (e: PointerEvent) => {
       tgtBeginX: 0,
       tgtBeginY: 0
     }
-    break
+    return
   }
-}
-const pointermove = (e: PointerEvent) => {
-  const bx = canvas.value?.getClientRects().item(0)?.left
-  const by = canvas.value?.getClientRects().item(0)?.top
-  if (bx === undefined || by === undefined) return
-
-  switch (mode.value) {
-  case 'move':
-    if (!draggingData || draggingData.pointerId != e.pointerId) break
-    canvasScrollX.value = e.x - draggingData.beginX + draggingData.tgtBeginX
-    canvasScrollY.value = e.y - draggingData.beginY + draggingData.tgtBeginY
-    break
-  case 'pen':
-    {
-      const path = working_path.get(e.pointerId)
-      if (!path) return
-
-      path.push({
-        x: e.clientX - bx,
-        y: e.clientY - by
-      })
-      if (workctx.value) {
-        workctx.value.clearRect(0,0, workctx.value.canvas.width, workctx.value.canvas.height)
-        drawPath(workctx.value, path)
-      }
-    }
-    break
-  case 'dialogue':
-    break
-  }
-}
-const pointerup = (e: PointerEvent) => {
-  const bx = canvas.value?.getClientRects().item(0)?.left
-  const by = canvas.value?.getClientRects().item(0)?.top
-  if (bx === undefined || by === undefined) return
-
-  switch (mode.value) {
-  case 'move':
-    draggingData = null
-    break
-  case 'pen':
-    {
-      const path = working_path.get(e.pointerId)
-      if (!path) return
-
-      if(ctx.value && workctx.value){
-        workctx.value.clearRect(0,0, workctx.value.canvas.width, workctx.value.canvas.height)
-        drawPath(ctx.value, path)
-      }
-      paths.push(path)
-      working_path.delete(e.pointerId)
-    }
-    break
-  case 'dialogue':
-    if (!draggingData || draggingData.pointerId != e.pointerId) break
+  pointermove(e: PointerEvent): void {}
+  pointerup(e: PointerEvent): void {
+    const bx = canvas.value?.getClientRects().item(0)?.left
+    const by = canvas.value?.getClientRects().item(0)?.top
+    if (bx === undefined || by === undefined) return
+    if (!draggingData || draggingData.pointerId != e.pointerId) return
     {
       const left = Math.min(e.clientX - bx, draggingData.beginX)
       const right = Math.max(e.clientX - bx, draggingData.beginX)
       const top = Math.min(e.clientY - by, draggingData.beginY)
       const bottom = Math.max(e.clientY - by, draggingData.beginY)
       if(right - left < 24 || bottom - top < 24)
-        break;
+        return
 
       dialogues.value.push({
         id: `${
@@ -195,21 +159,91 @@ const pointerup = (e: PointerEvent) => {
       })
     }
     draggingData = null
-    break
+    return
+  }
+}
+class PenToolHandler implements PointerHandler {
+  pointerdown(e: PointerEvent): void {
+    const bx = canvas.value?.getClientRects().item(0)?.left
+    const by = canvas.value?.getClientRects().item(0)?.top
+    if (bx === undefined || by === undefined) return
+    working_path.set(e.pointerId, [
+      {
+        x: e.clientX - bx,
+        y: e.clientY - by
+      }
+    ])
+    return
+  }
+  pointermove(e: PointerEvent): void {
+    const bx = canvas.value?.getClientRects().item(0)?.left
+    const by = canvas.value?.getClientRects().item(0)?.top
+    if (bx === undefined || by === undefined) return
+    const path = working_path.get(e.pointerId)
+    if (!path) return
+
+    path.push({
+      x: e.clientX - bx,
+      y: e.clientY - by
+    })
+    if (workctx.value) {
+      workctx.value.clearRect(0,0, workctx.value.canvas.width, workctx.value.canvas.height)
+      drawPath(workctx.value, path)
+    }
+    return
+  }
+  pointerup(e: PointerEvent): void {
+    const path = working_path.get(e.pointerId)
+    if (!path) return
+
+    if(ctx.value && workctx.value){
+      workctx.value.clearRect(0,0, workctx.value.canvas.width, workctx.value.canvas.height)
+      drawPath(ctx.value, path)
+    }
+    paths.push(path)
+    working_path.delete(e.pointerId)
+    return
+  }
+}
+class EraserToolHandler implements PointerHandler {
+  pointerdown(e: PointerEvent): void {
+    throw new Error('Method not implemented.');
+  }
+  pointermove(e: PointerEvent): void {
+    throw new Error('Method not implemented.');
+  }
+  pointerup(e: PointerEvent): void {
+    throw new Error('Method not implemented.');
   }
 }
 
-const selectModeMove = () => {
-  mode.value = 'move'
+function getModeHandler(): PointerHandler {
+  switch(mode.value){
+  case 'move':
+    return new MoveToolHandler()
+  case 'dialogue':
+    return new DialogueToolHandler()
+  case 'pen':
+    return new PenToolHandler()
+  case 'eraser':
+    return new EraserToolHandler()
+  }
 }
-const selectModeDialogue = () => {
-  mode.value = 'dialogue'
+let handler: PointerHandler = getModeHandler();
+
+const pointerdown = (e: PointerEvent) => {
+  handler.pointerdown(e)
 }
-const selectModePen = () => {
-  mode.value = 'pen'
+const pointermove = (e: PointerEvent) => {
+  handler.pointermove(e)
 }
-const selectModeEraser = () => {
-  mode.value = 'eraser'
+const pointerup = (e: PointerEvent) => {
+  handler.pointerup(e)
+}
+
+const changeMode = (new_mode: EditMode) => {
+  mode.value = new_mode
+  handler = getModeHandler()
 }
 </script>
 
@@ -235,12 +269,12 @@ const selectModeEraser = () => {
       <canvas ref="workcanvas" :style="canvasCss"></canvas>
     </div>
     <div class="button-container">
-      <button :data-active="mode == 'move'" @click="selectModeMove">移</button>
-      <button :data-active="mode == 'dialogue'" @click="selectModeDialogue">
+      <button :data-active="mode == 'move'" @click="changeMode('move')">移</button>
+      <button :data-active="mode == 'dialogue'" @click="changeMode('dialogue')">
         あ
       </button>
-      <button :data-active="mode == 'pen'" @click="selectModePen">筆</button>
-      <button :data-active="mode == 'eraser'" @click="selectModeEraser">
+      <button :data-active="mode == 'pen'" @click="changeMode('pen')">筆</button>
+      <button :data-active="mode == 'eraser'" @click="changeMode('eraser')">
         消
       </button>
     </div>
