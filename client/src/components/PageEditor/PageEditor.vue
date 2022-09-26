@@ -58,6 +58,7 @@ const dialogues = ref<Dialogue[]>([])
 const dialogues_display = computed(() => {
   return dialogues.value.map(dialogue => {
     return {
+      id: dialogue.id,
       style: {
         left: `${canvasScrollX.value + dialogue.left}px`,
         top: `${canvasScrollY.value + dialogue.top}px`,
@@ -94,8 +95,8 @@ const pointerdown = (e: PointerEvent) => {
     break
   case 'dialogue':
     dialogues.value.push({
-      id: '',
-      pageID: '',
+      id: `${dialogues.value.length ? dialogues.value.slice(-1)[0].id + 1 : 0}`,  // TODO: generate ULID
+      pageID: '', // TODO: pageID
       dialogue: '',
       left: e.clientX - bx - dialogue_default_width,
       top: e.clientY - by,
@@ -166,6 +167,7 @@ const selectModeEraser = () => {
     <div class="canvas-container" :data-editmode="mode">
       <div
         v-for="dialogue_display in dialogues_display"
+        :key="dialogue_display.id"
         class="dialogue"
         contenteditable="true"
         :style="dialogue_display.style"
