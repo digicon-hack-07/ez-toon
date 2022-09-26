@@ -233,7 +233,7 @@ const selectModeEraser = () => {
         {{ dialogue_display.str }}
       </div>
       <canvas ref="workcanvas" :style="canvasCss"></canvas>
-      <canvas ref="canvas" :style="canvasCss"></canvas>
+      <canvas ref="canvas" class="store-canvas" :style="canvasCss"></canvas>
     </div>
     <div class="button-container">
       <button :data-active="mode == 'move'" @click="selectModeMove">移</button>
@@ -262,6 +262,10 @@ const selectModeEraser = () => {
   overflow: hidden;
   flex-grow: 1;
   position: relative;
+  background-color: #CCC;
+}
+.store-canvas {
+  background-color: #FFF;
 }
 .dialogue {
   position: absolute;
