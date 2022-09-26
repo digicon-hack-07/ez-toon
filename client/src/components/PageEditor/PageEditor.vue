@@ -49,7 +49,7 @@ const pointerdown = (e: PointerEvent) => {
         case 'pen':
             const bx = canvas.value?.getClientRects().item(0)?.left;
             const by = canvas.value?.getClientRects().item(0)?.top;
-            if(!bx || !by)
+            if(bx === undefined || by === undefined)
                 return;
 
             working_path.set(e.pointerId, [{
@@ -68,7 +68,7 @@ const pointermove = (e: PointerEvent) => {
 
             const bx = canvas.value?.getClientRects().item(0)?.left;
             const by = canvas.value?.getClientRects().item(0)?.top;
-            if(!bx || !by)
+            if(bx === undefined || by === undefined)
                 return;
 
             path.push({
