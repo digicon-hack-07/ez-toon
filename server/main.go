@@ -13,6 +13,7 @@ func main() {
 	e.GET("/ping", func(c echo.Context) error {
 		return c.String(http.StatusOK, "pong")
 	})
+	e.Static("/", "public")
 
 	e.Logger.Panic(e.Start(":8080"))
 }
