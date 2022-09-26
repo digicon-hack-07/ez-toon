@@ -2,6 +2,10 @@
 import { computed, onMounted, ref } from 'vue'
 import { type PathRenderData, drawPath } from '../../lib/renderer/path'
 import { type Dialogue } from '../../lib/dialogue'
+import { ToolHandlerInterface } from '../../lib/edittools/ToolHandlerInterface'
+import { MoveToolHandler } from '../../lib/edittools/MoveToolHandler'
+import { DialogueToolHandler } from '../../lib/edittools/DialogueToolHandler'
+import { PenToolHandler } from '../../lib/edittools/PenToolHandler'
 
 const workcanvas = ref<HTMLCanvasElement>()
 const canvas = ref<HTMLCanvasElement>()
@@ -35,6 +39,7 @@ onMounted(() => {
     workcanvas.value.width = props.pageWidth * canvasScale.value
     workcanvas.value.height = props.pageHeight * canvasScale.value
     workctx.value = workcanvas.value.getContext('2d') ?? undefined
+    handler = getModeHandler()
   }
 })
 
@@ -65,158 +70,7 @@ const dialogues_display = computed(() => {
   })
 })
 
-interface PointerHandler {
-  pointerdown(e: PointerEvent): void
-  pointermove(e: PointerEvent): void
-  pointerup(e: PointerEvent): void
-}
-
-class MoveToolHandler implements PointerHandler {
-  draggingData: {
-      pointerId: number
-      beginX: number
-      beginY: number
-      tgtBeginX: number
-      tgtBeginY: number
-  } | null = null
-
-  constructor() {
-  }
-  pointerdown(e: PointerEvent): void {
-    if (this.draggingData) return
-    this.draggingData = {
-      pointerId: e.pointerId,
-      beginX: e.x,
-      beginY: e.y,
-      tgtBeginX: canvasScrollX.value,
-      tgtBeginY: canvasScrollY.value
-    }
-    return
-  }
-  pointermove(e: PointerEvent): void {
-    if (!this.draggingData || this.draggingData.pointerId != e.pointerId) return
-    canvasScrollX.value = e.x - this.draggingData.beginX + this.draggingData.tgtBeginX
-    canvasScrollY.value = e.y - this.draggingData.beginY + this.draggingData.tgtBeginY
-    return
-  }
-  pointerup(e: PointerEvent): void {
-    if (!this.draggingData || this.draggingData.pointerId != e.pointerId) return
-    canvasScrollX.value = e.x - this.draggingData.beginX + this.draggingData.tgtBeginX
-    canvasScrollY.value = e.y - this.draggingData.beginY + this.draggingData.tgtBeginY
-    this.draggingData = null
-    return
-  }
-}
-class DialogueToolHandler implements PointerHandler {
-  draggingData: {
-      pointerId: number
-      beginX: number
-      beginY: number
-  } | null = null
-
-  constructor() {
-  }
-  pointerdown(e: PointerEvent): void {
-    const bx = canvas.value?.getClientRects().item(0)?.left
-    const by = canvas.value?.getClientRects().item(0)?.top
-    if (bx === undefined || by === undefined) return
-    if (
-      dialogues.value.find(dialogue => {
-        return (
-          dialogue.left <= e.clientX - bx &&
-          e.clientX - bx <= dialogue.right &&
-          dialogue.top <= e.clientY - by &&
-          e.clientY - by <= dialogue.bottom
-        )
-      })
-    )
-      return
-    this.draggingData = {
-      pointerId: e.pointerId,
-      beginX: e.x - bx,
-      beginY: e.y - by
-    }
-    return
-  }
-  pointermove(e: PointerEvent): void {}
-  pointerup(e: PointerEvent): void {
-    const bx = canvas.value?.getClientRects().item(0)?.left
-    const by = canvas.value?.getClientRects().item(0)?.top
-    if (bx === undefined || by === undefined) return
-    if (!this.draggingData || this.draggingData.pointerId != e.pointerId) return
-    {
-      const left = Math.min(e.clientX - bx, this.draggingData.beginX)
-      const right = Math.max(e.clientX - bx, this.draggingData.beginX)
-      const top = Math.min(e.clientY - by, this.draggingData.beginY)
-      const bottom = Math.max(e.clientY - by, this.draggingData.beginY)
-      if(right - left < 24 || bottom - top < 24)
-        return
-
-      dialogues.value.push({
-        id: `${
-          dialogues.value.length ? dialogues.value.slice(-1)[0].id + 1 : 0
-        }`, // TODO: generate ULID
-        pageID: props.pageID,
-        dialogue: '',
-        left,
-        top,
-        right,
-        bottom
-      })
-    }
-    this.draggingData = null
-    return
-  }
-}
-class PenToolHandler implements PointerHandler {
-  working_path: Map<number, PathRenderData>
-
-  constructor() {
-    this.working_path = new Map<number, PathRenderData>()
-  }
-  pointerdown(e: PointerEvent): void {
-    const bx = canvas.value?.getClientRects().item(0)?.left
-    const by = canvas.value?.getClientRects().item(0)?.top
-    if (bx === undefined || by === undefined) return
-    this.working_path.set(e.pointerId, [
-      {
-        x: e.clientX - bx,
-        y: e.clientY - by
-      }
-    ])
-    return
-  }
-  pointermove(e: PointerEvent): void {
-    const bx = canvas.value?.getClientRects().item(0)?.left
-    const by = canvas.value?.getClientRects().item(0)?.top
-    if (bx === undefined || by === undefined) return
-    const path = this.working_path.get(e.pointerId)
-    if (!path) return
-
-    path.push({
-      x: e.clientX - bx,
-      y: e.clientY - by
-    })
-    if (workctx.value) {
-      workctx.value.clearRect(0,0, workctx.value.canvas.width, workctx.value.canvas.height)
-      drawPath(workctx.value, path)
-    }
-    return
-  }
-  pointerup(e: PointerEvent): void {
-    const path = this.working_path.get(e.pointerId)
-    if (!path) return
-
-    if(ctx.value && workctx.value){
-      workctx.value.clearRect(0,0, workctx.value.canvas.width, workctx.value.canvas.height)
-      drawPath(ctx.value, path)
-    }
-    paths.push(path)
-    this.working_path.delete(e.pointerId)
-    return
-  }
-}
-class EraserToolHandler implements PointerHandler {
+class EraserToolHandler implements ToolHandlerInterface {
   pointerdown(e: PointerEvent): void {
     throw new Error('Method not implemented.');
   }
@@ -228,28 +82,34 @@ class EraserToolHandler implements PointerHandler {
   }
 }
 
-function getModeHandler(): PointerHandler {
+function getModeHandler(): ToolHandlerInterface {
   switch(mode.value){
   case 'move':
-    return new MoveToolHandler()
+    return new MoveToolHandler(canvasScrollX, canvasScrollY)
   case 'dialogue':
-    return new DialogueToolHandler()
+    if(!canvas.value)
+      throw new Error('canvas not loaded')
+    return new DialogueToolHandler(canvas.value, dialogues, props.pageID)
   case 'pen':
-    return new PenToolHandler()
+    if(!canvas.value)
+        throw new Error('canvas not loaded')
+    if(!ctx.value || !workctx.value)
+      throw new Error('canvas context not loaded')
+    return new PenToolHandler(canvas.value, ctx.value, workctx.value, paths)
   case 'eraser':
     return new EraserToolHandler()
   }
 }
-let handler: PointerHandler = getModeHandler();
+let handler: ToolHandlerInterface | null;
 
 const pointerdown = (e: PointerEvent) => {
-  handler.pointerdown(e)
+  if(handler) handler.pointerdown(e)
 }
 const pointermove = (e: PointerEvent) => {
-  handler.pointermove(e)
+  if(handler) handler.pointermove(e)
 }
 const pointerup = (e: PointerEvent) => {
-  handler.pointerup(e)
+  if(handler) handler.pointerup(e)
 }
 
 const changeMode = (new_mode: EditMode) => {
