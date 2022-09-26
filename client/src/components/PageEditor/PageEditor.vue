@@ -3,7 +3,9 @@ import { computed, onMounted, ref } from 'vue'
 import { type PathRenderData, drawPath } from '../../lib/renderer/path'
 import { type Dialogue } from '../../lib/dialogue'
 
+const workcanvas = ref<HTMLCanvasElement>()
 const canvas = ref<HTMLCanvasElement>()
+const workctx = ref<CanvasRenderingContext2D>()
 const ctx = ref<CanvasRenderingContext2D>()
 
 interface Props {
@@ -24,10 +26,14 @@ type EditMode = 'move' | 'pen' | 'dialogue' | 'eraser'
 const mode = ref<EditMode>('pen')
 
 onMounted(() => {
-  if (canvas.value) {
+  if (canvas.value && workcanvas.value) {
     canvas.value.width = props.pageWidth * canvasScale.value
     canvas.value.height = props.pageHeight * canvasScale.value
     ctx.value = canvas.value.getContext('2d') ?? undefined
+
+    workcanvas.value.width = props.pageWidth * canvasScale.value
+    workcanvas.value.height = props.pageHeight * canvasScale.value
+    workctx.value = workcanvas.value.getContext('2d') ?? undefined
   }
 })
 
@@ -135,7 +141,10 @@ const pointermove = (e: PointerEvent) => {
         x: e.clientX - bx,
         y: e.clientY - by
       })
-      if (ctx.value) drawPath(ctx.value, path)
+      if (workctx.value) {
+        workctx.value.clearRect(0,0, workctx.value.canvas.width, workctx.value.canvas.height)
+        drawPath(workctx.value, path)
+      }
     }
     break
   case 'dialogue':
@@ -156,6 +165,10 @@ const pointerup = (e: PointerEvent) => {
       const path = working_path.get(e.pointerId)
       if (!path) return
 
+      if(ctx.value && workctx.value){
+        workctx.value.clearRect(0,0, workctx.value.canvas.width, workctx.value.canvas.height)
+        drawPath(ctx.value, path)
+      }
       paths.push(path)
       working_path.delete(e.pointerId)
     }
@@ -219,6 +232,7 @@ const selectModeEraser = () => {
       >
         {{ dialogue_display.str }}
       </div>
+      <canvas ref="workcanvas" :style="canvasCss"></canvas>
       <canvas ref="canvas" :style="canvasCss"></canvas>
     </div>
     <div class="button-container">
