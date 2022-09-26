@@ -6,34 +6,37 @@ import { PathRenderData, drawPath } from '../../lib/renderer/path';
 const canvas = ref<HTMLCanvasElement>();
 const ctx = ref<CanvasRenderingContext2D>();
 
-const pageWidth = 1000;
-const pageHeight = 1000;
+interface Props {
+    pageWidth: number,
+    pageHeight: number,
+};
 
-onMounted(() => {
-    if(canvas.value){
-        const width = canvas.value.getClientRects().item(0)?.width;
-        const height = canvas.value.getClientRects().item(0)?.height;
-        if(width && height){
-            canvas.value.width = pageWidth;
-            canvas.value.height = pageHeight;
-        }        
-        ctx.value = canvas.value.getContext("2d") ?? undefined;
-    }
+const props = withDefaults(defineProps<Props>(), {
+    pageWidth: 707,
+    pageHeight: 1000,
 });
-
-type EditMode = 'move' | 'pen' | 'dialogue' | 'eraser';
-const mode = ref<EditMode>('pen');
 
 const canvasScrollX = ref<number>(10);
 const canvasScrollY = ref<number>(20);
 const canvasScale = ref<number>(1.0);
 
+type EditMode = 'move' | 'pen' | 'dialogue' | 'eraser';
+const mode = ref<EditMode>('pen');
+
+onMounted(() => {
+    if(canvas.value){
+        canvas.value.width = props.pageWidth * canvasScale.value;
+        canvas.value.height = props.pageHeight * canvasScale.value;
+        ctx.value = canvas.value.getContext("2d") ?? undefined;
+    }
+});
+
 const canvasCss = computed(() => {
     return {
         left: `${canvasScrollX.value}px`,
         top: `${canvasScrollY.value}px`,
-        height: `${Math.floor(pageHeight * canvasScale.value)}px`,
-        width: `${Math.floor(pageWidth * canvasScale.value)}px`,
+        height: `${Math.floor(props.pageHeight * canvasScale.value)}px`,
+        width: `${Math.floor(props.pageWidth * canvasScale.value)}px`,
     }
 });
 
