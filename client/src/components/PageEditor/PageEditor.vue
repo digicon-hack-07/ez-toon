@@ -47,17 +47,7 @@ const canvasCss = computed(() => {
   }
 })
 
-let draggingData: {
-  pointerId: number
-  beginX: number
-  beginY: number
-  tgtBeginX: number
-  tgtBeginY: number
-} | null = null
-
 const paths: PathRenderData[] = []
-const working_path = new Map<number, PathRenderData>()
-
 const dialogues = ref<Dialogue[]>([])
 
 const dialogues_display = computed(() => {
@@ -82,9 +72,19 @@ interface PointerHandler {
 }
 
 class MoveToolHandler implements PointerHandler {
+  draggingData: {
+      pointerId: number
+      beginX: number
+      beginY: number
+      tgtBeginX: number
+      tgtBeginY: number
+  } | null = null
+
+  constructor() {
+  }
   pointerdown(e: PointerEvent): void {
-    if (draggingData) return
-    draggingData = {
+    if (this.draggingData) return
+    this.draggingData = {
       pointerId: e.pointerId,
       beginX: e.x,
       beginY: e.y,
@@ -94,20 +94,28 @@ class MoveToolHandler implements PointerHandler {
     return
   }
   pointermove(e: PointerEvent): void {
-    if (!draggingData || draggingData.pointerId != e.pointerId) return
-    canvasScrollX.value = e.x - draggingData.beginX + draggingData.tgtBeginX
-    canvasScrollY.value = e.y - draggingData.beginY + draggingData.tgtBeginY
+    if (!this.draggingData || this.draggingData.pointerId != e.pointerId) return
+    canvasScrollX.value = e.x - this.draggingData.beginX + this.draggingData.tgtBeginX
+    canvasScrollY.value = e.y - this.draggingData.beginY + this.draggingData.tgtBeginY
     return
   }
   pointerup(e: PointerEvent): void {
-    if (!draggingData || draggingData.pointerId != e.pointerId) return
-    canvasScrollX.value = e.x - draggingData.beginX + draggingData.tgtBeginX
-    canvasScrollY.value = e.y - draggingData.beginY + draggingData.tgtBeginY
-    draggingData = null
+    if (!this.draggingData || this.draggingData.pointerId != e.pointerId) return
+    canvasScrollX.value = e.x - this.draggingData.beginX + this.draggingData.tgtBeginX
+    canvasScrollY.value = e.y - this.draggingData.beginY + this.draggingData.tgtBeginY
+    this.draggingData = null
     return
   }
 }
 class DialogueToolHandler implements PointerHandler {
+  draggingData: {
+      pointerId: number
+      beginX: number
+      beginY: number
+  } | null = null
+
+  constructor() {
+  }
   pointerdown(e: PointerEvent): void {
     const bx = canvas.value?.getClientRects().item(0)?.left
     const by = canvas.value?.getClientRects().item(0)?.top
@@ -123,12 +131,10 @@ class DialogueToolHandler implements PointerHandler {
       })
     )
       return
-    draggingData = {
+    this.draggingData = {
       pointerId: e.pointerId,
       beginX: e.x - bx,
-      beginY: e.y - by,
-      tgtBeginX: 0,
-      tgtBeginY: 0
+      beginY: e.y - by
     }
     return
   }
@@ -137,12 +143,12 @@ class DialogueToolHandler implements PointerHandler {
     const bx = canvas.value?.getClientRects().item(0)?.left
     const by = canvas.value?.getClientRects().item(0)?.top
     if (bx === undefined || by === undefined) return
-    if (!draggingData || draggingData.pointerId != e.pointerId) return
+    if (!this.draggingData || this.draggingData.pointerId != e.pointerId) return
     {
-      const left = Math.min(e.clientX - bx, draggingData.beginX)
-      const right = Math.max(e.clientX - bx, draggingData.beginX)
-      const top = Math.min(e.clientY - by, draggingData.beginY)
-      const bottom = Math.max(e.clientY - by, draggingData.beginY)
+      const left = Math.min(e.clientX - bx, this.draggingData.beginX)
+      const right = Math.max(e.clientX - bx, this.draggingData.beginX)
+      const top = Math.min(e.clientY - by, this.draggingData.beginY)
+      const bottom = Math.max(e.clientY - by, this.draggingData.beginY)
       if(right - left < 24 || bottom - top < 24)
         return
 
@@ -158,16 +164,21 @@ class DialogueToolHandler implements PointerHandler {
         bottom
       })
     }
-    draggingData = null
+    this.draggingData = null
     return
   }
 }
 class PenToolHandler implements PointerHandler {
+  working_path: Map<number, PathRenderData>
+
+  constructor() {
+    this.working_path = new Map<number, PathRenderData>()
+  }
   pointerdown(e: PointerEvent): void {
     const bx = canvas.value?.getClientRects().item(0)?.left
     const by = canvas.value?.getClientRects().item(0)?.top
     if (bx === undefined || by === undefined) return
-    working_path.set(e.pointerId, [
+    this.working_path.set(e.pointerId, [
       {
         x: e.clientX - bx,
         y: e.clientY - by
@@ -179,7 +190,7 @@ class PenToolHandler implements PointerHandler {
     const bx = canvas.value?.getClientRects().item(0)?.left
     const by = canvas.value?.getClientRects().item(0)?.top
     if (bx === undefined || by === undefined) return
-    const path = working_path.get(e.pointerId)
+    const path = this.working_path.get(e.pointerId)
     if (!path) return
 
     path.push({
@@ -193,7 +204,7 @@ class PenToolHandler implements PointerHandler {
     return
   }
   pointerup(e: PointerEvent): void {
-    const path = working_path.get(e.pointerId)
+    const path = this.working_path.get(e.pointerId)
     if (!path) return
 
     if(ctx.value && workctx.value){
@@ -201,7 +212,7 @@ class PenToolHandler implements PointerHandler {
       drawPath(ctx.value, path)
     }
     paths.push(path)
-    working_path.delete(e.pointerId)
+    this.working_path.delete(e.pointerId)
     return
   }
 }
