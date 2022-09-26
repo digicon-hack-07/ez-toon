@@ -5,13 +5,16 @@ import { onMounted, ref } from 'vue';
 const canvas = ref<HTMLCanvasElement>();
 const ctx = ref<CanvasRenderingContext2D>();
 
+const pageWidth = 1000;
+const pageHeight = 1000;
+
 onMounted(() => {
     if(canvas.value){
         const width = canvas.value.getClientRects().item(0)?.width;
         const height = canvas.value.getClientRects().item(0)?.height;
         if(width && height){
-            canvas.value.width = width;
-            canvas.value.height = height;
+            canvas.value.width = pageWidth;
+            canvas.value.height = pageHeight;
         }        
         ctx.value = canvas.value.getContext("2d") ?? undefined;
     }
@@ -57,6 +60,9 @@ const pointerdown = (e: PointerEvent) => {
                 y: e.clientY - by,
             }]);
             break;
+        case 'dialogue':
+            
+            break;
     }
 }
 const pointermove = (e: PointerEvent) => {
@@ -77,15 +83,22 @@ const pointermove = (e: PointerEvent) => {
             });
             drawPath(path);
             break;
+        case 'dialogue':
+            break;
     }
 }
 const pointerup = (e: PointerEvent) => {
-    const path = working_path.get(e.pointerId);
-    if(!path)
-        return;
+    switch(mode.value){
+        case 'pen':
+            const path = working_path.get(e.pointerId);
+            if(!path)
+                return;
 
-    paths.push(path);
-    working_path.delete(e.pointerId);
+            paths.push(path);
+            working_path.delete(e.pointerId);
+        case 'dialogue':
+            break;
+    }
 }
 
 const selectModeDialogue = () => {
@@ -102,7 +115,8 @@ const selectModeEraser = () => {
 
 <template>
 <div class="pageeditor">
-    <div class="canvas-container">
+    <div class="canvas-container" :data-editmode="mode">
+        <div class="dialogue" contenteditable="true">aaa</div>
         <canvas ref="canvas" @pointerdown="pointerdown" @pointermove="pointermove" @pointerup="pointerup"></canvas>
     </div>
     <div class="button-container">
@@ -119,15 +133,35 @@ const selectModeEraser = () => {
 .pageeditor {
     display: flex;
     flex-direction: column;
+    width: 100vw;
+    height: 100vh;
 }
 .canvas-container {
     width: 100%;
     overflow: hidden;
     flex-grow: 1;
+    position: relative;
+}
+.dialogue {
+    position: absolute;
+    border: 1px solid #999;
+    outline: none;
+    writing-mode: vertical-rl;
+    line-height: 1.2;
+    word-break: break-all;
+    font-family: 'EzTooN-SourceHanSerif', serif;
+    z-index: -1;
+}
+.canvas-container[data-editmode="dialogue"] .dialogue {
+    z-index: auto;
 }
 canvas {
     touch-action: none;
     border: 1px solid;
+    z-index: -1;
+}
+.canvas-container[data-editmode="pen"] canvas {
+    z-index: auto;
 }
 .button-container {
     height: 6rem;
