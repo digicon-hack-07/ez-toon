@@ -9,6 +9,7 @@ const workctx = ref<CanvasRenderingContext2D>()
 const ctx = ref<CanvasRenderingContext2D>()
 
 interface Props {
+  pageID: string
   pageWidth: number
   pageHeight: number
 }
@@ -187,7 +188,7 @@ const pointerup = (e: PointerEvent) => {
         id: `${
           dialogues.value.length ? dialogues.value.slice(-1)[0].id + 1 : 0
         }`, // TODO: generate ULID
-        pageID: '', // TODO: pageID
+        pageID: props.pageID,
         dialogue: '',
         left,
         top,
