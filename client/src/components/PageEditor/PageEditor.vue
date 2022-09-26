@@ -1,6 +1,7 @@
 <script setup lang="ts">
 
 import { onMounted, ref } from 'vue';
+import { PathRenderData, drawPath } from '../../lib/renderer/path';
 
 const canvas = ref<HTMLCanvasElement>();
 const ctx = ref<CanvasRenderingContext2D>();
@@ -23,29 +24,8 @@ onMounted(() => {
 type EditMode = 'pen' | 'dialogue' | 'eraser';
 const mode = ref<EditMode>('pen');
 
-type Path = {
-    x: number,
-    y: number,
-}[];
-
-const paths :Path[] = [];
-const working_path = new Map<number, Path>();
-
-const drawPath = (path: Path) => {
-    switch(mode.value){
-        case 'pen':
-            if(ctx.value){
-                ctx.value.beginPath();
-                ctx.value.moveTo(path[0].x, path[1].y);
-                for(const pos of path){
-                    ctx.value.lineTo(pos.x, pos.y);
-                }
-                ctx.value.stroke();
-                ctx.value.closePath();
-            }
-            break;
-    }
-}
+const paths :PathRenderData[] = [];
+const working_path = new Map<number, PathRenderData>();
 
 const pointerdown = (e: PointerEvent) => {
     switch(mode.value){
@@ -81,7 +61,8 @@ const pointermove = (e: PointerEvent) => {
                 x: e.clientX - bx,
                 y: e.clientY - by,
             });
-            drawPath(path);
+            if(ctx.value)
+                drawPath(ctx.value, path);
             break;
         case 'dialogue':
             break;
