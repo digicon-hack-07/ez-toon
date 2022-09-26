@@ -5,6 +5,7 @@
       v-for="project in projectList"
       :key="project.id"
       :project-name="project.name"
+      :url="'/project/' + project.id"
       :thumnail-image="project.thumbnail"
       :created-at="project.createdAt"
       :updated-at="project.updatedAt"
@@ -13,7 +14,6 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
 import CreateNewProject from '../components/menu/CreateNewProject.vue'
 import OpenProject from '../components/menu/OpenProject.vue'
 import type { Project } from '../lib/project'
@@ -45,8 +45,8 @@ const getProjectList = function () {
       updatedAt: new Date(20000000000)
     },
     {
-      id: '4',
-      name: '4',
+      id: '10',
+      name: '10',
       pages: 10,
       thumbnail: '/vite.svg',
       createdAt: new Date(30000000000),
@@ -62,5 +62,6 @@ const projectList = getProjectList()
 .menu {
   text-align: left;
   width: 90vw;
+  min-height: 80vh;
 }
 </style>

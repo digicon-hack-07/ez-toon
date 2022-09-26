@@ -1,11 +1,8 @@
 <template>
   <thumbnail
-    :name="projectName"
+    :name="'' + pageNumber"
     :image="thumnailImage"
-    :is-show-date="true"
-    :created-at="createdAt"
-    :undated-at="updatedAt"
-    @click="openProject"
+    @click="openPage"
   />
 </template>
 
@@ -14,21 +11,19 @@ import { useRouter } from 'vue-router'
 import Thumbnail from './Thumbnail.vue'
 const props = withDefaults(
   defineProps<{
-    projectName: string
+    pageNumber: number
     url: string
     thumnailImage: string
-    createdAt?: Date
-    updatedAt?: Date
   }>(),
   {
-    projectName: 'noname',
+    pageNumber: 1,
     url: '/',
     thumnailImage: '/vite.svg'
   }
 )
 const router = useRouter()
 
-const openProject = function () {
+const openPage = function () {
   router.push(props.url)
 }
 </script>

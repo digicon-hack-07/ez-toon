@@ -2,7 +2,7 @@
 <template>
   <div :class="$style.thumbnail">
     <div :class="$style.area">
-      <img src="/vite.svg" :class="$style.image" />
+      <img :src="image" :class="$style.image" />
       <p
         ref="nameRef"
         :class="[$style.name, isHidden ? $style.overflowName : '']"
@@ -10,13 +10,13 @@
         {{ name }}
       </p>
       <span :class="[isHidden ? $style.overflow : $style.hide]">...</span>
-      <p :class="$style.name">{{ dateString }}</p>
+      <p v-if="isShowDate" :class="$style.name">{{ dateString }}</p>
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { computed, onMounted, ref } from 'vue'
+import { computed, nextTick, onMounted, ref, watch } from 'vue'
 
 const isHidden = ref<boolean>(false)
 
@@ -24,23 +24,24 @@ const props = withDefaults(
   defineProps<{
     name: string
     image: string
+    isShowDate: boolean
     createdAt?: Date
     updatedAt?: Date
   }>(),
   {
     name: 'noname',
-    image: '/vite.svg'
+    image: '/vite.svg',
+    isShowDate: false
   }
 )
 
 const nameRef = ref<HTMLElement>()
 
-const formatDate = (dt : Date) => {
-  var y = ('' + dt.getFullYear()).slice(-2);
-  var m = dt.getMonth()+1;
-  var d =  dt.getDate();
-  return (y + '/' + m + '/' + d);
-
+const formatDate = (dt: Date) => {
+  var y = ('' + dt.getFullYear()).slice(-2)
+  var m = dt.getMonth() + 1
+  var d = dt.getDate()
+  return y + '/' + m + '/' + d
 }
 
 onMounted(() => {
@@ -48,6 +49,15 @@ onMounted(() => {
   const remHeight = (nameRef.value?.clientHeight ?? 0) / parseFloat(fontSize)
   isHidden.value = remHeight > 3
   //alert(remHeight)
+})
+
+watch(props, () => {
+  isHidden.value = false
+  nextTick(() => {
+    const fontSize = getComputedStyle(document.documentElement).fontSize
+    const remHeight = (nameRef.value?.clientHeight ?? 0) / parseFloat(fontSize)
+    isHidden.value = remHeight > 3
+  })
 })
 
 const dateString = computed(() => {
@@ -96,7 +106,7 @@ const dateString = computed(() => {
   /* position: absolute; */
   position: relative;
   left: 3.5rem;
-  top: -2.35rem;
+  top: -1.4rem;
   padding: -0.5rem;
   margin-top: 1.3rem;
 }

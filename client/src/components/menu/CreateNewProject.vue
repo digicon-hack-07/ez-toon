@@ -4,6 +4,7 @@
     name="create new project"
     :created-at="createdAt"
     :undated-at="updatedAt"
+    :image="image"
     @click="createAndOpenNewProject"
   />
 </template>
@@ -21,7 +22,7 @@ withDefaults(
   }>(),
   {
     name: 'create new project',
-    image: '/vite.svg'
+    image: '/plus.svg'
   }
 )
 const router = useRouter()
@@ -29,7 +30,7 @@ const router = useRouter()
 const createAndOpenNewProject = function () {
   const url = ref<string>('/')
   /*以下にサーバーに通信して新しいプロジェクトを作らせ、そこにアクセスするためのデータを入手するプログラムを書く */
-  router.push('/')
+  router.push(url.value)
 }
 </script>
 
