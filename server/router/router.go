@@ -3,6 +3,7 @@ package router
 import (
 	"net/http"
 
+	"github.com/digicon-hack-07/ez-toon/server/router/project"
 	"github.com/gorilla/sessions"
 	"github.com/labstack/echo-contrib/session"
 	"github.com/labstack/echo/v4"
@@ -28,6 +29,18 @@ func NewRouter() *Router {
 	e.GET("/ping", func(c echo.Context) error {
 		return c.String(http.StatusOK, "pong")
 	})
+
+	p := project.NewProjectHandler()
+
+	api := e.Group("/api")
+	{
+		projectAPI := api.Group("/projects")
+		{
+			projectAPI.GET("", p.GetProjects)
+			projectAPI.POST("", p.PostProject)
+		}
+	}
+
 	e.Static("/", "public")
 
 	return &Router{e: e}
