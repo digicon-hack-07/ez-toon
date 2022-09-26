@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
-import { PathRenderData, drawPath } from '../../lib/renderer/path'
-import { Dialogue } from '../../lib/dialogue'
+import { type PathRenderData, drawPath } from '../../lib/renderer/path'
+import { type Dialogue } from '../../lib/dialogue'
 
 const canvas = ref<HTMLCanvasElement>()
 const ctx = ref<CanvasRenderingContext2D>()
@@ -106,26 +106,26 @@ const pointerdown = (e: PointerEvent) => {
   }
 }
 const pointermove = (e: PointerEvent) => {
+  const bx = canvas.value?.getClientRects().item(0)?.left
+  const by = canvas.value?.getClientRects().item(0)?.top
+  if (bx === undefined || by === undefined) return
+
   switch (mode.value) {
   case 'move':
     if (!draggingData || draggingData.pointerId != e.pointerId) break
     canvasScrollX.value = e.x - draggingData.beginX + draggingData.tgtBeginX
     canvasScrollY.value = e.y - draggingData.beginY + draggingData.tgtBeginY
     break
-  case 'pen':
+  case 'pen': {
     const path = working_path.get(e.pointerId)
     if (!path) return
-
-    const bx = canvas.value?.getClientRects().item(0)?.left
-    const by = canvas.value?.getClientRects().item(0)?.top
-    if (bx === undefined || by === undefined) return
 
     path.push({
       x: e.clientX - bx,
       y: e.clientY - by
     })
     if (ctx.value) drawPath(ctx.value, path)
-    break
+  } break
   case 'dialogue':
     break
   }
@@ -135,12 +135,13 @@ const pointerup = (e: PointerEvent) => {
   case 'move':
     draggingData = null
     break
-  case 'pen':
+  case 'pen':{
     const path = working_path.get(e.pointerId)
     if (!path) return
 
     paths.push(path)
     working_path.delete(e.pointerId)
+  } break
   case 'dialogue':
     break
   }
@@ -173,11 +174,11 @@ const selectModeEraser = () => {
       </div>
       <canvas
         ref="canvas"
+        :style="canvasCss"
         @pointerdown="pointerdown"
         @pointermove="pointermove"
         @pointerup="pointerup"
         @pointerout="pointerup"
-        :style="canvasCss"
       ></canvas>
     </div>
     <div class="button-container">
