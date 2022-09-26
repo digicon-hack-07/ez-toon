@@ -270,13 +270,9 @@ const changeMode = (new_mode: EditMode) => {
     </div>
     <div class="button-container">
       <button :data-active="mode == 'move'" @click="changeMode('move')">移</button>
-      <button :data-active="mode == 'dialogue'" @click="changeMode('dialogue')">
-        あ
-      </button>
+      <button :data-active="mode == 'dialogue'" @click="changeMode('dialogue')">あ</button>
       <button :data-active="mode == 'pen'" @click="changeMode('pen')">筆</button>
-      <button :data-active="mode == 'eraser'" @click="changeMode('eraser')">
-        消
-      </button>
+      <button :data-active="mode == 'eraser'" @click="changeMode('eraser')">消</button>
     </div>
   </div>
 </template>
