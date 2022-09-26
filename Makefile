@@ -1,3 +1,8 @@
+.PHONY: init
+init:
+	cd client && npm ci
+	cd server && go mod download
+
 .PHONY: build-client
 build-client:
 	cd client && npm run build

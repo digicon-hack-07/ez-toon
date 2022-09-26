@@ -1,6 +1,6 @@
 type: runtime
 use_mariadb: true
-startup: make build
+startup: make init && make build
 entrypoint: ./ez-toon
 http_proxy: 8080
 https: hard
