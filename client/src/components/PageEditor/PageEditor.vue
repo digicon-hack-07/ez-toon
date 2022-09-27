@@ -5,6 +5,7 @@ import { type ToolHandlerInterface } from '../../lib/edittools/ToolHandlerInterf
 import { MoveToolHandler } from '../../lib/edittools/MoveToolHandler'
 import { DialogueToolHandler } from '../../lib/edittools/DialogueToolHandler'
 import { PenToolHandler } from '../../lib/edittools/PenToolHandler'
+import { EraserToolHandler } from '../../lib/edittools/EraserToolHandler'
 import { type Line } from '../../lib/line'
 import DialogueSubTool from './DialogueSubTool.vue'
 
@@ -84,18 +85,6 @@ const dialogue_delete = () => {
   dialogues.value = dialogues.value.filter(p => {
     return p.id != dialogue_selected.value
   })
-}
-
-class EraserToolHandler implements ToolHandlerInterface {
-  pointerdown(e: PointerEvent): void {
-    throw new Error('Method not implemented.')
-  }
-  pointermove(e: PointerEvent): void {
-    throw new Error('Method not implemented.')
-  }
-  pointerup(e: PointerEvent): void {
-    throw new Error('Method not implemented.')
-  }
 }
 
 function getModeHandler(): ToolHandlerInterface {
