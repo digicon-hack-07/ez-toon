@@ -19,14 +19,12 @@ const ctx = ref<CanvasRenderingContext2D>()
 
 interface Props {
   pageID: string
-  pageWidth: number
-  pageHeight: number
 }
 
-const props = withDefaults(defineProps<Props>(), {
-  pageWidth: 707,
-  pageHeight: 1000
-})
+const props = defineProps<Props>()
+
+const pageWidth = ref(707)
+const pageHeight = ref(1000)
 
 const canvasScrollX = ref<number>(0)
 const canvasScrollY = ref<number>(0)
@@ -37,12 +35,12 @@ const mode = ref<EditMode>('pen')
 
 onMounted(() => {
   if (canvas.value && workcanvas.value && canvascontainer.value) {
-    canvas.value.width = props.pageWidth * canvasScale.value
-    canvas.value.height = props.pageHeight * canvasScale.value
+    canvas.value.width = pageWidth.value * canvasScale.value
+    canvas.value.height = pageHeight.value * canvasScale.value
     ctx.value = canvas.value.getContext('2d') ?? undefined
 
-    workcanvas.value.width = props.pageWidth * canvasScale.value
-    workcanvas.value.height = props.pageHeight * canvasScale.value
+    workcanvas.value.width = pageWidth.value * canvasScale.value
+    workcanvas.value.height = pageHeight.value * canvasScale.value
     workctx.value = workcanvas.value.getContext('2d') ?? undefined
 
     canvasScrollX.value =
@@ -57,17 +55,17 @@ const canvasCss = computed(() => {
   return {
     left: `${canvasScrollX.value}px`,
     top: `${canvasScrollY.value}px`,
-    height: `${Math.floor(props.pageHeight * canvasScale.value)}px`,
-    width: `${Math.floor(props.pageWidth * canvasScale.value)}px`
+    height: `${Math.floor(pageHeight.value * canvasScale.value)}px`,
+    width: `${Math.floor(pageWidth.value * canvasScale.value)}px`
   }
 })
 
 watch(canvasScale, () => {
   if (canvas.value && workcanvas.value && ctx.value) {
-    canvas.value.width = props.pageWidth * canvasScale.value
-    canvas.value.height = props.pageHeight * canvasScale.value
-    workcanvas.value.width = props.pageWidth * canvasScale.value
-    workcanvas.value.height = props.pageHeight * canvasScale.value
+    canvas.value.width = pageWidth.value * canvasScale.value
+    canvas.value.height = pageHeight.value * canvasScale.value
+    workcanvas.value.width = pageWidth.value * canvasScale.value
+    workcanvas.value.height = pageHeight.value * canvasScale.value
     for (const line of lines) {
       drawLine(ctx.value, canvasScale.value, line)
     }
