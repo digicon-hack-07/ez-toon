@@ -24,17 +24,6 @@ export class DialogueToolHandler implements ToolHandlerInterface {
     const bx = this.canvas.getClientRects().item(0)?.left
     const by = this.canvas.getClientRects().item(0)?.top
     if (bx === undefined || by === undefined) return
-    if (
-      this.dialogues.value.find(dialogue => {
-        return (
-          dialogue.left <= (e.clientX - bx) / this.canvasScale.value &&
-          (e.clientX - bx) / this.canvasScale.value <= dialogue.right &&
-          dialogue.top <= (e.clientY - by) / this.canvasScale.value &&
-          (e.clientY - by) / this.canvasScale.value <= dialogue.bottom
-        )
-      })
-    )
-      return
     this.draggingData = {
       pointerId: e.pointerId,
       beginX: e.clientX - bx,

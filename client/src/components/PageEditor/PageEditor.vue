@@ -213,11 +213,11 @@ const changeMode = (new_mode: EditMode) => {
       class="canvas-container"
       ref="canvascontainer"
       :data-editmode="mode"
-      @pointerdown="pointerdown"
-      @pointermove="pointermove"
-      @pointerup="pointerup"
     >
       <canvas ref="canvas" class="store-canvas" :style="canvasCss"></canvas>
+      <canvas ref="workcanvas" :style="canvasCss"></canvas>
+    </div>
+    <div class="dialogue-container">
       <div
         v-for="dialogue_display in dialogues_display"
         :key="dialogue_display.id"
@@ -230,7 +230,6 @@ const changeMode = (new_mode: EditMode) => {
       >
         {{ dialogues_dummy.get(dialogue_display.id) }}
       </div>
-      <canvas ref="workcanvas" :style="canvasCss"></canvas>
       <div
         v-if="mode == 'dialogue'"
         v-for="dialogue_handle in dialogues_handle_display"
@@ -238,6 +237,10 @@ const changeMode = (new_mode: EditMode) => {
         :style="dialogue_handle.style"
       ></div>
     </div>
+    <div class="canvas-dummy"
+      @pointerdown="pointerdown"
+      @pointermove="pointermove"
+      @pointerup="pointerup"></div>
     <div class="subtool-container">
       <move-sub-tool
         v-if="mode == 'move'"
@@ -326,7 +329,7 @@ const changeMode = (new_mode: EditMode) => {
   border: 2px solid #BBB;
   box-sizing: border-box;
 }
-.canvas-container[data-editmode='dialogue'] .dialogue {
+.canvas-container[data-editmode='dialogue'] ~ .dialogue-container {
   z-index: 9999;
 }
 canvas {
@@ -339,9 +342,16 @@ canvas {
   bottom: 6rem;
   z-index: 10000;
 }
+.canvas-dummy {
+  position: absolute;
+  top: 0;
+  width: 100%;
+  height: 100%;
+}
 .button-container {
   height: 6rem;
   display: flex;
+  z-index: 10000;
 }
 .button-container button {
   flex-grow: 1;
