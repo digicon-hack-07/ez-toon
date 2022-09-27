@@ -28,3 +28,10 @@ func (h *LineHandler) PostLine(c echo.Context) error {
 		Points:  req.Points,
 	})
 }
+
+func (h *LineHandler) DeleteLine(c echo.Context) error {
+	id := c.Param("lineID")
+	c.Logger().Debug(id)
+
+	return c.NoContent(http.StatusNoContent)
+}

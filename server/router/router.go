@@ -56,6 +56,7 @@ func NewRouter() *Router {
 		lineAPI := api.Group("/lines")
 		{
 			lineAPI.POST("", line.PostLine)
+			lineAPI.DELETE("/:lineID", line.DeleteLine)
 		}
 	}
 
