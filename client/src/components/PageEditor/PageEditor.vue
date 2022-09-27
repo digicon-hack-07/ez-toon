@@ -11,6 +11,7 @@ import DialogueSubTool from './DialogueSubTool.vue'
 import MoveSubTool from './MoveSubTool.vue'
 import { drawLine } from '../../lib/renderer/path'
 
+const canvascontainer = ref<HTMLCanvasElement>()
 const workcanvas = ref<HTMLCanvasElement>()
 const canvas = ref<HTMLCanvasElement>()
 const workctx = ref<CanvasRenderingContext2D>()
@@ -27,15 +28,15 @@ const props = withDefaults(defineProps<Props>(), {
   pageHeight: 1000
 })
 
-const canvasScrollX = ref<number>(10)
-const canvasScrollY = ref<number>(20)
+const canvasScrollX = ref<number>(0)
+const canvasScrollY = ref<number>(0)
 const canvasScale = ref<number>(0.5)
 
 type EditMode = 'move' | 'pen' | 'dialogue' | 'eraser'
 const mode = ref<EditMode>('pen')
 
 onMounted(() => {
-  if (canvas.value && workcanvas.value) {
+  if (canvas.value && workcanvas.value && canvascontainer.value) {
     canvas.value.width = props.pageWidth * canvasScale.value
     canvas.value.height = props.pageHeight * canvasScale.value
     ctx.value = canvas.value.getContext('2d') ?? undefined
@@ -43,6 +44,9 @@ onMounted(() => {
     workcanvas.value.width = props.pageWidth * canvasScale.value
     workcanvas.value.height = props.pageHeight * canvasScale.value
     workctx.value = workcanvas.value.getContext('2d') ?? undefined
+
+    canvasScrollX.value = canvascontainer.value.clientWidth / 2 - canvas.value.clientWidth / 2;
+    canvasScrollY.value = canvascontainer.value.clientHeight / 2 - canvas.value.clientHeight / 2;
     handler = getModeHandler()
   }
 })
@@ -113,11 +117,19 @@ const dialogue_delete = () => {
   })
 }
 
+const changeScale = (newScale: number) => {
+  const oldScale = canvasScale.value
+  if(canvascontainer.value && canvas.value){
+    canvasScrollX.value = canvascontainer.value.clientWidth / 2 - newScale / oldScale * (canvascontainer.value.clientWidth / 2 - canvasScrollX.value)
+    canvasScrollY.value = canvascontainer.value.clientHeight / 2 - newScale / oldScale * (canvascontainer.value.clientHeight / 2 - canvasScrollY.value)
+    canvasScale.value = newScale
+  }
+}
 const zoomIn = () => {
-  if (canvasScale.value < 5) canvasScale.value += 0.2
+  if (canvasScale.value < 5) changeScale(canvasScale.value + 0.2)
 }
 const zoomOut = () => {
-  if (canvasScale.value > 0.2) canvasScale.value -= 0.2
+  if (canvasScale.value > 0.2) changeScale(canvasScale.value - 0.2)
 }
 
 function getModeHandler(): ToolHandlerInterface {
@@ -173,6 +185,7 @@ const changeMode = (new_mode: EditMode) => {
   <div class="pageeditor">
     <div
       class="canvas-container"
+      ref="canvascontainer"
       :data-editmode="mode"
       @pointerdown="pointerdown"
       @pointermove="pointermove"
