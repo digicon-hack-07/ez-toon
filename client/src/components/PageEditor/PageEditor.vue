@@ -57,6 +57,7 @@ const canvasCss = computed(() => {
 const lines: Line[] = []
 const dialogues = ref<Dialogue[]>([])
 const dialogue_selected = ref<string | null>(null)
+const dialogues_dummy = ref(new Map<string, string>)
 
 const dialogues_display = computed(() => {
   return dialogues.value.map(dialogue => {
@@ -74,6 +75,17 @@ const dialogues_display = computed(() => {
     }
   })
 })
+const dialogue_update = (e: Event) => {
+  const tgt = e.target
+  if (!tgt) return
+  if (e instanceof InputEvent && tgt instanceof HTMLElement) {
+    const dialogue = dialogues.value.find(p => {
+      return p.id == tgt.dataset.id
+    })
+    if (!dialogue || e.data === null) return
+    dialogue.dialogue = tgt.innerText
+  }
+}
 const dialogue_select = (e: FocusEvent) => {
   if (e.target instanceof HTMLElement) {
     const id = e.target.dataset.id
@@ -149,10 +161,9 @@ const changeMode = (new_mode: EditMode) => {
         contenteditable="true"
         :style="dialogue_display.style"
         :data-id="dialogue_display.id"
+        @input="dialogue_update"
         @focus="dialogue_select"
-      >
-        {{ dialogue_display.str }}
-      </div>
+      >{{ dialogues_dummy.get(dialogue_display.id) }}</div>
       <canvas ref="workcanvas" :style="canvasCss"></canvas>
     </div>
     <div class="subtool-container">
@@ -200,14 +211,17 @@ const changeMode = (new_mode: EditMode) => {
 }
 .dialogue {
   position: absolute;
-  border: 1px solid #999;
-  outline: none;
+  border: 2px solid #999; /* 小さいと縮小時にブラウザのレンダリングがバグりやすい */
   writing-mode: vertical-rl;
   line-height: 1.2;
   word-break: break-all;
   font-family: 'EzTooN-SourceHanSerif', serif;
   text-align: start;
   transform-origin: top left;
+}
+.dialogue:active, .dialogue:focus, .dialogue:focus-visible,
+.dialogue div:active, .dialogue div:focus, .dialogue div:focus-visible {
+  outline: none;
 }
 .canvas-container[data-editmode='dialogue'] .dialogue {
   z-index: 9999;
