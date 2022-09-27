@@ -31,7 +31,7 @@ export class PenToolHandler implements ToolHandlerInterface {
     if (bx === undefined || by === undefined) return
     this.working_lines.set(e.pointerId, {
       brushSize: 5,
-      color: '#000000',
+      color: '#606060',
       id: '', // TODO: generate ULID
       pageID: '', // TODO: pageID
       path: [
