@@ -83,6 +83,8 @@ type PatchProjectRequest struct {
 	Name string `json:"name,omitempty"`
 }
 
+type PatchProjectResponse Project
+
 func (h *ProjectHandler) PatchProject(c echo.Context) error {
 	id := c.Param("projectID")
 
@@ -91,7 +93,7 @@ func (h *ProjectHandler) PatchProject(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, err)
 	}
 
-	res := PostProjectResponse{
+	res := PatchProjectResponse{
 		ID:         ulid.MustParse(id),
 		Name:       req.Name,
 		TotalPages: 0,
