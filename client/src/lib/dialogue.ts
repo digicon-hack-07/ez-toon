@@ -6,4 +6,7 @@ export type Dialogue = {
   bottom: number
   left: number
   right: number
+  fontSize : number
+  fontName : string
+  color : string
 }
