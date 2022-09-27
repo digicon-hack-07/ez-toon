@@ -8,6 +8,30 @@ import (
 	"github.com/oklog/ulid/v2"
 )
 
+type PostPageRequest struct {
+	ID        ulid.ULID `json:"id,omitempty"`
+	ProjectID ulid.ULID `json:"project_id,omitempty"`
+	Height    int       `json:"height,omitempty"`
+	Width     int       `json:"width,omitempty"`
+}
+
+type PostPageResponse Page
+
+func (h *PageHandler) PostPage(c echo.Context) error {
+	req := PostPageRequest{}
+	if err := c.Bind(&req); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, err)
+	}
+
+	return c.JSON(http.StatusCreated, PostPageResponse{
+		ID:        ulid.Make(),
+		ProjectID: req.ProjectID,
+		Index:     1,
+		Height:    req.Height,
+		Width:     req.Width,
+	})
+}
+
 type GetPageResponse PageWithContents
 
 func (h *PageHandler) GetPage(c echo.Context) error {

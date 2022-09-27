@@ -49,6 +49,7 @@ func NewRouter() *Router {
 
 		pageAPI := api.Group("/pages")
 		{
+			pageAPI.POST("", page.PostPage)
 			pageAPI.GET("/:pageID", page.GetPage)
 			pageAPI.PATCH("/:pageID/index", page.PatchIndex)
 		}
