@@ -26,14 +26,14 @@ func NewRouter() *Router {
 
 	e.Use(session.Middleware(sessions.NewCookieStore([]byte("secret"))))
 
-	e.GET("/ping", func(c echo.Context) error {
-		return c.String(http.StatusOK, "pong")
-	})
-
 	p := project.NewProjectHandler()
 
 	api := e.Group("/api")
 	{
+		api.GET("/ping", func(c echo.Context) error {
+			return c.String(http.StatusOK, "pong")
+		})
+
 		projectAPI := api.Group("/projects")
 		{
 			projectAPI.GET("", p.GetProjects)
