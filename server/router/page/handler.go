@@ -3,7 +3,6 @@ package page
 import (
 	"net/http"
 
-	"github.com/digicon-hack-07/ez-toon/server/router/content"
 	"github.com/labstack/echo/v4"
 	"github.com/oklog/ulid/v2"
 )
@@ -14,15 +13,16 @@ func (h *PageHandler) GetPage(c echo.Context) error {
 	id := c.Param("pageID")
 
 	return c.JSON(http.StatusOK, GetPageResponse{
-		ID:     ulid.MustParse(id),
-		Index:  0,
-		Height: 300,
-		Width:  400,
-		Lines: []content.Line{
+		ID:        ulid.MustParse(id),
+		ProjectID: ulid.Make(),
+		Index:     0,
+		Height:    300,
+		Width:     400,
+		Lines: []Line{
 			{
 				ID:      ulid.Make(),
 				PenSize: 3,
-				Points: []content.Point{
+				Points: []Point{
 					{
 						X:        0,
 						Y:        0,
@@ -43,7 +43,7 @@ func (h *PageHandler) GetPage(c echo.Context) error {
 			{
 				ID:      ulid.Make(),
 				PenSize: 4,
-				Points: []content.Point{
+				Points: []Point{
 					{
 						X:        100.2,
 						Y:        353.6,
@@ -62,7 +62,7 @@ func (h *PageHandler) GetPage(c echo.Context) error {
 				},
 			},
 		},
-		Dialogues: []content.Dialogue{
+		Dialogues: []Dialogue{
 			{
 				ID:       ulid.Make(),
 				Dialogue: "あいうえおかきくけこ",
@@ -80,6 +80,7 @@ type PatchIndexRequest struct {
 	Operation string `json:"operation,omitempty"`
 }
 
+// 更新したページ一覧を返却する
 type PatchIndexResponse []Page
 
 func (h *PageHandler) PatchIndex(c echo.Context) error {
@@ -95,16 +96,18 @@ func (h *PageHandler) PatchIndex(c echo.Context) error {
 
 	return c.JSON(http.StatusOK, PatchIndexResponse{
 		{
-			ID:     ulid.Make(),
-			Index:  0,
-			Height: 300,
-			Width:  400,
+			ID:        ulid.Make(),
+			ProjectID: ulid.Make(),
+			Index:     0,
+			Height:    300,
+			Width:     400,
 		},
 		{
-			ID:     ulid.MustParse(id),
-			Index:  1,
-			Height: 500,
-			Width:  600,
+			ID:        ulid.MustParse(id),
+			ProjectID: ulid.Make(),
+			Index:     1,
+			Height:    500,
+			Width:     600,
 		},
 	})
 }

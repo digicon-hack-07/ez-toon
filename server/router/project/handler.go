@@ -4,7 +4,6 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/digicon-hack-07/ez-toon/server/router/page"
 	"github.com/labstack/echo/v4"
 	"github.com/oklog/ulid/v2"
 )
@@ -63,7 +62,7 @@ func (h *ProjectHandler) GetProject(c echo.Context) error {
 		Name:      "test",
 		CreatedAt: time.Now(),
 		UpdatedAt: time.Now(),
-		Pages: []page.Page{
+		Pages: []Page{
 			{
 				ID:     ulid.Make(),
 				Index:  0,

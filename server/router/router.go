@@ -43,12 +43,12 @@ func NewRouter() *Router {
 			projectAPI.GET("/:projectID", prj.GetProject)
 			projectAPI.PATCH("/:projectID", prj.PatchProject)
 			projectAPI.DELETE("/:projectID", prj.DeleteProject)
+		}
 
-			pageAPI := api.Group("/:projectID/page")
-			{
-				pageAPI.GET("/:pageID", page.GetPage)
-				pageAPI.PATCH("/:pageID/index", page.PatchIndex)
-			}
+		pageAPI := api.Group("/pages")
+		{
+			pageAPI.GET("/:pageID", page.GetPage)
+			pageAPI.PATCH("/:pageID/index", page.PatchIndex)
 		}
 	}
 

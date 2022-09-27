@@ -10,12 +10,14 @@ type Point struct {
 
 type Line struct {
 	ID      ulid.ULID `json:"id,omitempty"`
+	PageID  ulid.ULID `json:"page_id,omitempty"`
 	PenSize int       `json:"penSize,omitempty"`
 	Points  []Point   `json:"points,omitempty"`
 }
 
 type Dialogue struct {
 	ID       ulid.ULID `json:"id,omitempty"`
+	PageID   ulid.ULID `json:"page_id,omitempty"`
 	Dialogue string    `json:"dialogue,omitempty"`
 	Top      float64   `json:"top,omitempty"`
 	Bottom   float64   `json:"bottom,omitempty"`
