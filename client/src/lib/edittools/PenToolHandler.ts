@@ -68,15 +68,16 @@ export class PenToolHandler implements ToolHandlerInterface {
   pointerup(e: PointerEvent): void {
     const line = this.working_lines.get(e.pointerId)
     if (!line) return
-
-    this.workctx.clearRect(
-      0,
-      0,
-      this.workctx.canvas.width,
-      this.workctx.canvas.height
-    )
-    drawLine(this.ctx, this.canvasScale.value, line)
-    this.lines.push(line)
+    if (line.path.length > 2){
+      this.workctx.clearRect(
+        0,
+        0,
+        this.workctx.canvas.width,
+        this.workctx.canvas.height
+      )
+      drawLine(this.ctx, this.canvasScale.value, line)
+      this.lines.push(line)
+    }
     this.working_lines.delete(e.pointerId)
     return
   }
