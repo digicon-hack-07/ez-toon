@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/digicon-hack-07/ez-toon/server/router/page"
 	"github.com/labstack/echo/v4"
 	"github.com/oklog/ulid/v2"
 )
@@ -52,13 +53,39 @@ func (h *ProjectHandler) PostProject(c echo.Context) error {
 	return c.JSON(http.StatusCreated, res)
 }
 
+type GetProjectResponse ProjectWithPages
+
+func (h *ProjectHandler) GetProject(c echo.Context) error {
+	id := c.Param("projectID")
+
+	return c.JSON(http.StatusOK, GetProjectResponse{
+		ID:        ulid.MustParse(id),
+		Name:      "test",
+		CreatedAt: time.Now(),
+		UpdatedAt: time.Now(),
+		Pages: []page.Page{
+			{
+				ID:     ulid.Make(),
+				Index:  0,
+				Height: 300,
+				Width:  400,
+			},
+			{
+				ID:     ulid.Make(),
+				Index:  1,
+				Height: 500,
+				Width:  600,
+			},
+		},
+	})
+}
+
 type PatchProjectRequest struct {
 	Name string `json:"name,omitempty"`
 }
 
 func (h *ProjectHandler) PatchProject(c echo.Context) error {
 	id := c.Param("projectID")
-	c.Logger().Debug(id)
 
 	req := PatchProjectRequest{}
 	if err := c.Bind(&req); err != nil {
@@ -66,7 +93,7 @@ func (h *ProjectHandler) PatchProject(c echo.Context) error {
 	}
 
 	res := PostProjectResponse{
-		ID:         ulid.Make(),
+		ID:         ulid.MustParse(id),
 		Name:       req.Name,
 		TotalPages: 0,
 		CreatedAt:  time.Now().Add(-time.Hour),

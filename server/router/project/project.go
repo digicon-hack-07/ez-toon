@@ -3,6 +3,7 @@ package project
 import (
 	"time"
 
+	"github.com/digicon-hack-07/ez-toon/server/router/page"
 	"github.com/oklog/ulid/v2"
 )
 
@@ -13,6 +14,15 @@ type Project struct {
 	Thumbnail  string    `json:"thumbnail,omitempty"`
 	CreatedAt  time.Time `json:"created_at,omitempty"`
 	UpdatedAt  time.Time `json:"updated_at,omitempty"`
+}
+
+type ProjectWithPages struct {
+	ID        ulid.ULID   `json:"id,omitempty"`
+	Name      string      `json:"name,omitempty"`
+	Pages     []page.Page `json:"pages,omitempty"`
+	Thumbnail string      `json:"thumbnail,omitempty"`
+	CreatedAt time.Time   `json:"created_at,omitempty"`
+	UpdatedAt time.Time   `json:"updated_at,omitempty"`
 }
 
 type ProjectHandler struct{}
