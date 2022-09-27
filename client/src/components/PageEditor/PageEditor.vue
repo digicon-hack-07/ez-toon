@@ -55,6 +55,7 @@ const canvasCss = computed(() => {
 
 const lines: Line[] = []
 const dialogues = ref<Dialogue[]>([])
+const dialogue_selected = ref<string | null>(null)
 
 const dialogues_display = computed(() => {
   return dialogues.value.map(dialogue => {
@@ -72,6 +73,18 @@ const dialogues_display = computed(() => {
     }
   })
 })
+const dialogue_select = (e: FocusEvent) => {
+  if (e.target instanceof HTMLElement) {
+    const id = e.target.dataset.id
+    if (!id) return
+    dialogue_selected.value = id
+  }
+}
+const dialogue_delete = () => {
+  dialogues.value = dialogues.value.filter(p => {
+    return p.id != dialogue_selected.value
+  })
+}
 
 class EraserToolHandler implements ToolHandlerInterface {
   pointerdown(e: PointerEvent): void {
@@ -87,18 +100,29 @@ class EraserToolHandler implements ToolHandlerInterface {
 
 function getModeHandler(): ToolHandlerInterface {
   switch (mode.value) {
-  case 'move':
-    return new MoveToolHandler(canvasScrollX, canvasScrollY)
-  case 'dialogue':
-    if (!canvas.value) throw new Error('canvas not loaded')
-    return new DialogueToolHandler(canvas.value, canvasScale, dialogues, props.pageID)
-  case 'pen':
-    if (!canvas.value) throw new Error('canvas not loaded')
-    if (!ctx.value || !workctx.value)
-      throw new Error('canvas context not loaded')
-    return new PenToolHandler(canvas.value, canvasScale, ctx.value, workctx.value, lines)
-  case 'eraser':
-    return new EraserToolHandler()
+    case 'move':
+      return new MoveToolHandler(canvasScrollX, canvasScrollY)
+    case 'dialogue':
+      if (!canvas.value) throw new Error('canvas not loaded')
+      return new DialogueToolHandler(
+        canvas.value,
+        canvasScale,
+        dialogues,
+        props.pageID
+      )
+    case 'pen':
+      if (!canvas.value) throw new Error('canvas not loaded')
+      if (!ctx.value || !workctx.value)
+        throw new Error('canvas context not loaded')
+      return new PenToolHandler(
+        canvas.value,
+        canvasScale,
+        ctx.value,
+        workctx.value,
+        lines
+      )
+    case 'eraser':
+      return new EraserToolHandler()
   }
 }
 let handler: ToolHandlerInterface | null
@@ -135,12 +159,17 @@ const changeMode = (new_mode: EditMode) => {
         class="dialogue"
         contenteditable="true"
         :style="dialogue_display.style"
+        :data-id="dialogue_display.id"
+        @focus="dialogue_select"
       >
         {{ dialogue_display.str }}
       </div>
       <canvas ref="workcanvas" :style="canvasCss"></canvas>
       <div class="subtool-container">
-        <dialogue-sub-tool v-if="mode == 'dialogue'"></dialogue-sub-tool>
+        <dialogue-sub-tool
+          v-if="mode == 'dialogue'"
+          @delete-dialogue="dialogue_delete"
+        ></dialogue-sub-tool>
       </div>
     </div>
     <div class="button-container">

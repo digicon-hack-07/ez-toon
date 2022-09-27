@@ -1,6 +1,9 @@
 <script setup lang="ts">
 
-const deleteDialogue = (e: MouseEvent) => {}
+const emit = defineEmits<{
+  (e: 'deleteDialogue'): void
+}>()
+const deleteDialogue = (e: MouseEvent) => { emit("deleteDialogue") }
 
 </script>
 
