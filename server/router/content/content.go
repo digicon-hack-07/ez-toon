@@ -24,3 +24,15 @@ type Dialogue struct {
 	Left     float64   `json:"left,omitempty"`
 	Right    float64   `json:"right,omitempty"`
 }
+
+type LineHandler struct{}
+
+func NewLineHandler() *LineHandler {
+	return &LineHandler{}
+}
+
+type DialogueHandler struct{}
+
+func NewDialogueHandler() *DialogueHandler {
+	return &DialogueHandler{}
+}
