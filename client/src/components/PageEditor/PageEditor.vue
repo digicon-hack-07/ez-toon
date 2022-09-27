@@ -123,13 +123,14 @@ const changeScale = (newScale: number) => {
     canvasScrollX.value = canvascontainer.value.clientWidth / 2 - newScale / oldScale * (canvascontainer.value.clientWidth / 2 - canvasScrollX.value)
     canvasScrollY.value = canvascontainer.value.clientHeight / 2 - newScale / oldScale * (canvascontainer.value.clientHeight / 2 - canvasScrollY.value)
     canvasScale.value = newScale
+    console.log(newScale)
   }
 }
 const zoomIn = () => {
-  if (canvasScale.value < 5) changeScale(canvasScale.value + 0.2)
+  if (canvasScale.value < 5) changeScale(canvasScale.value + 0.25)
 }
 const zoomOut = () => {
-  if (canvasScale.value > 0.2) changeScale(canvasScale.value - 0.2)
+  if (canvasScale.value > 0.25) changeScale(canvasScale.value - 0.25)
 }
 
 function getModeHandler(): ToolHandlerInterface {
