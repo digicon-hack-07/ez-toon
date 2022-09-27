@@ -13,18 +13,18 @@ type GetProjectsResponse []Project
 func (h *ProjectHandler) GetProjects(c echo.Context) error {
 	return c.JSON(http.StatusOK, GetProjectsResponse{
 		{
-			ID:        ulid.Make(),
-			Name:      "test",
-			Pages:     5,
-			CreatedAt: time.Now(),
-			UpdatedAt: time.Now(),
+			ID:         ulid.Make(),
+			Name:       "test",
+			TotalPages: 5,
+			CreatedAt:  time.Now(),
+			UpdatedAt:  time.Now(),
 		},
 		{
-			ID:        ulid.Make(),
-			Name:      "test2",
-			Pages:     5,
-			CreatedAt: time.Now(),
-			UpdatedAt: time.Now(),
+			ID:         ulid.Make(),
+			Name:       "test2",
+			TotalPages: 5,
+			CreatedAt:  time.Now(),
+			UpdatedAt:  time.Now(),
 		},
 	})
 }
@@ -42,11 +42,11 @@ func (h *ProjectHandler) PostProject(c echo.Context) error {
 	}
 
 	res := PostProjectResponse{
-		ID:        ulid.Make(),
-		Name:      req.Name,
-		Pages:     0,
-		CreatedAt: time.Now(),
-		UpdatedAt: time.Now(),
+		ID:         ulid.Make(),
+		Name:       req.Name,
+		TotalPages: 0,
+		CreatedAt:  time.Now(),
+		UpdatedAt:  time.Now(),
 	}
 
 	return c.JSON(http.StatusCreated, res)
@@ -66,11 +66,11 @@ func (h *ProjectHandler) PatchProject(c echo.Context) error {
 	}
 
 	res := PostProjectResponse{
-		ID:        ulid.Make(),
-		Name:      req.Name,
-		Pages:     0,
-		CreatedAt: time.Now().Add(-time.Hour),
-		UpdatedAt: time.Now(),
+		ID:         ulid.Make(),
+		Name:       req.Name,
+		TotalPages: 0,
+		CreatedAt:  time.Now().Add(-time.Hour),
+		UpdatedAt:  time.Now(),
 	}
 
 	return c.JSON(http.StatusCreated, res)

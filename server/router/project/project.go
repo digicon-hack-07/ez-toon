@@ -7,12 +7,12 @@ import (
 )
 
 type Project struct {
-	ID        ulid.ULID `json:"id,omitempty"`
-	Name      string    `json:"name,omitempty"`
-	Pages     int       `json:"pages,omitempty"`
-	Thumbnail string    `json:"thumbnail,omitempty"`
-	CreatedAt time.Time `json:"created_at,omitempty"`
-	UpdatedAt time.Time `json:"updated_at,omitempty"`
+	ID         ulid.ULID `json:"id,omitempty"`
+	Name       string    `json:"name,omitempty"`
+	TotalPages int       `json:"pages,omitempty"`
+	Thumbnail  string    `json:"thumbnail,omitempty"`
+	CreatedAt  time.Time `json:"created_at,omitempty"`
+	UpdatedAt  time.Time `json:"updated_at,omitempty"`
 }
 
 type ProjectHandler struct{}
