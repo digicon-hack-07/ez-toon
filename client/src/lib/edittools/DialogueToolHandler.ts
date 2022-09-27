@@ -57,14 +57,19 @@ export class DialogueToolHandler implements ToolHandlerInterface {
 
       this.dialogues.value.push({
         id: `${
-          this.dialogues.value.length ? this.dialogues.value.slice(-1)[0].id + 1 : 0
+          this.dialogues.value.length
+            ? this.dialogues.value.slice(-1)[0].id + 1
+            : 0
         }`, // TODO: generate ULID
         pageID: this.pageID,
         dialogue: '',
         left,
         top,
         right,
-        bottom
+        bottom,
+        fontSize: 24,
+        fontName: '',
+        color: '#000000'
       })
     }
     this.draggingData = null

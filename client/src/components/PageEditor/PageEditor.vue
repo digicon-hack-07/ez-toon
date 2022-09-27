@@ -64,7 +64,8 @@ const dialogues_display = computed(() => {
         left: `${canvasScrollX.value + dialogue.left}px`,
         top: `${canvasScrollY.value + dialogue.top}px`,
         width: `${dialogue.right - dialogue.left}px`,
-        height: `${dialogue.bottom - dialogue.top}px`
+        height: `${dialogue.bottom - dialogue.top}px`,
+        fontSize: `${dialogue.fontSize * canvasScale.value}px`
       },
       str: dialogue.dialogue
     }
