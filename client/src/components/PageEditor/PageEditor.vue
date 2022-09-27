@@ -6,6 +6,7 @@ import { MoveToolHandler } from '../../lib/edittools/MoveToolHandler'
 import { DialogueToolHandler } from '../../lib/edittools/DialogueToolHandler'
 import { PenToolHandler } from '../../lib/edittools/PenToolHandler'
 import { type Line } from '../../lib/line'
+import DialogueSubTool from './DialogueSubTool.vue'
 
 const workcanvas = ref<HTMLCanvasElement>()
 const canvas = ref<HTMLCanvasElement>()
@@ -136,6 +137,9 @@ const changeMode = (new_mode: EditMode) => {
         {{ dialogue_display.str }}
       </div>
       <canvas ref="workcanvas" :style="canvasCss"></canvas>
+      <div class="subtool-container">
+        <dialogue-sub-tool v-if="mode == 'dialogue'"></dialogue-sub-tool>
+      </div>
     </div>
     <div class="button-container">
       <button :data-active="mode == 'move'" @click="changeMode('move')">
@@ -191,20 +195,26 @@ canvas {
   touch-action: none;
   border: 1px solid;
 }
+.subtool-container {
+  position: absolute;
+  width: 100%;
+  bottom: 0;
+  z-index: 10000;
+}
 .button-container {
   height: 6rem;
   display: flex;
 }
-button {
+.button-container button {
   flex-grow: 1;
   border: 2px solid #888;
   border-bottom: none;
   border-radius: 0;
 }
-button:focus {
+.button-container button:focus {
   outline: none;
 }
-button[data-active='true'] {
+.button-container button[data-active='true'] {
   background-color: #3c70ff;
   color: #fff;
 }
