@@ -10,8 +10,8 @@ const zoomOut = (e: MouseEvent) => { emit("zoomOut") }
 </script>
 
 <template>
-  <button @click="zoomIn" style="bottom: 8rem;">＋</button>
-  <button @click="zoomOut" style="bottom: 1rem;">－</button>
+  <button style="bottom: 8rem;" @click="zoomIn">＋</button>
+  <button style="bottom: 1rem;" @click="zoomOut">－</button>
 </template>
 
 <style scoped>

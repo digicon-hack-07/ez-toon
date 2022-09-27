@@ -1,4 +1,4 @@
-import { Ref } from 'vue'
+import { type Ref } from 'vue'
 import { type Line } from '../line'
 import { drawLine } from '../renderer/path'
 import { type ToolHandlerInterface } from './ToolHandlerInterface'

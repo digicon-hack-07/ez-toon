@@ -57,12 +57,12 @@ const canvasCss = computed(() => {
 })
 
 watch(canvasScale, () => {
-  if(canvas.value && workcanvas.value && ctx.value){
+  if (canvas.value && workcanvas.value && ctx.value) {
     canvas.value.width = props.pageWidth * canvasScale.value
     canvas.value.height = props.pageHeight * canvasScale.value
     workcanvas.value.width = props.pageWidth * canvasScale.value
     workcanvas.value.height = props.pageHeight * canvasScale.value
-    for(const line of lines){
+    for (const line of lines) {
       drawLine(ctx.value, canvasScale.value, line)
     }
   }
@@ -114,43 +114,39 @@ const dialogue_delete = () => {
 }
 
 const zoomIn = () => {
-  if(canvasScale.value < 5)
-  canvasScale.value += 0.2
-  console.log(canvasScale.value)
+  if (canvasScale.value < 5) canvasScale.value += 0.2
 }
 const zoomOut = () => {
-  if(canvasScale.value > 0.2)
-  canvasScale.value -= 0.2
-  console.log(canvasScale.value)
+  if (canvasScale.value > 0.2) canvasScale.value -= 0.2
 }
 
 function getModeHandler(): ToolHandlerInterface {
   switch (mode.value) {
-    case 'move':
-      return new MoveToolHandler(canvasScrollX, canvasScrollY)
-    case 'dialogue':
-      if (!canvas.value) throw new Error('canvas not loaded')
-      return new DialogueToolHandler(
-        canvas.value,
-        canvasScale,
-        dialogues,
-        props.pageID
-      )
-    case 'pen':
-      if (!canvas.value) throw new Error('canvas not loaded')
-      if (!ctx.value || !workctx.value)
-        throw new Error('canvas context not loaded')
-      return new PenToolHandler(
-        canvas.value,
-        canvasScale,
-        ctx.value,
-        workctx.value,
-        lines
-      )
-    case 'eraser':
-      if (!canvas.value) throw new Error('canvas not loaded')
-      if (!ctx.value) throw new Error('canvas context not loaded')
-      return new EraserToolHandler(canvas.value, ctx.value, canvasScale, lines)
+  case 'move':
+    return new MoveToolHandler(canvasScrollX, canvasScrollY)
+  case 'dialogue':
+    if (!canvas.value) throw new Error('canvas not loaded')
+    return new DialogueToolHandler(
+      canvas.value,
+      canvasScale,
+      dialogues,
+      props.pageID
+    )
+  case 'pen':
+    if (!canvas.value) throw new Error('canvas not loaded')
+    if (!ctx.value || !workctx.value)
+      throw new Error('canvas context not loaded')
+    return new PenToolHandler(
+      canvas.value,
+      canvasScale,
+      ctx.value,
+      workctx.value,
+      lines
+    )
+  case 'eraser':
+    if (!canvas.value) throw new Error('canvas not loaded')
+    if (!ctx.value) throw new Error('canvas context not loaded')
+    return new EraserToolHandler(canvas.value, ctx.value, canvasScale, lines)
   }
 }
 let handler: ToolHandlerInterface | null

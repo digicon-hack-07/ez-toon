@@ -1,5 +1,5 @@
-import { Ref } from 'vue'
-import { Line } from '../line'
+import { type Ref } from 'vue'
+import { type Line } from '../line'
 import { drawLine } from '../renderer/path'
 import { type ToolHandlerInterface } from './ToolHandlerInterface'
 
@@ -8,7 +8,7 @@ export class EraserToolHandler implements ToolHandlerInterface {
   canvas: HTMLElement
   canvasScale: Ref<number>
   ctx: CanvasRenderingContext2D
-  en: boolean = false
+  en = false
 
   constructor(
     canvas: HTMLElement,
