@@ -45,8 +45,10 @@ onMounted(() => {
     workcanvas.value.height = props.pageHeight * canvasScale.value
     workctx.value = workcanvas.value.getContext('2d') ?? undefined
 
-    canvasScrollX.value = canvascontainer.value.clientWidth / 2 - canvas.value.clientWidth / 2;
-    canvasScrollY.value = canvascontainer.value.clientHeight / 2 - canvas.value.clientHeight / 2;
+    canvasScrollX.value =
+      canvascontainer.value.clientWidth / 2 - canvas.value.clientWidth / 2
+    canvasScrollY.value =
+      canvascontainer.value.clientHeight / 2 - canvas.value.clientHeight / 2
     handler = getModeHandler()
   }
 })
@@ -93,6 +95,23 @@ const dialogues_display = computed(() => {
     }
   })
 })
+const dialogues_handle_display = computed(() => {
+  return dialogues.value.map(dialogue => {
+    return {
+      id: dialogue.id,
+      style: {
+        left: `${
+          canvasScrollX.value + dialogue.right * canvasScale.value + 4
+        }px`,
+        top: `${
+          canvasScrollY.value + dialogue.top * canvasScale.value - 12 - 4
+        }px`,
+        width: `12px`,
+        height: `12px`
+      }
+    }
+  })
+})
 const dialogue_update = (e: Event) => {
   const tgt = e.target
   if (!tgt) return
@@ -119,9 +138,15 @@ const dialogue_delete = () => {
 
 const changeScale = (newScale: number) => {
   const oldScale = canvasScale.value
-  if(canvascontainer.value && canvas.value){
-    canvasScrollX.value = canvascontainer.value.clientWidth / 2 - newScale / oldScale * (canvascontainer.value.clientWidth / 2 - canvasScrollX.value)
-    canvasScrollY.value = canvascontainer.value.clientHeight / 2 - newScale / oldScale * (canvascontainer.value.clientHeight / 2 - canvasScrollY.value)
+  if (canvascontainer.value && canvas.value) {
+    canvasScrollX.value =
+      canvascontainer.value.clientWidth / 2 -
+      (newScale / oldScale) *
+        (canvascontainer.value.clientWidth / 2 - canvasScrollX.value)
+    canvasScrollY.value =
+      canvascontainer.value.clientHeight / 2 -
+      (newScale / oldScale) *
+        (canvascontainer.value.clientHeight / 2 - canvasScrollY.value)
     canvasScale.value = newScale
     console.log(newScale)
   }
@@ -206,6 +231,12 @@ const changeMode = (new_mode: EditMode) => {
         {{ dialogues_dummy.get(dialogue_display.id) }}
       </div>
       <canvas ref="workcanvas" :style="canvasCss"></canvas>
+      <div
+        v-if="mode == 'dialogue'"
+        v-for="dialogue_handle in dialogues_handle_display"
+        class="dialoguehandle"
+        :style="dialogue_handle.style"
+      ></div>
     </div>
     <div class="subtool-container">
       <move-sub-tool
@@ -252,17 +283,21 @@ const changeMode = (new_mode: EditMode) => {
   position: relative;
   background-color: #ccc;
 }
-.canvas-container[data-editmode="move"] {
+.canvas-container[data-editmode='move'] {
   cursor: grab;
 }
-.canvas-container[data-editmode="dialogue"] {
+.canvas-container[data-editmode='dialogue'] {
   cursor: crosshair;
 }
-.canvas-container[data-editmode="pen"] {
-  cursor: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9Im5vIj8+CjwhLS0gQ3JlYXRlZCB3aXRoIElua3NjYXBlIChodHRwOi8vd3d3Lmlua3NjYXBlLm9yZy8pIC0tPgoKPHN2ZwogICB3aWR0aD0iMTUuOTk5OTk5IgogICBoZWlnaHQ9IjE1Ljk5OTk5OSIKICAgdmlld0JveD0iMCAwIDQuMjMzMzMzIDQuMjMzMzMzIgogICB2ZXJzaW9uPSIxLjEiCiAgIGlkPSJzdmc1IgogICB4bWxuczppbmtzY2FwZT0iaHR0cDovL3d3dy5pbmtzY2FwZS5vcmcvbmFtZXNwYWNlcy9pbmtzY2FwZSIKICAgeG1sbnM6c29kaXBvZGk9Imh0dHA6Ly9zb2RpcG9kaS5zb3VyY2Vmb3JnZS5uZXQvRFREL3NvZGlwb2RpLTAuZHRkIgogICB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciCiAgIHhtbG5zOnN2Zz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgogIDxzb2RpcG9kaTpuYW1lZHZpZXcKICAgICBpZD0ibmFtZWR2aWV3NyIKICAgICBwYWdlY29sb3I9IiNmZmZmZmYiCiAgICAgYm9yZGVyY29sb3I9IiMwMDAwMDAiCiAgICAgYm9yZGVyb3BhY2l0eT0iMC4yNSIKICAgICBpbmtzY2FwZTpzaG93cGFnZXNoYWRvdz0iMiIKICAgICBpbmtzY2FwZTpwYWdlb3BhY2l0eT0iMC4wIgogICAgIGlua3NjYXBlOnBhZ2VjaGVja2VyYm9hcmQ9IjAiCiAgICAgaW5rc2NhcGU6ZGVza2NvbG9yPSIjZDFkMWQxIgogICAgIGlua3NjYXBlOmRvY3VtZW50LXVuaXRzPSJtbSIKICAgICBzaG93Z3JpZD0iZmFsc2UiIC8+CiAgPGRlZnMKICAgICBpZD0iZGVmczIiIC8+CiAgPGcKICAgICBpbmtzY2FwZTpsYWJlbD0iTGF5ZXIgMSIKICAgICBpbmtzY2FwZTpncm91cG1vZGU9ImxheWVyIgogICAgIGlkPSJsYXllcjEiPgogICAgPGNpcmNsZQogICAgICAgc3R5bGU9ImZpbGw6IzAwMDAwMDtmaWxsLW9wYWNpdHk6MTtzdHJva2U6bm9uZTtzdHJva2Utd2lkdGg6Ny4yOTMxNTtzdHJva2UtbGluZWNhcDpyb3VuZDtzdHJva2UtbGluZWpvaW46cm91bmQ7cGFpbnQtb3JkZXI6c3Ryb2tlIGZpbGwgbWFya2VycyIKICAgICAgIGlkPSJwYXRoODk4IgogICAgICAgY3g9IjIuMTE2NjY2NiIKICAgICAgIGN5PSIyLjExNjY2NjYiCiAgICAgICByPSIxLjU4NzUiIC8+CiAgPC9nPgo8L3N2Zz4K) 6 6, crosshair;
+.canvas-container[data-editmode='pen'] {
+  cursor: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9Im5vIj8+CjwhLS0gQ3JlYXRlZCB3aXRoIElua3NjYXBlIChodHRwOi8vd3d3Lmlua3NjYXBlLm9yZy8pIC0tPgoKPHN2ZwogICB3aWR0aD0iMTUuOTk5OTk5IgogICBoZWlnaHQ9IjE1Ljk5OTk5OSIKICAgdmlld0JveD0iMCAwIDQuMjMzMzMzIDQuMjMzMzMzIgogICB2ZXJzaW9uPSIxLjEiCiAgIGlkPSJzdmc1IgogICB4bWxuczppbmtzY2FwZT0iaHR0cDovL3d3dy5pbmtzY2FwZS5vcmcvbmFtZXNwYWNlcy9pbmtzY2FwZSIKICAgeG1sbnM6c29kaXBvZGk9Imh0dHA6Ly9zb2RpcG9kaS5zb3VyY2Vmb3JnZS5uZXQvRFREL3NvZGlwb2RpLTAuZHRkIgogICB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciCiAgIHhtbG5zOnN2Zz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgogIDxzb2RpcG9kaTpuYW1lZHZpZXcKICAgICBpZD0ibmFtZWR2aWV3NyIKICAgICBwYWdlY29sb3I9IiNmZmZmZmYiCiAgICAgYm9yZGVyY29sb3I9IiMwMDAwMDAiCiAgICAgYm9yZGVyb3BhY2l0eT0iMC4yNSIKICAgICBpbmtzY2FwZTpzaG93cGFnZXNoYWRvdz0iMiIKICAgICBpbmtzY2FwZTpwYWdlb3BhY2l0eT0iMC4wIgogICAgIGlua3NjYXBlOnBhZ2VjaGVja2VyYm9hcmQ9IjAiCiAgICAgaW5rc2NhcGU6ZGVza2NvbG9yPSIjZDFkMWQxIgogICAgIGlua3NjYXBlOmRvY3VtZW50LXVuaXRzPSJtbSIKICAgICBzaG93Z3JpZD0iZmFsc2UiIC8+CiAgPGRlZnMKICAgICBpZD0iZGVmczIiIC8+CiAgPGcKICAgICBpbmtzY2FwZTpsYWJlbD0iTGF5ZXIgMSIKICAgICBpbmtzY2FwZTpncm91cG1vZGU9ImxheWVyIgogICAgIGlkPSJsYXllcjEiPgogICAgPGNpcmNsZQogICAgICAgc3R5bGU9ImZpbGw6IzAwMDAwMDtmaWxsLW9wYWNpdHk6MTtzdHJva2U6bm9uZTtzdHJva2Utd2lkdGg6Ny4yOTMxNTtzdHJva2UtbGluZWNhcDpyb3VuZDtzdHJva2UtbGluZWpvaW46cm91bmQ7cGFpbnQtb3JkZXI6c3Ryb2tlIGZpbGwgbWFya2VycyIKICAgICAgIGlkPSJwYXRoODk4IgogICAgICAgY3g9IjIuMTE2NjY2NiIKICAgICAgIGN5PSIyLjExNjY2NjYiCiAgICAgICByPSIxLjU4NzUiIC8+CiAgPC9nPgo8L3N2Zz4K)
+      6 6,
+    crosshair;
 }
-.canvas-container[data-editmode="eraser"] {
-  cursor: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9Im5vIj8+CjwhLS0gQ3JlYXRlZCB3aXRoIElua3NjYXBlIChodHRwOi8vd3d3Lmlua3NjYXBlLm9yZy8pIC0tPgoKPHN2ZwogICB3aWR0aD0iMTIuOTk5OTk5IgogICBoZWlnaHQ9IjEyLjk5OTk5OSIKICAgdmlld0JveD0iMCAwIDMuNDM5NTgzIDMuNDM5NTgzIgogICB2ZXJzaW9uPSIxLjEiCiAgIGlkPSJzdmc1IgogICBpbmtzY2FwZTpleHBvcnQtZmlsZW5hbWU9ImVyYXNlci5zdmciCiAgIGlua3NjYXBlOmV4cG9ydC14ZHBpPSI5NiIKICAgaW5rc2NhcGU6ZXhwb3J0LXlkcGk9Ijk2IgogICB4bWxuczppbmtzY2FwZT0iaHR0cDovL3d3dy5pbmtzY2FwZS5vcmcvbmFtZXNwYWNlcy9pbmtzY2FwZSIKICAgeG1sbnM6c29kaXBvZGk9Imh0dHA6Ly9zb2RpcG9kaS5zb3VyY2Vmb3JnZS5uZXQvRFREL3NvZGlwb2RpLTAuZHRkIgogICB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciCiAgIHhtbG5zOnN2Zz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgogIDxzb2RpcG9kaTpuYW1lZHZpZXcKICAgICBpZD0ibmFtZWR2aWV3NyIKICAgICBwYWdlY29sb3I9IiNmZmZmZmYiCiAgICAgYm9yZGVyY29sb3I9IiMwMDAwMDAiCiAgICAgYm9yZGVyb3BhY2l0eT0iMC4yNSIKICAgICBpbmtzY2FwZTpzaG93cGFnZXNoYWRvdz0iMiIKICAgICBpbmtzY2FwZTpwYWdlb3BhY2l0eT0iMC4wIgogICAgIGlua3NjYXBlOnBhZ2VjaGVja2VyYm9hcmQ9IjAiCiAgICAgaW5rc2NhcGU6ZGVza2NvbG9yPSIjZDFkMWQxIgogICAgIGlua3NjYXBlOmRvY3VtZW50LXVuaXRzPSJtbSIKICAgICBzaG93Z3JpZD0iZmFsc2UiIC8+CiAgPGRlZnMKICAgICBpZD0iZGVmczIiIC8+CiAgPGcKICAgICBpbmtzY2FwZTpsYWJlbD0iTGF5ZXIgMSIKICAgICBpbmtzY2FwZTpncm91cG1vZGU9ImxheWVyIgogICAgIGlkPSJsYXllcjEiCiAgICAgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoLTAuMzk2ODc0OTEsLTAuMzk2ODc0OTEpIj4KICAgIDxjaXJjbGUKICAgICAgIHN0eWxlPSJmaWxsOiNmZmZmZmY7ZmlsbC1vcGFjaXR5OjE7c3Ryb2tlOiMwMjAyMDI7c3Ryb2tlLXdpZHRoOjAuMjY0NTgzO3N0cm9rZS1saW5lY2FwOnJvdW5kO3N0cm9rZS1saW5lam9pbjpyb3VuZDtzdHJva2UtZGFzaGFycmF5Om5vbmU7c3Ryb2tlLW9wYWNpdHk6MTtwYWludC1vcmRlcjpzdHJva2UgZmlsbCBtYXJrZXJzIgogICAgICAgaWQ9InBhdGg4OTgiCiAgICAgICBjeD0iMi4xMTY2NjY2IgogICAgICAgY3k9IjIuMTE2NjY2NiIKICAgICAgIHI9IjEuNTg3NSIgLz4KICA8L2c+Cjwvc3ZnPgo=) 6 6, crosshair;
+.canvas-container[data-editmode='eraser'] {
+  cursor: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9Im5vIj8+CjwhLS0gQ3JlYXRlZCB3aXRoIElua3NjYXBlIChodHRwOi8vd3d3Lmlua3NjYXBlLm9yZy8pIC0tPgoKPHN2ZwogICB3aWR0aD0iMTIuOTk5OTk5IgogICBoZWlnaHQ9IjEyLjk5OTk5OSIKICAgdmlld0JveD0iMCAwIDMuNDM5NTgzIDMuNDM5NTgzIgogICB2ZXJzaW9uPSIxLjEiCiAgIGlkPSJzdmc1IgogICBpbmtzY2FwZTpleHBvcnQtZmlsZW5hbWU9ImVyYXNlci5zdmciCiAgIGlua3NjYXBlOmV4cG9ydC14ZHBpPSI5NiIKICAgaW5rc2NhcGU6ZXhwb3J0LXlkcGk9Ijk2IgogICB4bWxuczppbmtzY2FwZT0iaHR0cDovL3d3dy5pbmtzY2FwZS5vcmcvbmFtZXNwYWNlcy9pbmtzY2FwZSIKICAgeG1sbnM6c29kaXBvZGk9Imh0dHA6Ly9zb2RpcG9kaS5zb3VyY2Vmb3JnZS5uZXQvRFREL3NvZGlwb2RpLTAuZHRkIgogICB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciCiAgIHhtbG5zOnN2Zz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgogIDxzb2RpcG9kaTpuYW1lZHZpZXcKICAgICBpZD0ibmFtZWR2aWV3NyIKICAgICBwYWdlY29sb3I9IiNmZmZmZmYiCiAgICAgYm9yZGVyY29sb3I9IiMwMDAwMDAiCiAgICAgYm9yZGVyb3BhY2l0eT0iMC4yNSIKICAgICBpbmtzY2FwZTpzaG93cGFnZXNoYWRvdz0iMiIKICAgICBpbmtzY2FwZTpwYWdlb3BhY2l0eT0iMC4wIgogICAgIGlua3NjYXBlOnBhZ2VjaGVja2VyYm9hcmQ9IjAiCiAgICAgaW5rc2NhcGU6ZGVza2NvbG9yPSIjZDFkMWQxIgogICAgIGlua3NjYXBlOmRvY3VtZW50LXVuaXRzPSJtbSIKICAgICBzaG93Z3JpZD0iZmFsc2UiIC8+CiAgPGRlZnMKICAgICBpZD0iZGVmczIiIC8+CiAgPGcKICAgICBpbmtzY2FwZTpsYWJlbD0iTGF5ZXIgMSIKICAgICBpbmtzY2FwZTpncm91cG1vZGU9ImxheWVyIgogICAgIGlkPSJsYXllcjEiCiAgICAgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoLTAuMzk2ODc0OTEsLTAuMzk2ODc0OTEpIj4KICAgIDxjaXJjbGUKICAgICAgIHN0eWxlPSJmaWxsOiNmZmZmZmY7ZmlsbC1vcGFjaXR5OjE7c3Ryb2tlOiMwMjAyMDI7c3Ryb2tlLXdpZHRoOjAuMjY0NTgzO3N0cm9rZS1saW5lY2FwOnJvdW5kO3N0cm9rZS1saW5lam9pbjpyb3VuZDtzdHJva2UtZGFzaGFycmF5Om5vbmU7c3Ryb2tlLW9wYWNpdHk6MTtwYWludC1vcmRlcjpzdHJva2UgZmlsbCBtYXJrZXJzIgogICAgICAgaWQ9InBhdGg4OTgiCiAgICAgICBjeD0iMi4xMTY2NjY2IgogICAgICAgY3k9IjIuMTE2NjY2NiIKICAgICAgIHI9IjEuNTg3NSIgLz4KICA8L2c+Cjwvc3ZnPgo=)
+      6 6,
+    crosshair;
 }
 .store-canvas {
   background-color: #fff;
@@ -284,6 +319,12 @@ const changeMode = (new_mode: EditMode) => {
 .dialogue div:focus,
 .dialogue div:focus-visible {
   outline: none;
+}
+.dialoguehandle {
+  position: absolute;
+  background-color: #0099ff;
+  border: 2px solid #BBB;
+  box-sizing: border-box;
 }
 .canvas-container[data-editmode='dialogue'] .dialogue {
   z-index: 9999;
