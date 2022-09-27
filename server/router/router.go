@@ -38,6 +38,7 @@ func NewRouter() *Router {
 		{
 			projectAPI.GET("", p.GetProjects)
 			projectAPI.POST("", p.PostProject)
+			projectAPI.DELETE("/:projectID", p.DeleteProject)
 		}
 	}
 
