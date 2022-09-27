@@ -1,6 +1,7 @@
 package page
 
 import (
+	"errors"
 	"net/http"
 
 	"github.com/labstack/echo/v4"
@@ -88,10 +89,10 @@ func (h *PageHandler) PatchIndex(c echo.Context) error {
 
 	req := PatchIndexRequest{}
 	if err := c.Bind(&req); err != nil {
-		return c.JSON(http.StatusBadRequest, err)
+		return echo.NewHTTPError(http.StatusBadRequest, err)
 	}
 	if req.Operation != "inc" && req.Operation != "dec" {
-		return c.JSON(http.StatusBadRequest, "invalid operation")
+		return echo.NewHTTPError(http.StatusBadRequest, errors.New("invalid operation"))
 	}
 
 	return c.JSON(http.StatusOK, PatchIndexResponse{

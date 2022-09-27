@@ -38,7 +38,7 @@ type PostProjectResponse Project
 func (h *ProjectHandler) PostProject(c echo.Context) error {
 	req := PostProjectRequest{}
 	if err := c.Bind(&req); err != nil {
-		return c.JSON(http.StatusBadRequest, err)
+		return echo.NewHTTPError(http.StatusBadRequest, err)
 	}
 
 	res := PostProjectResponse{
@@ -88,7 +88,7 @@ func (h *ProjectHandler) PatchProject(c echo.Context) error {
 
 	req := PatchProjectRequest{}
 	if err := c.Bind(&req); err != nil {
-		return c.JSON(http.StatusBadRequest, err)
+		return echo.NewHTTPError(http.StatusBadRequest, err)
 	}
 
 	res := PostProjectResponse{
