@@ -63,9 +63,10 @@ const dialogues_display = computed(() => {
       style: {
         left: `${canvasScrollX.value + dialogue.left * canvasScale.value}px`,
         top: `${canvasScrollY.value + dialogue.top * canvasScale.value}px`,
-        width: `${(dialogue.right - dialogue.left) * canvasScale.value}px`,
-        height: `${(dialogue.bottom - dialogue.top) * canvasScale.value}px`,
-        fontSize: `${dialogue.fontSize * canvasScale.value}px`
+        width: `${dialogue.right - dialogue.left}px`,
+        height: `${dialogue.bottom - dialogue.top}px`,
+        fontSize: `${dialogue.fontSize}px`,
+        transform: `scale(${canvasScale.value})`
       },
       str: dialogue.dialogue
     }
@@ -187,6 +188,7 @@ const changeMode = (new_mode: EditMode) => {
   word-break: break-all;
   font-family: 'EzTooN-SourceHanSerif', serif;
   text-align: start;
+  transform-origin: top left;
 }
 .canvas-container[data-editmode='dialogue'] .dialogue {
   z-index: 9999;
