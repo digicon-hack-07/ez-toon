@@ -57,9 +57,11 @@ const canvasCss = computed(() => {
 })
 
 watch(canvasScale, () => {
-  if(canvas.value){
+  if(canvas.value && workcanvas.value && ctx.value){
     canvas.value.width = props.pageWidth * canvasScale.value
     canvas.value.height = props.pageHeight * canvasScale.value
+    workcanvas.value.width = props.pageWidth * canvasScale.value
+    workcanvas.value.height = props.pageHeight * canvasScale.value
     for(const line of lines){
       drawLine(ctx.value, canvasScale.value, line)
     }
