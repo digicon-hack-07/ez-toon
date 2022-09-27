@@ -3,6 +3,7 @@ package router
 import (
 	"net/http"
 
+	"github.com/digicon-hack-07/ez-toon/server/router/content"
 	"github.com/digicon-hack-07/ez-toon/server/router/page"
 	"github.com/digicon-hack-07/ez-toon/server/router/project"
 	"github.com/gorilla/sessions"
@@ -29,6 +30,7 @@ func NewRouter() *Router {
 
 	prj := project.NewProjectHandler()
 	page := page.NewPageHandler()
+	line := content.NewLineHandler()
 
 	api := e.Group("/api")
 	{
@@ -49,6 +51,11 @@ func NewRouter() *Router {
 		{
 			pageAPI.GET("/:pageID", page.GetPage)
 			pageAPI.PATCH("/:pageID/index", page.PatchIndex)
+		}
+
+		lineAPI := api.Group("/lines")
+		{
+			lineAPI.POST("", line.PostLine)
 		}
 	}
 
