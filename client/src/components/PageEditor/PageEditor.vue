@@ -8,6 +8,7 @@ import { PenToolHandler } from '../../lib/edittools/PenToolHandler'
 import { EraserToolHandler } from '../../lib/edittools/EraserToolHandler'
 import { type Line } from '../../lib/line'
 import DialogueSubTool from './DialogueSubTool.vue'
+import MoveSubTool from './MoveSubTool.vue'
 
 const workcanvas = ref<HTMLCanvasElement>()
 const canvas = ref<HTMLCanvasElement>()
@@ -99,6 +100,17 @@ const dialogue_delete = () => {
   })
 }
 
+const zoomIn = () => {
+  if(canvasScale.value < 5)
+  canvasScale.value += 0.2
+  console.log(canvasScale.value)
+}
+const zoomOut = () => {
+  if(canvasScale.value > 0.2)
+  canvasScale.value -= 0.2
+  console.log(canvasScale.value)
+}
+
 function getModeHandler(): ToolHandlerInterface {
   switch (mode.value) {
     case 'move':
@@ -173,6 +185,11 @@ const changeMode = (new_mode: EditMode) => {
       <canvas ref="workcanvas" :style="canvasCss"></canvas>
     </div>
     <div class="subtool-container">
+      <move-sub-tool
+        v-if="mode == 'move'"
+        @zoom-in="zoomIn"
+        @zoom-out="zoomOut"
+      ></move-sub-tool>
       <dialogue-sub-tool
         v-if="mode == 'dialogue'"
         @delete-dialogue="dialogue_delete"
