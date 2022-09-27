@@ -62,3 +62,31 @@ func (h *DialogueHandler) PostDialogue(c echo.Context) error {
 		Right:    req.Right,
 	})
 }
+
+type PatchDialogueRequest struct {
+	Dialogue string  `json:"dialogue,omitempty"`
+	Top      float64 `json:"top,omitempty"`
+	Bottom   float64 `json:"bottom,omitempty"`
+	Left     float64 `json:"left,omitempty"`
+	Right    float64 `json:"right,omitempty"`
+}
+
+type PatchDialogueResponse Dialogue
+
+func (h *DialogueHandler) PatchDialogue(c echo.Context) error {
+	id := c.Param("dialogueID")
+
+	req := PatchDialogueRequest{}
+	if err := c.Bind(&req); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, err)
+	}
+
+	return c.JSON(http.StatusCreated, PatchDialogueResponse{
+		ID:       ulid.MustParse(id),
+		Dialogue: req.Dialogue,
+		Top:      req.Top,
+		Bottom:   req.Bottom,
+		Left:     req.Left,
+		Right:    req.Right,
+	})
+}

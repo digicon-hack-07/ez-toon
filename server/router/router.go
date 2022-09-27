@@ -64,6 +64,7 @@ func NewRouter() *Router {
 		dialogueAPI := api.Group("/dialogues")
 		{
 			dialogueAPI.POST("", dial.PostDialogue)
+			dialogueAPI.PATCH("/:dialogueID", dial.PatchDialogue)
 		}
 	}
 
