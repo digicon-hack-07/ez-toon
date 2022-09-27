@@ -154,12 +154,12 @@ const changeMode = (new_mode: EditMode) => {
         {{ dialogue_display.str }}
       </div>
       <canvas ref="workcanvas" :style="canvasCss"></canvas>
-      <div class="subtool-container">
-        <dialogue-sub-tool
-          v-if="mode == 'dialogue'"
-          @delete-dialogue="dialogue_delete"
-        ></dialogue-sub-tool>
-      </div>
+    </div>
+    <div class="subtool-container">
+      <dialogue-sub-tool
+        v-if="mode == 'dialogue'"
+        @delete-dialogue="dialogue_delete"
+      ></dialogue-sub-tool>
     </div>
     <div class="button-container">
       <button :data-active="mode == 'move'" @click="changeMode('move')">
@@ -219,7 +219,7 @@ canvas {
 .subtool-container {
   position: absolute;
   width: 100%;
-  bottom: 0;
+  bottom: 6rem;
   z-index: 10000;
 }
 .button-container {
