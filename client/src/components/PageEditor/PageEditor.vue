@@ -168,6 +168,7 @@ const changeMode = (new_mode: EditMode) => {
   flex-direction: column;
   width: 100%;
   height: 100%;
+  touch-action: none;
 }
 .canvas-container {
   width: 100%;
@@ -195,7 +196,6 @@ const changeMode = (new_mode: EditMode) => {
 }
 canvas {
   position: absolute;
-  touch-action: none;
   border: 1px solid;
 }
 .subtool-container {
