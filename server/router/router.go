@@ -65,6 +65,7 @@ func NewRouter() *Router {
 		{
 			dialogueAPI.POST("", dial.PostDialogue)
 			dialogueAPI.PATCH("/:dialogueID", dial.PatchDialogue)
+			dialogueAPI.DELETE("/:dialogueID", dial.DeleteDialogue)
 		}
 	}
 

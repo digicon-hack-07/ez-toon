@@ -90,3 +90,10 @@ func (h *DialogueHandler) PatchDialogue(c echo.Context) error {
 		Right:    req.Right,
 	})
 }
+
+func (h *DialogueHandler) DeleteDialogue(c echo.Context) error {
+	id := c.Param("dialogueID")
+	c.Logger().Debug(id)
+
+	return c.NoContent(http.StatusNoContent)
+}
