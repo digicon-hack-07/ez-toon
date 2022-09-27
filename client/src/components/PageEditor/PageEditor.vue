@@ -129,12 +129,14 @@ function getModeHandler(): ToolHandlerInterface {
 let handler: ToolHandlerInterface | null
 
 const pointerdown = (e: PointerEvent) => {
+  (e.target as HTMLElement).setPointerCapture(e.pointerId)
   if (handler) handler.pointerdown(e)
 }
 const pointermove = (e: PointerEvent) => {
   if (handler) handler.pointermove(e)
 }
 const pointerup = (e: PointerEvent) => {
+  (e.target as HTMLElement).releasePointerCapture(e.pointerId)
   if (handler) handler.pointerup(e)
 }
 
