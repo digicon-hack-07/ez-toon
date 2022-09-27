@@ -26,7 +26,7 @@ const props = withDefaults(defineProps<Props>(), {
 
 const canvasScrollX = ref<number>(10)
 const canvasScrollY = ref<number>(20)
-const canvasScale = ref<number>(0.8)
+const canvasScale = ref<number>(0.5)
 
 type EditMode = 'move' | 'pen' | 'dialogue' | 'eraser'
 const mode = ref<EditMode>('pen')
@@ -61,10 +61,10 @@ const dialogues_display = computed(() => {
     return {
       id: dialogue.id,
       style: {
-        left: `${canvasScrollX.value + dialogue.left}px`,
-        top: `${canvasScrollY.value + dialogue.top}px`,
-        width: `${dialogue.right - dialogue.left}px`,
-        height: `${dialogue.bottom - dialogue.top}px`,
+        left: `${canvasScrollX.value + dialogue.left * canvasScale.value}px`,
+        top: `${canvasScrollY.value + dialogue.top * canvasScale.value}px`,
+        width: `${(dialogue.right - dialogue.left) * canvasScale.value}px`,
+        height: `${(dialogue.bottom - dialogue.top) * canvasScale.value}px`,
         fontSize: `${dialogue.fontSize * canvasScale.value}px`
       },
       str: dialogue.dialogue
@@ -90,7 +90,7 @@ function getModeHandler(): ToolHandlerInterface {
     return new MoveToolHandler(canvasScrollX, canvasScrollY)
   case 'dialogue':
     if (!canvas.value) throw new Error('canvas not loaded')
-    return new DialogueToolHandler(canvas.value, dialogues, props.pageID)
+    return new DialogueToolHandler(canvas.value, canvasScale, dialogues, props.pageID)
   case 'pen':
     if (!canvas.value) throw new Error('canvas not loaded')
     if (!ctx.value || !workctx.value)

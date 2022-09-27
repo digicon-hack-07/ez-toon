@@ -12,9 +12,11 @@ export class DialogueToolHandler implements ToolHandlerInterface {
   canvas: HTMLElement
   dialogues: Ref<Dialogue[]>
   pageID: string
+  canvasScale: Ref<number>
 
-  constructor(canvas: HTMLElement, dialogues: Ref<Dialogue[]>, pageID: string) {
+  constructor(canvas: HTMLElement, canvasScale: Ref<number>, dialogues: Ref<Dialogue[]>, pageID: string) {
     this.canvas = canvas
+    this.canvasScale = canvasScale
     this.dialogues = dialogues
     this.pageID = pageID
   }
@@ -25,18 +27,18 @@ export class DialogueToolHandler implements ToolHandlerInterface {
     if (
       this.dialogues.value.find(dialogue => {
         return (
-          dialogue.left <= e.clientX - bx &&
-          e.clientX - bx <= dialogue.right &&
-          dialogue.top <= e.clientY - by &&
-          e.clientY - by <= dialogue.bottom
+          dialogue.left <= (e.clientX - bx) / this.canvasScale.value &&
+          (e.clientX - bx) / this.canvasScale.value <= dialogue.right &&
+          dialogue.top <= (e.clientY - by) / this.canvasScale.value &&
+          (e.clientY - by) / this.canvasScale.value <= dialogue.bottom
         )
       })
     )
       return
     this.draggingData = {
       pointerId: e.pointerId,
-      beginX: e.x - bx,
-      beginY: e.y - by
+      beginX: e.clientX - bx,
+      beginY: e.clientY - by
     }
     return
   }
@@ -49,10 +51,10 @@ export class DialogueToolHandler implements ToolHandlerInterface {
     if (bx === undefined || by === undefined) return
     if (!this.draggingData || this.draggingData.pointerId != e.pointerId) return
     {
-      const left = Math.min(e.clientX - bx, this.draggingData.beginX)
-      const right = Math.max(e.clientX - bx, this.draggingData.beginX)
-      const top = Math.min(e.clientY - by, this.draggingData.beginY)
-      const bottom = Math.max(e.clientY - by, this.draggingData.beginY)
+      const left = Math.min(e.clientX - bx, this.draggingData.beginX) / this.canvasScale.value
+      const right = Math.max(e.clientX - bx, this.draggingData.beginX) / this.canvasScale.value
+      const top = Math.min(e.clientY - by, this.draggingData.beginY) / this.canvasScale.value
+      const bottom = Math.max(e.clientY - by, this.draggingData.beginY) / this.canvasScale.value
       if (right - left < 24 || bottom - top < 24) return
 
       this.dialogues.value.push({
