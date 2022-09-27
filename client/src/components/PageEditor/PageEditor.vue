@@ -57,7 +57,7 @@ const canvasCss = computed(() => {
 const lines: Line[] = []
 const dialogues = ref<Dialogue[]>([])
 const dialogue_selected = ref<string | null>(null)
-const dialogues_dummy = ref(new Map<string, string>)
+const dialogues_dummy = ref(new Map<string, string>())
 
 const dialogues_display = computed(() => {
   return dialogues.value.map(dialogue => {
@@ -123,20 +123,22 @@ function getModeHandler(): ToolHandlerInterface {
         lines
       )
     case 'eraser':
-      return new EraserToolHandler()
+      if (!canvas.value) throw new Error('canvas not loaded')
+      if (!ctx.value) throw new Error('canvas context not loaded')
+      return new EraserToolHandler(canvas.value, ctx.value, canvasScale, lines)
   }
 }
 let handler: ToolHandlerInterface | null
 
 const pointerdown = (e: PointerEvent) => {
-  (e.target as HTMLElement).setPointerCapture(e.pointerId)
+  ;(e.target as HTMLElement).setPointerCapture(e.pointerId)
   if (handler) handler.pointerdown(e)
 }
 const pointermove = (e: PointerEvent) => {
   if (handler) handler.pointermove(e)
 }
 const pointerup = (e: PointerEvent) => {
-  (e.target as HTMLElement).releasePointerCapture(e.pointerId)
+  ;(e.target as HTMLElement).releasePointerCapture(e.pointerId)
   if (handler) handler.pointerup(e)
 }
 
@@ -165,7 +167,9 @@ const changeMode = (new_mode: EditMode) => {
         :data-id="dialogue_display.id"
         @input="dialogue_update"
         @focus="dialogue_select"
-      >{{ dialogues_dummy.get(dialogue_display.id) }}</div>
+      >
+        {{ dialogues_dummy.get(dialogue_display.id) }}
+      </div>
       <canvas ref="workcanvas" :style="canvasCss"></canvas>
     </div>
     <div class="subtool-container">
@@ -221,8 +225,12 @@ const changeMode = (new_mode: EditMode) => {
   text-align: start;
   transform-origin: top left;
 }
-.dialogue:active, .dialogue:focus, .dialogue:focus-visible,
-.dialogue div:active, .dialogue div:focus, .dialogue div:focus-visible {
+.dialogue:active,
+.dialogue:focus,
+.dialogue:focus-visible,
+.dialogue div:active,
+.dialogue div:focus,
+.dialogue div:focus-visible {
   outline: none;
 }
 .canvas-container[data-editmode='dialogue'] .dialogue {
