@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import { type Dialogue } from '../../lib/dialogue'
 import { type ToolHandlerInterface } from '../../lib/edittools/ToolHandlerInterface'
 import { MoveToolHandler } from '../../lib/edittools/MoveToolHandler'
@@ -9,6 +9,7 @@ import { EraserToolHandler } from '../../lib/edittools/EraserToolHandler'
 import { type Line } from '../../lib/line'
 import DialogueSubTool from './DialogueSubTool.vue'
 import MoveSubTool from './MoveSubTool.vue'
+import { drawLine } from '../../lib/renderer/path'
 
 const workcanvas = ref<HTMLCanvasElement>()
 const canvas = ref<HTMLCanvasElement>()
@@ -52,6 +53,16 @@ const canvasCss = computed(() => {
     top: `${canvasScrollY.value}px`,
     height: `${Math.floor(props.pageHeight * canvasScale.value)}px`,
     width: `${Math.floor(props.pageWidth * canvasScale.value)}px`
+  }
+})
+
+watch(canvasScale, () => {
+  if(canvas.value){
+    canvas.value.width = props.pageWidth * canvasScale.value
+    canvas.value.height = props.pageHeight * canvasScale.value
+    for(const line of lines){
+      drawLine(ctx.value, canvasScale.value, line)
+    }
   }
 })
 
