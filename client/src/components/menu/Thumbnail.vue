@@ -11,12 +11,17 @@
       </p>
       <span :class="[isHidden ? $style.overflow : $style.hide]">...</span>
       <p v-if="isShowDate" :class="$style.name">{{ dateString }}</p>
+      <span v-if="isShowArrow" :class="$style.arrowSpace">
+        <img src="/leftArrow.svg" :class="$style.leftArrow" @click.stop="$emit('left')" />
+        <img src="/rightArrow.svg" :class="$style.rightArrow" @click.stop="$emit('right')"/>
+      </span>
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
 import { computed, nextTick, onMounted, ref, watch } from 'vue'
+
 
 const isHidden = ref<boolean>(false)
 
@@ -25,15 +30,23 @@ const props = withDefaults(
     name: string
     image: string
     isShowDate: boolean
+    isShowArrow: boolean
     createdAt?: Date
     updatedAt?: Date
   }>(),
   {
     name: 'noname',
     image: '/vite.svg',
-    isShowDate: false
+    isShowDate: false,
+    isShowArrow: false
   }
 )
+interface Emits {
+  (e: 'left'): void
+  (e: 'right'): void
+}
+
+const emit = defineEmits<Emits>()
 
 const nameRef = ref<HTMLElement>()
 
@@ -121,5 +134,18 @@ const dateString = computed(() => {
 
 .hide {
   display: none;
+}
+
+.arrowSpace {
+  width: 100%;
+}
+.leftArrow {
+  height: 1rem;
+  margin-right: 2rem;
+}
+
+.rightArrow {
+  height: 1rem;
+  margin-left: 2rem;
 }
 </style>

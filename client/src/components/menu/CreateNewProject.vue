@@ -10,7 +10,6 @@
 
 <script lang="ts" setup>
 import axios from 'axios';
-import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import type { Project } from '../../lib/project';
 import Thumbnail from './Thumbnail.vue'

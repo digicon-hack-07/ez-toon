@@ -16,13 +16,17 @@
         </span>
       </h1>
     </div>
-    <open-page
-      v-for="page in pageList"
-      :key="page.id"
-      :page-number="page.index"
-      :url="'/Page/' + page.projectID + '/' + page.id"
-      :thumnail-image="'/vite.svg'"
-    />
+    <transition-group :move-class="$style.listMove" tag="div">
+      <open-page
+        v-for="page in pageList"
+        :key="page.id"
+        :page-number="page.index"
+        :url="'/Page/' + page.projectID + '/' + page.id"
+        :thumnail-image="'/vite.svg'"
+        @left="decrementIndex"
+        @right="incrementIndex"
+      />
+    </transition-group>
   </div>
 </template>
 
@@ -67,6 +71,47 @@ const select = () => {
   })
 }
 
+const decrementIndex = (index: number) => {
+  if (
+    pageList.value.some(v => v.index === index) &&
+    pageList.value.some(v => v.index === index - 1)
+  ) {
+    //ここにAPI操作を書く
+    const pageListValue = pageList.value
+    for (let i = 0; i < pageListValue.length; i++) {
+      if (pageListValue[i].index === index - 1) {
+        pageList.value[i].index = index
+      } else if (pageListValue[i].index === index) {
+        pageList.value[i].index = index - 1
+      }
+    }
+    pageList.value.sort((a, b) => {
+      return a.index < b.index ? -1 : 1
+    })
+    console.log(JSON.stringify(pageList.value))
+  }
+}
+
+const incrementIndex = (index: number) => {
+  if (
+    pageList.value.some(v => v.index === index) &&
+    pageList.value.some(v => v.index === index + 1)
+  ) {
+    //ここにAPI操作を書く
+    const pageListValue = pageList.value
+    for (let i = 0; i < pageListValue.length; i++) {
+      if (pageListValue[i].index === index) {
+        pageList.value[i].index = index + 1
+      } else if (pageListValue[i].index === index + 1) {
+        pageList.value[i].index = index
+      }
+    }
+    pageList.value.sort((a, b) => {
+      return a.index < b.index ? -1 : 1
+    })
+    console.log(JSON.stringify(pageList.value))
+  }
+}
 // if (pages) {
 //   if (!Array.isArray(pages)) {
 //     let pageCount = parseInt(pages.toString(), 10)
@@ -99,5 +144,9 @@ const select = () => {
 
 .pencilImage {
   height: 1rem;
+}
+
+.listMove {
+  transition: all 0.3s ease;
 }
 </style>
