@@ -1,3 +1,4 @@
+import { Ref } from 'vue'
 import { type Line } from '../line'
 import { drawLine } from '../renderer/path'
 import { type ToolHandlerInterface } from './ToolHandlerInterface'
@@ -8,14 +9,17 @@ export class PenToolHandler implements ToolHandlerInterface {
   ctx: CanvasRenderingContext2D
   workctx: CanvasRenderingContext2D
   lines: Line[]
+  canvasScale: Ref<number>
 
   constructor(
     canvas: HTMLElement,
+    canvasScale: Ref<number>,
     ctx: CanvasRenderingContext2D,
     workctx: CanvasRenderingContext2D,
     lines: Line[]
   ) {
     this.canvas = canvas
+    this.canvasScale = canvasScale
     this.ctx = ctx
     this.workctx = workctx
     this.working_lines = new Map<number, Line>()
@@ -32,8 +36,8 @@ export class PenToolHandler implements ToolHandlerInterface {
       pageID: '', // TODO: pageID
       path: [
         {
-          x: e.clientX - bx,
-          y: e.clientY - by,
+          x: (e.clientX - bx) / this.canvasScale.value,
+          y: (e.clientY - by) / this.canvasScale.value,
           force: e.pressure
         }
       ]
@@ -48,8 +52,8 @@ export class PenToolHandler implements ToolHandlerInterface {
     if (!line) return
 
     line.path.push({
-      x: e.clientX - bx,
-      y: e.clientY - by,
+      x: (e.clientX - bx) / this.canvasScale.value,
+      y: (e.clientY - by) / this.canvasScale.value,
       force: e.pressure
     })
     this.workctx.clearRect(
@@ -58,7 +62,7 @@ export class PenToolHandler implements ToolHandlerInterface {
       this.workctx.canvas.width,
       this.workctx.canvas.height
     )
-    drawLine(this.workctx, line)
+    drawLine(this.workctx, this.canvasScale.value, line)
     return
   }
   pointerup(e: PointerEvent): void {
@@ -71,7 +75,7 @@ export class PenToolHandler implements ToolHandlerInterface {
       this.workctx.canvas.width,
       this.workctx.canvas.height
     )
-    drawLine(this.ctx, line)
+    drawLine(this.ctx, this.canvasScale.value, line)
     this.lines.push(line)
     this.working_lines.delete(e.pointerId)
     return

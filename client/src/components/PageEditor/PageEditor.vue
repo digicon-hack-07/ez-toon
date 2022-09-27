@@ -26,7 +26,7 @@ const props = withDefaults(defineProps<Props>(), {
 
 const canvasScrollX = ref<number>(10)
 const canvasScrollY = ref<number>(20)
-const canvasScale = ref<number>(1.0)
+const canvasScale = ref<number>(0.8)
 
 type EditMode = 'move' | 'pen' | 'dialogue' | 'eraser'
 const mode = ref<EditMode>('pen')
@@ -95,7 +95,7 @@ function getModeHandler(): ToolHandlerInterface {
     if (!canvas.value) throw new Error('canvas not loaded')
     if (!ctx.value || !workctx.value)
       throw new Error('canvas context not loaded')
-    return new PenToolHandler(canvas.value, ctx.value, workctx.value, lines)
+    return new PenToolHandler(canvas.value, canvasScale, ctx.value, workctx.value, lines)
   case 'eraser':
     return new EraserToolHandler()
   }
