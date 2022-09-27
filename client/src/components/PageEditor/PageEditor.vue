@@ -148,7 +148,6 @@ const changeScale = (newScale: number) => {
       (newScale / oldScale) *
         (canvascontainer.value.clientHeight / 2 - canvasScrollY.value)
     canvasScale.value = newScale
-    console.log(newScale)
   }
 }
 const zoomIn = () => {
@@ -209,11 +208,7 @@ const changeMode = (new_mode: EditMode) => {
 
 <template>
   <div class="pageeditor">
-    <div
-      class="canvas-container"
-      ref="canvascontainer"
-      :data-editmode="mode"
-    >
+    <div ref="canvascontainer" class="canvas-container" :data-editmode="mode">
       <canvas ref="canvas" class="store-canvas" :style="canvasCss"></canvas>
       <canvas ref="workcanvas" :style="canvasCss"></canvas>
     </div>
@@ -230,17 +225,21 @@ const changeMode = (new_mode: EditMode) => {
       >
         {{ dialogues_dummy.get(dialogue_display.id) }}
       </div>
-      <div
-        v-if="mode == 'dialogue'"
-        v-for="dialogue_handle in dialogues_handle_display"
-        class="dialoguehandle"
-        :style="dialogue_handle.style"
-      ></div>
+      <div v-if="mode == 'dialogue'">
+        <div
+          v-for="dialogue_handle in dialogues_handle_display"
+          :key="dialogue_handle.id"
+          class="dialoguehandle"
+          :style="dialogue_handle.style"
+        ></div>
+      </div>
     </div>
-    <div class="canvas-dummy"
+    <div
+      class="canvas-dummy"
       @pointerdown="pointerdown"
       @pointermove="pointermove"
-      @pointerup="pointerup"></div>
+      @pointerup="pointerup"
+    ></div>
     <div class="subtool-container">
       <move-sub-tool
         v-if="mode == 'move'"
@@ -326,7 +325,7 @@ const changeMode = (new_mode: EditMode) => {
 .dialoguehandle {
   position: absolute;
   background-color: #0099ff;
-  border: 2px solid #BBB;
+  border: 2px solid #bbb;
   box-sizing: border-box;
 }
 .canvas-container[data-editmode='dialogue'] ~ .dialogue-container {
