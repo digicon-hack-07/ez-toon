@@ -52,6 +52,30 @@ func (h *ProjectHandler) PostProject(c echo.Context) error {
 	return c.JSON(http.StatusCreated, res)
 }
 
+type PatchProjectRequest struct {
+	Name string `json:"name,omitempty"`
+}
+
+func (h *ProjectHandler) PatchProject(c echo.Context) error {
+	id := c.Param("projectID")
+	c.Logger().Debug(id)
+
+	req := PatchProjectRequest{}
+	if err := c.Bind(&req); err != nil {
+		return err
+	}
+
+	res := PostProjectResponse{
+		ID:        ulid.Make(),
+		Name:      req.Name,
+		Pages:     0,
+		CreatedAt: time.Now().Add(-time.Hour),
+		UpdatedAt: time.Now(),
+	}
+
+	return c.JSON(http.StatusCreated, res)
+}
+
 func (h *ProjectHandler) DeleteProject(c echo.Context) error {
 	id := c.Param("projectID")
 	c.Logger().Debug(id)
