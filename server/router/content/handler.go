@@ -35,3 +35,30 @@ func (h *LineHandler) DeleteLine(c echo.Context) error {
 
 	return c.NoContent(http.StatusNoContent)
 }
+
+type PostDialogueRequest struct {
+	PageID   ulid.ULID `json:"page_id,omitempty"`
+	Dialogue string    `json:"dialogue,omitempty"`
+	Top      float64   `json:"top,omitempty"`
+	Bottom   float64   `json:"bottom,omitempty"`
+	Left     float64   `json:"left,omitempty"`
+	Right    float64   `json:"right,omitempty"`
+}
+
+type PostDialogueResponse Dialogue
+
+func (h *DialogueHandler) PostDialogue(c echo.Context) error {
+	req := PostDialogueRequest{}
+	if err := c.Bind(&req); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, err)
+	}
+
+	return c.JSON(http.StatusCreated, PostDialogueResponse{
+		ID:       ulid.Make(),
+		Dialogue: req.Dialogue,
+		Top:      req.Top,
+		Bottom:   req.Bottom,
+		Left:     req.Left,
+		Right:    req.Right,
+	})
+}

@@ -31,6 +31,7 @@ func NewRouter() *Router {
 	prj := project.NewProjectHandler()
 	page := page.NewPageHandler()
 	line := content.NewLineHandler()
+	dial := content.NewDialogueHandler()
 
 	api := e.Group("/api")
 	{
@@ -58,6 +59,11 @@ func NewRouter() *Router {
 		{
 			lineAPI.POST("", line.PostLine)
 			lineAPI.DELETE("/:lineID", line.DeleteLine)
+		}
+
+		dialogueAPI := api.Group("/dialogues")
+		{
+			dialogueAPI.POST("", dial.PostDialogue)
 		}
 	}
 
