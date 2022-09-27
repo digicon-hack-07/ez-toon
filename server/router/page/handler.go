@@ -11,8 +11,10 @@ import (
 type GetPageResponse PageWithContents
 
 func (h *PageHandler) GetPage(c echo.Context) error {
+	id := c.Param("pageID")
+
 	return c.JSON(http.StatusOK, GetPageResponse{
-		ID:     ulid.Make(),
+		ID:     ulid.MustParse(id),
 		Index:  0,
 		Height: 300,
 		Width:  400,
@@ -69,6 +71,40 @@ func (h *PageHandler) GetPage(c echo.Context) error {
 				Left:     250,
 				Right:    100,
 			},
+		},
+	})
+}
+
+type PatchIndexRequest struct {
+	// Operationは"inc"(加算)か"dec"(減算)のみを許可する
+	Operation string `json:"operation,omitempty"`
+}
+
+type PatchIndexResponse []Page
+
+func (h *PageHandler) PatchIndex(c echo.Context) error {
+	id := c.Param("pageID")
+
+	req := PatchIndexRequest{}
+	if err := c.Bind(&req); err != nil {
+		return c.JSON(http.StatusBadRequest, err)
+	}
+	if req.Operation != "inc" && req.Operation != "dec" {
+		return c.JSON(http.StatusBadRequest, "invalid operation")
+	}
+
+	return c.JSON(http.StatusOK, PatchIndexResponse{
+		{
+			ID:     ulid.Make(),
+			Index:  0,
+			Height: 300,
+			Width:  400,
+		},
+		{
+			ID:     ulid.MustParse(id),
+			Index:  1,
+			Height: 500,
+			Width:  600,
 		},
 	})
 }

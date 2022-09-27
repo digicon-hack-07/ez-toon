@@ -47,6 +47,7 @@ func NewRouter() *Router {
 			pageAPI := api.Group("/:projectID/page")
 			{
 				pageAPI.GET("/:pageID", page.GetPage)
+				pageAPI.PATCH("/:pageID/index", page.PatchIndex)
 			}
 		}
 	}
