@@ -8,4 +8,6 @@ type Page struct {
 	ID        ulid.ULID
 	ProjectID ulid.ULID
 	Index     int
+	Height    int
+	Width     int
 }
