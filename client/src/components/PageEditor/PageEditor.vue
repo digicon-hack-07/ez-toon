@@ -157,31 +157,31 @@ const zoomOut = () => {
 
 function getModeHandler(): ToolHandlerInterface {
   switch (mode.value) {
-  case 'move':
-    return new MoveToolHandler(canvasScrollX, canvasScrollY)
-  case 'dialogue':
-    if (!canvas.value) throw new Error('canvas not loaded')
-    return new DialogueToolHandler(
-      canvas.value,
-      canvasScale,
-      dialogues,
-      props.pageID
-    )
-  case 'pen':
-    if (!canvas.value) throw new Error('canvas not loaded')
-    if (!ctx.value || !workctx.value)
-      throw new Error('canvas context not loaded')
-    return new PenToolHandler(
-      canvas.value,
-      canvasScale,
-      ctx.value,
-      workctx.value,
-      lines
-    )
-  case 'eraser':
-    if (!canvas.value) throw new Error('canvas not loaded')
-    if (!ctx.value) throw new Error('canvas context not loaded')
-    return new EraserToolHandler(canvas.value, ctx.value, canvasScale, lines)
+    case 'move':
+      return new MoveToolHandler(canvasScrollX, canvasScrollY)
+    case 'dialogue':
+      if (!canvas.value) throw new Error('canvas not loaded')
+      return new DialogueToolHandler(
+        canvas.value,
+        canvasScale,
+        dialogues,
+        props.pageID
+      )
+    case 'pen':
+      if (!canvas.value) throw new Error('canvas not loaded')
+      if (!ctx.value || !workctx.value)
+        throw new Error('canvas context not loaded')
+      return new PenToolHandler(
+        canvas.value,
+        canvasScale,
+        ctx.value,
+        workctx.value,
+        lines
+      )
+    case 'eraser':
+      if (!canvas.value) throw new Error('canvas not loaded')
+      if (!ctx.value) throw new Error('canvas context not loaded')
+      return new EraserToolHandler(canvas.value, ctx.value, canvasScale, lines)
   }
 }
 let handler: ToolHandlerInterface | null
@@ -205,11 +205,7 @@ const changeMode = (new_mode: EditMode) => {
 </script>
 
 <template>
-  <div class="pageeditor">
-    <div ref="canvascontainer" class="canvas-container" :data-editmode="mode">
-      <canvas ref="canvas" class="store-canvas" :style="canvasCss"></canvas>
-      <canvas ref="workcanvas" :style="canvasCss"></canvas>
-    </div>
+  <div class="pageeditor" :data-editmode="mode">
     <div class="dialogue-container">
       <div
         v-for="dialogue_display in dialogues_display"
@@ -231,6 +227,10 @@ const changeMode = (new_mode: EditMode) => {
           :style="dialogue_handle.style"
         ></div>
       </div>
+    </div>
+    <div ref="canvascontainer" class="canvas-container">
+      <canvas ref="canvas" class="store-canvas" :style="canvasCss"></canvas>
+      <canvas ref="workcanvas" :style="canvasCss"></canvas>
     </div>
     <div
       class="canvas-dummy"
@@ -275,6 +275,7 @@ const changeMode = (new_mode: EditMode) => {
   width: 100%;
   height: 100%;
   touch-action: none;
+  overflow: hidden;
 }
 .canvas-container {
   width: 100%;
@@ -282,25 +283,29 @@ const changeMode = (new_mode: EditMode) => {
   flex-grow: 1;
   position: relative;
   background-color: #ccc;
+  z-index: -1;
 }
-.canvas-container[data-editmode='move'] {
+[data-editmode='move'] {
   cursor: grab;
 }
-.canvas-container[data-editmode='dialogue'] {
+[data-editmode='dialogue'] {
   cursor: crosshair;
 }
-.canvas-container[data-editmode='pen'] {
+[data-editmode='pen'] {
   cursor: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9Im5vIj8+CjwhLS0gQ3JlYXRlZCB3aXRoIElua3NjYXBlIChodHRwOi8vd3d3Lmlua3NjYXBlLm9yZy8pIC0tPgoKPHN2ZwogICB3aWR0aD0iMTUuOTk5OTk5IgogICBoZWlnaHQ9IjE1Ljk5OTk5OSIKICAgdmlld0JveD0iMCAwIDQuMjMzMzMzIDQuMjMzMzMzIgogICB2ZXJzaW9uPSIxLjEiCiAgIGlkPSJzdmc1IgogICB4bWxuczppbmtzY2FwZT0iaHR0cDovL3d3dy5pbmtzY2FwZS5vcmcvbmFtZXNwYWNlcy9pbmtzY2FwZSIKICAgeG1sbnM6c29kaXBvZGk9Imh0dHA6Ly9zb2RpcG9kaS5zb3VyY2Vmb3JnZS5uZXQvRFREL3NvZGlwb2RpLTAuZHRkIgogICB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciCiAgIHhtbG5zOnN2Zz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgogIDxzb2RpcG9kaTpuYW1lZHZpZXcKICAgICBpZD0ibmFtZWR2aWV3NyIKICAgICBwYWdlY29sb3I9IiNmZmZmZmYiCiAgICAgYm9yZGVyY29sb3I9IiMwMDAwMDAiCiAgICAgYm9yZGVyb3BhY2l0eT0iMC4yNSIKICAgICBpbmtzY2FwZTpzaG93cGFnZXNoYWRvdz0iMiIKICAgICBpbmtzY2FwZTpwYWdlb3BhY2l0eT0iMC4wIgogICAgIGlua3NjYXBlOnBhZ2VjaGVja2VyYm9hcmQ9IjAiCiAgICAgaW5rc2NhcGU6ZGVza2NvbG9yPSIjZDFkMWQxIgogICAgIGlua3NjYXBlOmRvY3VtZW50LXVuaXRzPSJtbSIKICAgICBzaG93Z3JpZD0iZmFsc2UiIC8+CiAgPGRlZnMKICAgICBpZD0iZGVmczIiIC8+CiAgPGcKICAgICBpbmtzY2FwZTpsYWJlbD0iTGF5ZXIgMSIKICAgICBpbmtzY2FwZTpncm91cG1vZGU9ImxheWVyIgogICAgIGlkPSJsYXllcjEiPgogICAgPGNpcmNsZQogICAgICAgc3R5bGU9ImZpbGw6IzAwMDAwMDtmaWxsLW9wYWNpdHk6MTtzdHJva2U6bm9uZTtzdHJva2Utd2lkdGg6Ny4yOTMxNTtzdHJva2UtbGluZWNhcDpyb3VuZDtzdHJva2UtbGluZWpvaW46cm91bmQ7cGFpbnQtb3JkZXI6c3Ryb2tlIGZpbGwgbWFya2VycyIKICAgICAgIGlkPSJwYXRoODk4IgogICAgICAgY3g9IjIuMTE2NjY2NiIKICAgICAgIGN5PSIyLjExNjY2NjYiCiAgICAgICByPSIxLjU4NzUiIC8+CiAgPC9nPgo8L3N2Zz4K)
       6 6,
     crosshair;
 }
-.canvas-container[data-editmode='eraser'] {
+[data-editmode='eraser'] {
   cursor: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9Im5vIj8+CjwhLS0gQ3JlYXRlZCB3aXRoIElua3NjYXBlIChodHRwOi8vd3d3Lmlua3NjYXBlLm9yZy8pIC0tPgoKPHN2ZwogICB3aWR0aD0iMTIuOTk5OTk5IgogICBoZWlnaHQ9IjEyLjk5OTk5OSIKICAgdmlld0JveD0iMCAwIDMuNDM5NTgzIDMuNDM5NTgzIgogICB2ZXJzaW9uPSIxLjEiCiAgIGlkPSJzdmc1IgogICBpbmtzY2FwZTpleHBvcnQtZmlsZW5hbWU9ImVyYXNlci5zdmciCiAgIGlua3NjYXBlOmV4cG9ydC14ZHBpPSI5NiIKICAgaW5rc2NhcGU6ZXhwb3J0LXlkcGk9Ijk2IgogICB4bWxuczppbmtzY2FwZT0iaHR0cDovL3d3dy5pbmtzY2FwZS5vcmcvbmFtZXNwYWNlcy9pbmtzY2FwZSIKICAgeG1sbnM6c29kaXBvZGk9Imh0dHA6Ly9zb2RpcG9kaS5zb3VyY2Vmb3JnZS5uZXQvRFREL3NvZGlwb2RpLTAuZHRkIgogICB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciCiAgIHhtbG5zOnN2Zz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgogIDxzb2RpcG9kaTpuYW1lZHZpZXcKICAgICBpZD0ibmFtZWR2aWV3NyIKICAgICBwYWdlY29sb3I9IiNmZmZmZmYiCiAgICAgYm9yZGVyY29sb3I9IiMwMDAwMDAiCiAgICAgYm9yZGVyb3BhY2l0eT0iMC4yNSIKICAgICBpbmtzY2FwZTpzaG93cGFnZXNoYWRvdz0iMiIKICAgICBpbmtzY2FwZTpwYWdlb3BhY2l0eT0iMC4wIgogICAgIGlua3NjYXBlOnBhZ2VjaGVja2VyYm9hcmQ9IjAiCiAgICAgaW5rc2NhcGU6ZGVza2NvbG9yPSIjZDFkMWQxIgogICAgIGlua3NjYXBlOmRvY3VtZW50LXVuaXRzPSJtbSIKICAgICBzaG93Z3JpZD0iZmFsc2UiIC8+CiAgPGRlZnMKICAgICBpZD0iZGVmczIiIC8+CiAgPGcKICAgICBpbmtzY2FwZTpsYWJlbD0iTGF5ZXIgMSIKICAgICBpbmtzY2FwZTpncm91cG1vZGU9ImxheWVyIgogICAgIGlkPSJsYXllcjEiCiAgICAgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoLTAuMzk2ODc0OTEsLTAuMzk2ODc0OTEpIj4KICAgIDxjaXJjbGUKICAgICAgIHN0eWxlPSJmaWxsOiNmZmZmZmY7ZmlsbC1vcGFjaXR5OjE7c3Ryb2tlOiMwMjAyMDI7c3Ryb2tlLXdpZHRoOjAuMjY0NTgzO3N0cm9rZS1saW5lY2FwOnJvdW5kO3N0cm9rZS1saW5lam9pbjpyb3VuZDtzdHJva2UtZGFzaGFycmF5Om5vbmU7c3Ryb2tlLW9wYWNpdHk6MTtwYWludC1vcmRlcjpzdHJva2UgZmlsbCBtYXJrZXJzIgogICAgICAgaWQ9InBhdGg4OTgiCiAgICAgICBjeD0iMi4xMTY2NjY2IgogICAgICAgY3k9IjIuMTE2NjY2NiIKICAgICAgIHI9IjEuNTg3NSIgLz4KICA8L2c+Cjwvc3ZnPgo=)
       6 6,
     crosshair;
 }
 .store-canvas {
   background-color: #fff;
+}
+.dialogue-container {
+  position: relative;
 }
 .dialogue {
   position: absolute;
@@ -326,7 +331,7 @@ const changeMode = (new_mode: EditMode) => {
   border: 2px solid #bbb;
   box-sizing: border-box;
 }
-.canvas-container[data-editmode='dialogue'] ~ .dialogue-container {
+.pageeditor[data-editmode='dialogue'] .dialogue-container {
   z-index: 9999;
 }
 canvas {
