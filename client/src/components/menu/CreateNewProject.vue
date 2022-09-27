@@ -2,35 +2,35 @@
 <template>
   <thumbnail
     name="create new project"
-    :created-at="createdAt"
-    :undated-at="updatedAt"
-    :image="image"
+    :is-show-date="false"
+    :image="'/plus.svg'"
     @click="createAndOpenNewProject"
   />
 </template>
 
 <script lang="ts" setup>
+import axios from 'axios';
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
+import type { Project } from '../../lib/project';
 import Thumbnail from './Thumbnail.vue'
-withDefaults(
-  defineProps<{
-    name: string
-    image: string
-    createdAt?: Date
-    updatedAt?: Date
-  }>(),
-  {
-    name: 'create new project',
-    image: '/plus.svg'
-  }
-)
 const router = useRouter()
 
-const createAndOpenNewProject = function () {
-  const url = ref<string>('/')
-  /*以下にサーバーに通信して新しいプロジェクトを作らせ、そこにアクセスするためのデータを入手するプログラムを書く */
-  router.push(url.value)
+const createAndOpenNewProject = async () => {
+  const now = new Date(Date.now()).toISOString()
+  const data : Project = {
+    id: "00000000000000000000000000",
+    name: "untitled",
+    thumbnail: "/vite.svg",
+    pages: 1,
+    created_at: now,
+    updated_at: now
+  }
+
+  const res = await axios.post('/api/projects', data)
+  if(res.status === 201){
+    router.push("/project/" + res.data.id)
+  }
 }
 </script>
 

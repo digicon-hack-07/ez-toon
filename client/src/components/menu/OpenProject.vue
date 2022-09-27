@@ -17,19 +17,21 @@ const props = withDefaults(
     projectName: string
     url: string
     thumnailImage: string
+    pages: number
     createdAt?: Date
     updatedAt?: Date
   }>(),
   {
     projectName: 'noname',
     url: '/',
-    thumnailImage: '/vite.svg'
+    thumnailImage: '/vite.svg',
+    pages: 0
   }
 )
 const router = useRouter()
 
 const openProject = function () {
-  router.push(props.url)
+  router.push({ path: props.url})
 }
 </script>
 

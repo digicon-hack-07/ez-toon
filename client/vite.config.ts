@@ -7,7 +7,7 @@ export default defineConfig({
   server: {
     proxy: {
       '/api': {
-        target: "",
+        target: "https://ez-toon.trap.games/api/",
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api/, '/'),
       }

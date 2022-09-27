@@ -2,6 +2,7 @@
   <thumbnail
     :name="'' + pageNumber"
     :image="thumnailImage"
+    :is-show-date="false"
     @click="openPage"
   />
 </template>

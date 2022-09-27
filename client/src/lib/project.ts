@@ -3,6 +3,6 @@ export type Project = {
     name : string
     pages : number
     thumbnail : string
-    createdAt : Date
-    updatedAt : Date
+    created_at : string
+    updated_at : string
 }

@@ -61,7 +61,7 @@ watch(props, () => {
 })
 
 const dateString = computed(() => {
-  const displayDate = props.createdAt ?? new Date(0)
+  const displayDate = props.createdAt ?? new Date(10000000000)
   return formatDate(displayDate)
 })
 </script>
