@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/digicon-hack-07/ez-toon/server/config"
+	"github.com/digicon-hack-07/ez-toon/server/repository"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )
@@ -36,6 +37,13 @@ func NewGorm2Repository(c *Config) (*Repository, error) {
 	if err != nil {
 		return nil, fmt.Errorf("failed to connect to db :%w", err)
 	}
+
+	db.AutoMigrate(
+		repository.Project{},
+		repository.Page{},
+		repository.Line{},
+		repository.Dialogue{},
+	)
 
 	return &Repository{
 		db: db,
