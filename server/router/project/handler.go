@@ -30,7 +30,7 @@ func (h *ProjectHandler) GetProjects(c echo.Context) error {
 }
 
 type PostProjectRequest struct {
-	Name string `json:"name,omitempty"`
+	Name string `json:"name"`
 }
 
 type PostProjectResponse Project
@@ -80,7 +80,7 @@ func (h *ProjectHandler) GetProject(c echo.Context) error {
 }
 
 type PatchProjectRequest struct {
-	Name string `json:"name,omitempty"`
+	Name string `json:"name"`
 }
 
 type PatchProjectResponse Project

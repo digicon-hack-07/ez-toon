@@ -9,10 +9,10 @@ import (
 )
 
 type PostPageRequest struct {
-	ID        ulid.ULID `json:"id,omitempty"`
-	ProjectID ulid.ULID `json:"project_id,omitempty"`
-	Height    int       `json:"height,omitempty"`
-	Width     int       `json:"width,omitempty"`
+	ID        ulid.ULID `json:"id"`
+	ProjectID ulid.ULID `json:"project_id"`
+	Height    int       `json:"height"`
+	Width     int       `json:"width"`
 }
 
 type PostPageResponse Page
@@ -102,7 +102,7 @@ func (h *PageHandler) GetPage(c echo.Context) error {
 
 type PatchIndexRequest struct {
 	// Operationは"inc"(加算)か"dec"(減算)のみを許可する
-	Operation string `json:"operation,omitempty"`
+	Operation string `json:"operation"`
 }
 
 // 更新したページ一覧を返却する

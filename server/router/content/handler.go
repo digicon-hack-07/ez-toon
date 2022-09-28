@@ -8,9 +8,9 @@ import (
 )
 
 type PostLineRequest struct {
-	PageID  ulid.ULID `json:"page_id,omitempty"`
-	PenSize int       `json:"penSize,omitempty"`
-	Points  []Point   `json:"points,omitempty"`
+	PageID  ulid.ULID `json:"page_id"`
+	PenSize int       `json:"penSize"`
+	Points  []Point   `json:"points"`
 }
 
 type PostLineResponse Line
@@ -37,12 +37,12 @@ func (h *LineHandler) DeleteLine(c echo.Context) error {
 }
 
 type PostDialogueRequest struct {
-	PageID   ulid.ULID `json:"page_id,omitempty"`
-	Dialogue string    `json:"dialogue,omitempty"`
-	Top      float64   `json:"top,omitempty"`
-	Bottom   float64   `json:"bottom,omitempty"`
-	Left     float64   `json:"left,omitempty"`
-	Right    float64   `json:"right,omitempty"`
+	PageID   ulid.ULID `json:"page_id"`
+	Dialogue string    `json:"dialogue"`
+	Top      float64   `json:"top"`
+	Bottom   float64   `json:"bottom"`
+	Left     float64   `json:"left"`
+	Right    float64   `json:"right"`
 }
 
 type PostDialogueResponse Dialogue
@@ -64,11 +64,11 @@ func (h *DialogueHandler) PostDialogue(c echo.Context) error {
 }
 
 type PatchDialogueRequest struct {
-	Dialogue string  `json:"dialogue,omitempty"`
-	Top      float64 `json:"top,omitempty"`
-	Bottom   float64 `json:"bottom,omitempty"`
-	Left     float64 `json:"left,omitempty"`
-	Right    float64 `json:"right,omitempty"`
+	Dialogue string  `json:"dialogue"`
+	Top      float64 `json:"top"`
+	Bottom   float64 `json:"bottom"`
+	Left     float64 `json:"left"`
+	Right    float64 `json:"right"`
 }
 
 type PatchDialogueResponse Dialogue
