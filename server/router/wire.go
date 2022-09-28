@@ -22,6 +22,7 @@ var SuperSet = wire.NewSet(
 	wire.Bind(new(repository.ProjectPageRepository), new(*gorm2.Repository)),
 	wire.Bind(new(repository.PageRepository), new(*gorm2.Repository)),
 	wire.Bind(new(repository.LinePageRepository), new(*gorm2.Repository)),
+	wire.Bind(new(repository.LineRepository), new(*gorm2.Repository)),
 	wire.Bind(new(repository.DialoguePageRepository), new(*gorm2.Repository)),
 
 	project.NewProjectHandler,
