@@ -6,6 +6,7 @@ import (
 
 	"github.com/digicon-hack-07/ez-toon/server/repository"
 	"github.com/oklog/ulid/v2"
+	"gorm.io/gorm"
 )
 
 func (repo *Repository) SelectProjectPageNum(ctx context.Context, projectID ulid.ULID) (int, error) {
@@ -81,7 +82,7 @@ func (repo *Repository) SelectPage(ctx context.Context, id ulid.ULID) (*reposito
 	var page repository.Page
 	err = tx.Where("id = ?", id).First(&page).Error
 	if err != nil {
-		if errors.Is(err, repository.ErrNotFound) {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, repository.ErrNotFound
 		}
 		return nil, err
@@ -101,7 +102,7 @@ func (repo *Repository) UpdateIndex(ctx context.Context, id ulid.ULID, operation
 	var page repository.Page
 	err = tx.Where("id = ?", id).First(&page).Error
 	if err != nil {
-		if errors.Is(err, repository.ErrNotFound) {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, repository.ErrNotFound
 		}
 		return nil, err
