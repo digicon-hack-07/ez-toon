@@ -46,10 +46,18 @@ type PageWithContents struct {
 
 type PageHandler struct {
 	pageRepo repository.PageRepository
+	lineRepo repository.LinePageRepository
+	dialRepo repository.DialoguePageRepository
 }
 
-func NewPageHandler(pageRepo repository.PageRepository) *PageHandler {
+func NewPageHandler(
+	pageRepo repository.PageRepository,
+	lineRepo repository.LinePageRepository,
+	dialRepo repository.DialoguePageRepository,
+) *PageHandler {
 	return &PageHandler{
 		pageRepo: pageRepo,
+		lineRepo: lineRepo,
+		dialRepo: dialRepo,
 	}
 }
