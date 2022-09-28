@@ -7,10 +7,10 @@ import (
 )
 
 type Project struct {
-	ID        ulid.ULID
-	Name      string
-	Pages     int
-	Thumbnail string
-	CreatedAt time.Time
-	UpdatedAt time.Time
+	ID         ulid.ULID
+	Name       string
+	TotalPages int
+	Thumbnail  string
+	CreatedAt  time.Time
+	UpdatedAt  time.Time
 }

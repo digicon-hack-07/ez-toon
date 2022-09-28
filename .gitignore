@@ -1,2 +1,6 @@
-.vscode/
-.idea/
+/.vscode/
+/.idea/
+/deploy_key/
+/public/
+/server/public
+/ez-toon

@@ -1,0 +1,26 @@
+name: CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    name: Push on traP Git
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Setup
+        run: |
+          echo "${{ secrets.DEPLOY_KEY_GITEA }}" > ~/deploy_key
+          chmod 600 ~/deploy_key
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "digicon-hack-07"
+      - name: Push on traP Git
+        env:
+          GIT_SSH_COMMAND: ssh -i ~/deploy_key -o StrictHostKeyChecking=no -F /dev/null
+        run: |
+          git fetch --unshallow origin
+          git push -f ssh://git@git.trap.jp:2200/digicon-hack-07/ez-toon.git main
