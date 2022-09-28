@@ -148,6 +148,15 @@ const dialogue_update = (id: string, text: string) => {
   const dialogue = dialogues.value.find(p => p.id == id)
   if (!dialogue) return
   dialogue.dialogue = text
+  fetch(`/api/dialogues/${dialogue_selected.value}`, {
+    method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      // TODO
+    })
+  })
 }
 const dialogue_move = (
   id: string,
@@ -162,6 +171,15 @@ const dialogue_move = (
   dialogue.right = right
   dialogue.top = top
   dialogue.bottom = bottom
+  fetch(`/api/dialogues/${dialogue_selected.value}`, {
+    method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      // TODO
+    })
+  })
 }
 const dialogue_select = (id: string) => {
   dialogue_selected.value = id
@@ -169,6 +187,9 @@ const dialogue_select = (id: string) => {
 const dialogue_delete = () => {
   dialogues.value = dialogues.value.filter(p => {
     return p.id != dialogue_selected.value
+  })
+  fetch(`/api/dialogues/${dialogue_selected.value}`, {
+    method: 'DELETE'
   })
 }
 
