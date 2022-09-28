@@ -24,12 +24,7 @@ func (h *PageHandler) PostPage(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, err)
 	}
 
-	prjID, err := ulid.Parse(c.Param("projectID"))
-	if err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, err)
-	}
-
-	page, err := h.pageRepo.InsertPage(c.Request().Context(), ulid.Make(), prjID, req.Height, req.Width)
+	page, err := h.pageRepo.InsertPage(c.Request().Context(), ulid.Make(), req.ProjectID, req.Height, req.Width)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err)
 	}
