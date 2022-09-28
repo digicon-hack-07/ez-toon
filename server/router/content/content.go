@@ -38,8 +38,12 @@ func NewLineHandler(repo repository.LineRepository) *LineHandler {
 	}
 }
 
-type DialogueHandler struct{}
+type DialogueHandler struct {
+	repo repository.DialogueRepository
+}
 
-func NewDialogueHandler() *DialogueHandler {
-	return &DialogueHandler{}
+func NewDialogueHandler(repo repository.DialogueRepository) *DialogueHandler {
+	return &DialogueHandler{
+		repo: repo,
+	}
 }

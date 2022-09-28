@@ -80,14 +80,22 @@ func (h *DialogueHandler) PostDialogue(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, err)
 	}
 
-	return c.JSON(http.StatusCreated, PostDialogueResponse{
-		ID:       ulid.Make(),
-		Dialogue: req.Dialogue,
-		Top:      req.Top,
-		Bottom:   req.Bottom,
-		Left:     req.Left,
-		Right:    req.Right,
-	})
+	dial, err := h.repo.InsertDialogue(c.Request().Context(), ulid.Make(), req.PageID, req.Dialogue, req.Top, req.Bottom, req.Left, req.Right)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, err)
+	}
+
+	res := PostDialogueResponse{
+		ID:       dial.ID,
+		PageID:   dial.PageID,
+		Dialogue: dial.Dialogue,
+		Top:      dial.Top,
+		Bottom:   dial.Bottom,
+		Left:     dial.Left,
+		Right:    dial.Right,
+	}
+
+	return c.JSON(http.StatusCreated, res)
 }
 
 type PatchDialogueRequest struct {
@@ -101,26 +109,49 @@ type PatchDialogueRequest struct {
 type PatchDialogueResponse Dialogue
 
 func (h *DialogueHandler) PatchDialogue(c echo.Context) error {
-	id := c.Param("dialogueID")
+	id, err := ulid.Parse(c.Param("dialogueID"))
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, err)
+	}
 
 	req := PatchDialogueRequest{}
 	if err := c.Bind(&req); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err)
 	}
 
-	return c.JSON(http.StatusCreated, PatchDialogueResponse{
-		ID:       ulid.MustParse(id),
-		Dialogue: req.Dialogue,
-		Top:      req.Top,
-		Bottom:   req.Bottom,
-		Left:     req.Left,
-		Right:    req.Right,
-	})
+	dial, err := h.repo.UpdateDialogue(c.Request().Context(), id, req.Dialogue, req.Top, req.Bottom, req.Left, req.Right)
+	if err != nil {
+		if errors.Is(err, repository.ErrNotFound) {
+			return echo.NewHTTPError(http.StatusNotFound, err)
+		}
+		return echo.NewHTTPError(http.StatusInternalServerError, err)
+	}
+
+	res := PatchDialogueResponse{
+		ID:       dial.ID,
+		PageID:   dial.PageID,
+		Dialogue: dial.Dialogue,
+		Top:      dial.Top,
+		Bottom:   dial.Bottom,
+		Left:     dial.Left,
+		Right:    dial.Right,
+	}
+
+	return c.JSON(http.StatusOK, res)
 }
 
 func (h *DialogueHandler) DeleteDialogue(c echo.Context) error {
-	id := c.Param("dialogueID")
-	c.Logger().Debug(id)
+	id, err := ulid.Parse(c.Param("dialogueID"))
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, err)
+	}
+
+	if err := h.repo.DeleteDialogue(c.Request().Context(), id); err != nil {
+		if errors.Is(err, repository.ErrNotFound) {
+			return echo.NewHTTPError(http.StatusNotFound, err)
+		}
+		return echo.NewHTTPError(http.StatusInternalServerError, err)
+	}
 
 	return c.NoContent(http.StatusNoContent)
 }

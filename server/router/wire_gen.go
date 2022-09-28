@@ -31,7 +31,7 @@ func InjectRouter(c *config.Config) (*Router, error) {
 	projectHandler := project.NewProjectHandler(repository, repository)
 	pageHandler := page.NewPageHandler(repository, repository, repository)
 	lineHandler := content.NewLineHandler(repository)
-	dialogueHandler := content.NewDialogueHandler()
+	dialogueHandler := content.NewDialogueHandler(repository)
 	router, err := NewRouter(db, projectHandler, pageHandler, lineHandler, dialogueHandler)
 	if err != nil {
 		return nil, err
@@ -41,4 +41,4 @@ func InjectRouter(c *config.Config) (*Router, error) {
 
 // wire.go:
 
-var SuperSet = wire.NewSet(gorm2.GetGorm2Config, gorm2.NewGorm2Repository, gorm2.GetSQLDb, wire.Bind(new(repository.ProjectRepository), new(*gorm2.Repository)), wire.Bind(new(repository.ProjectPageRepository), new(*gorm2.Repository)), wire.Bind(new(repository.PageRepository), new(*gorm2.Repository)), wire.Bind(new(repository.LinePageRepository), new(*gorm2.Repository)), wire.Bind(new(repository.LineRepository), new(*gorm2.Repository)), wire.Bind(new(repository.DialoguePageRepository), new(*gorm2.Repository)), project.NewProjectHandler, page.NewPageHandler, content.NewLineHandler, content.NewDialogueHandler, NewRouter)
+var SuperSet = wire.NewSet(gorm2.GetGorm2Config, gorm2.NewGorm2Repository, gorm2.GetSQLDb, wire.Bind(new(repository.ProjectRepository), new(*gorm2.Repository)), wire.Bind(new(repository.ProjectPageRepository), new(*gorm2.Repository)), wire.Bind(new(repository.PageRepository), new(*gorm2.Repository)), wire.Bind(new(repository.LinePageRepository), new(*gorm2.Repository)), wire.Bind(new(repository.LineRepository), new(*gorm2.Repository)), wire.Bind(new(repository.DialoguePageRepository), new(*gorm2.Repository)), wire.Bind(new(repository.DialogueRepository), new(*gorm2.Repository)), project.NewProjectHandler, page.NewPageHandler, content.NewLineHandler, content.NewDialogueHandler, NewRouter)
