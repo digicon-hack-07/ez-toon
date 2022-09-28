@@ -30,11 +30,7 @@ export class DialogueToolHandler implements ToolHandlerInterface {
       beginY: e.clientY - by
     }
     this.dialogues.value.push({
-      id: `${
-        this.dialogues.value.length
-          ? this.dialogues.value.slice(-1)[0].id + 1
-          : 0
-      }`, // TODO: generate ULID
+      id: `tmp${e.pointerId}`,
       pageID: this.pageID,
       dialogue: '',
       left: (e.clientX - bx) / this.canvasScale.value,
@@ -58,7 +54,8 @@ export class DialogueToolHandler implements ToolHandlerInterface {
       const top = Math.min(e.clientY - by, this.draggingData.beginY) / this.canvasScale.value
       const bottom = Math.max(e.clientY - by, this.draggingData.beginY) / this.canvasScale.value
 
-      const dialogue = this.dialogues.value.slice(-1)[0]
+      const dialogue = this.dialogues.value.find(d => d.id == `tmp${e.pointerId}`)
+      if(!dialogue) return
       dialogue.left = left
       dialogue.top = top
       dialogue.right = right
@@ -68,9 +65,26 @@ export class DialogueToolHandler implements ToolHandlerInterface {
   }
   pointerup(e: PointerEvent): void {
     if (!this.draggingData || this.draggingData.pointerId != e.pointerId) return
-    const dialogue = this.dialogues.value.slice(-1)[0]
-    if(dialogue.right - dialogue.left < 24 && dialogue.bottom - dialogue.top < 24)
-      this.dialogues.value.pop()
+    const dialogue = this.dialogues.value.find(d => d.id == `tmp${e.pointerId}`)
+    if(!dialogue) return
+    if(dialogue.right - dialogue.left < 24 && dialogue.bottom - dialogue.top < 24){
+      const erased = this.dialogues.value.filter(d => d.id != `tmp${e.pointerId}`)
+      this.dialogues.value.length = 0
+      this.dialogues.value.push(...erased)
+    }
+    fetch(`/api/dialogues`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        // TODO: Data
+      })
+    })
+    .then(res => res.json())
+    .then(res => {
+      dialogue.id = res.id
+    })
     this.draggingData = null
     return
   }
