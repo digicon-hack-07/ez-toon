@@ -37,7 +37,7 @@ type Line struct {
 	ID      ulid.ULID `gorm:"primaryKey;type:char(26);not null"`
 	PageID  ulid.ULID `gorm:"type:char(26);not null"`
 	PenSize int       `gorm:"type:int;not null"`
-	Points  []Point   `gorm:"type:json;not null"`
+	Points  []Point   `gorm:"type:text;not null"`
 	Page    Page      `gorm:"foreignKey:PageID;references:ID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE"`
 }
 
