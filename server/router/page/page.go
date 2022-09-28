@@ -1,6 +1,7 @@
 package page
 
 import (
+	"github.com/digicon-hack-07/ez-toon/server/repository"
 	"github.com/oklog/ulid/v2"
 )
 
@@ -43,8 +44,20 @@ type PageWithContents struct {
 	Dialogues []Dialogue `json:"dialogues"`
 }
 
-type PageHandler struct{}
+type PageHandler struct {
+	pageRepo repository.PageRepository
+	lineRepo repository.LinePageRepository
+	dialRepo repository.DialoguePageRepository
+}
 
-func NewPageHandler() *PageHandler {
-	return &PageHandler{}
+func NewPageHandler(
+	pageRepo repository.PageRepository,
+	lineRepo repository.LinePageRepository,
+	dialRepo repository.DialoguePageRepository,
+) *PageHandler {
+	return &PageHandler{
+		pageRepo: pageRepo,
+		lineRepo: lineRepo,
+		dialRepo: dialRepo,
+	}
 }

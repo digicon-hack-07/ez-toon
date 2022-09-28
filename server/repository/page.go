@@ -19,3 +19,10 @@ type ProjectPageRepository interface {
 	SelectProjectPageNum(ctx context.Context, projectID ulid.ULID) (int, error)
 	SelectProjectPages(ctx context.Context, projectID ulid.ULID) ([]*Page, error)
 }
+
+type PageRepository interface {
+	SelectProjectPages(ctx context.Context, projectID ulid.ULID) ([]*Page, error)
+	InsertPage(ctx context.Context, id ulid.ULID, projectID ulid.ULID, height int, width int) (*Page, error)
+	SelectPage(ctx context.Context, id ulid.ULID) (*Page, error)
+	UpdateIndex(ctx context.Context, id ulid.ULID, operation string) (*Page, error)
+}
