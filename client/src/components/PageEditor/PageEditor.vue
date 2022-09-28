@@ -81,6 +81,14 @@ const dialogue_update = (id: string, text: string) => {
   if (!dialogue) return
   dialogue.dialogue = text
 }
+const dialogue_move = (id: string, left: number, top: number, right: number, bottom: number) => {
+  const dialogue = dialogues.value.find(p => p.id == id)
+  if (!dialogue) return
+  dialogue.left = left
+  dialogue.right = right
+  dialogue.top = top
+  dialogue.bottom = bottom
+}
 const dialogue_select = (id: string) => {
   dialogue_selected.value = id
 }
@@ -170,6 +178,7 @@ const changeMode = (new_mode: EditMode) => {
       :is-active="mode == 'dialogue'"
       @select-dialogue="dialogue_select"
       @update-dialogue="dialogue_update"
+      @move-dialogue="dialogue_move"
     ></dialogue-container>
     <div ref="canvascontainer" class="canvas-container">
       <canvas ref="canvas" class="store-canvas" :style="canvasCss"></canvas>
