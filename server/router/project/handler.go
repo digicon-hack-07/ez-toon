@@ -1,6 +1,7 @@
 package project
 
 import (
+	"errors"
 	"net/http"
 
 	"github.com/digicon-hack-07/ez-toon/server/repository"
@@ -75,7 +76,7 @@ func (h *ProjectHandler) GetProject(c echo.Context) error {
 
 	project, err := h.prjRepo.SelectProject(c.Request().Context(), id)
 	if err != nil {
-		if err == repository.ErrNotFound {
+		if errors.Is(err, repository.ErrNotFound) {
 			return echo.NewHTTPError(http.StatusNotFound, err)
 		}
 		return echo.NewHTTPError(http.StatusInternalServerError, err)
@@ -127,7 +128,7 @@ func (h *ProjectHandler) PatchProject(c echo.Context) error {
 
 	project, err := h.prjRepo.UpdateProject(c.Request().Context(), id, req.Name)
 	if err != nil {
-		if err == repository.ErrNotFound {
+		if errors.Is(err, repository.ErrNotFound) {
 			return echo.NewHTTPError(http.StatusNotFound, err)
 		}
 		return echo.NewHTTPError(http.StatusInternalServerError, err)
@@ -157,7 +158,7 @@ func (h *ProjectHandler) DeleteProject(c echo.Context) error {
 	}
 
 	if err := h.prjRepo.DeleteProject(c.Request().Context(), id); err != nil {
-		if err == repository.ErrNotFound {
+		if errors.Is(err, repository.ErrNotFound) {
 			return echo.NewHTTPError(http.StatusNotFound, err)
 		}
 		return echo.NewHTTPError(http.StatusInternalServerError, err)
