@@ -3,6 +3,7 @@ package project
 import (
 	"time"
 
+	"github.com/digicon-hack-07/ez-toon/server/repository"
 	"github.com/oklog/ulid/v2"
 )
 
@@ -31,8 +32,12 @@ type ProjectWithPages struct {
 	UpdatedAt time.Time `json:"updated_at"`
 }
 
-type ProjectHandler struct{}
+type ProjectHandler struct {
+	repo repository.ProjectRepository
+}
 
-func NewProjectHandler() *ProjectHandler {
-	return &ProjectHandler{}
+func NewProjectHandler(repo repository.ProjectRepository) *ProjectHandler {
+	return &ProjectHandler{
+		repo: repo,
+	}
 }
