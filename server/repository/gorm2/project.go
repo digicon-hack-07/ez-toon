@@ -22,7 +22,7 @@ func (repo *Repository) SelectProjects(ctx context.Context) ([]*repository.Proje
 	return projects, nil
 }
 
-func (repo *Repository) CreateProject(ctx context.Context, id ulid.ULID, name string, thumbnail string) (*repository.Project, error) {
+func (repo *Repository)InsertProject(ctx context.Context, id ulid.ULID, name string, thumbnail string) (*repository.Project, error) {
 	tx, err := repo.getTX(ctx)
 	if err != nil {
 		return nil, err

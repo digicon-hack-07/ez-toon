@@ -17,7 +17,7 @@ type Project struct {
 
 type ProjectRepository interface {
 	SelectProjects(ctx context.Context) ([]*Project, error)
-	CreateProject(ctx context.Context, id ulid.ULID, name string, thumbnail string) (*Project, error)
+	InsertProject(ctx context.Context, id ulid.ULID, name string, thumbnail string) (*Project, error)
 	SelectProject(ctx context.Context, id ulid.ULID) (*Project, error)
 	UpdateProject(ctx context.Context, id ulid.ULID, name string) (*Project, error)
 	DeleteProject(ctx context.Context, id ulid.ULID) error
