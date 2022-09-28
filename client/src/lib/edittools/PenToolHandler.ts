@@ -32,7 +32,7 @@ export class PenToolHandler implements ToolHandlerInterface {
     this.working_lines.set(e.pointerId, {
       brushSize: 5,
       color: '#606060',
-      id: '', // TODO: generate ULID
+      id: `tmp${e.pointerId}`,
       pageID: '', // TODO: pageID
       path: [
         {
@@ -76,6 +76,19 @@ export class PenToolHandler implements ToolHandlerInterface {
         this.workctx.canvas.height
       )
       drawLine(this.ctx, this.canvasScale.value, line)
+      fetch(`/api/lines`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          // TODO
+        })
+      })
+      .then(res => res.json())
+      .then(res => {
+        line.id = res.id
+      })
       this.lines.push(line)
     }
     this.working_lines.delete(e.pointerId)
