@@ -12,15 +12,11 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   (e: 'selectDialogue', id: string): void
-  (e: 'updateDialogue', id: string, text: string): void
-  (
-    e: 'moveDialogue',
-    id: string,
+  (e: 'updateDialogue', id: string, text: string,
     left: number,
     top: number,
     right: number,
-    bottom: number
-  ): void
+    bottom: number): void
 }>()
 
 const dialogue_container = ref()
@@ -77,7 +73,10 @@ const dialogue_update = (e: Event) => {
   if (!tgt) return
   if (e instanceof InputEvent && tgt instanceof HTMLElement) {
     if (!tgt.dataset.id) return
-    emit('updateDialogue', tgt.dataset.id, tgt.innerText)
+    const id = tgt.dataset.id
+    const dialogue = props.dialogues.find(p => p.id == id)
+    if (!dialogue) return
+    emit('updateDialogue', tgt.dataset.id, tgt.innerText, dialogue.left, dialogue.top, dialogue.right, dialogue.bottom)
   }
 }
 
@@ -118,12 +117,14 @@ const dialogue_handler_pointerdown = (e: PointerEvent) => {
 const dialogue_handler_pointermove = (e: PointerEvent) => {
   const drag = handlerDragInfo.get(e.pointerId)
   if (!drag) return
+  const dialogue = props.dialogues.find(p => p.id == drag.id)
+  if (!dialogue) return
   const top = (e.clientY - drag.beginY) / props.canvasScale + drag.targetBeginY
   const right =
     (e.clientX - drag.beginX) / props.canvasScale + drag.targetBeginX
   const left = right - drag.targetW
   const bottom = top + drag.targetH
-  emit('moveDialogue', drag.id, left, top, right, bottom)
+  emit('updateDialogue', drag.id, dialogue.dialogue, left, top, right, bottom)
 }
 const dialogue_handler_pointerup = (e: PointerEvent) => {
   const tgt = e.target

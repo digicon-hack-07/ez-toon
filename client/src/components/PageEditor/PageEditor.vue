@@ -144,34 +144,19 @@ watch(canvasScale, () => {
 const lines: Line[] = []
 const dialogues = ref<Dialogue[]>([])
 const dialogue_selected = ref<string | null>(null)
-const dialogue_update = (id: string, text: string) => {
-  const dialogue = dialogues.value.find(p => p.id == id)
-  if (!dialogue) return
-  dialogue.dialogue = text
-  fetch(`/api/dialogues/${dialogue_selected.value}`, {
-    method: 'PATCH',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({
-      // TODO
-    })
-  })
-}
-const dialogue_move = (
-  id: string,
+const dialogue_update = (id: string, text: string,
   left: number,
   top: number,
   right: number,
-  bottom: number
-) => {
+  bottom: number) => {
   const dialogue = dialogues.value.find(p => p.id == id)
   if (!dialogue) return
+  dialogue.dialogue = text
   dialogue.left = left
   dialogue.right = right
   dialogue.top = top
   dialogue.bottom = bottom
-  fetch(`/api/dialogues/${dialogue_selected.value}`, {
+  fetch(`/api/dialogues/${id}`, {
     method: 'PATCH',
     headers: {
       'Content-Type': 'application/json'
@@ -274,7 +259,6 @@ const changeMode = (new_mode: EditMode) => {
       :is-active="mode == 'dialogue'"
       @select-dialogue="dialogue_select"
       @update-dialogue="dialogue_update"
-      @move-dialogue="dialogue_move"
     ></dialogue-container>
     <div ref="canvascontainer" class="canvas-container">
       <canvas ref="canvas" class="store-canvas" :style="canvasCss"></canvas>
