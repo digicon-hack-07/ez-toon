@@ -23,6 +23,7 @@ interface Props {
 }
 
 const props = defineProps<Props>()
+const loaded = ref(false)
 
 const pageWidth = ref(707)
 const pageHeight = ref(1000)
@@ -114,6 +115,7 @@ onMounted(() => {
           drawLine(ctx.value, canvasScale.value, line)
         }
       }
+      loaded.value = true
     })
 })
 
@@ -122,7 +124,8 @@ const canvasCss = computed(() => {
     left: `${canvasScrollX.value}px`,
     top: `${canvasScrollY.value}px`,
     height: `${Math.floor(pageHeight.value * canvasScale.value)}px`,
-    width: `${Math.floor(pageWidth.value * canvasScale.value)}px`
+    width: `${Math.floor(pageWidth.value * canvasScale.value)}px`,
+    display: `${loaded.value ? 'inherit' : 'none'}`
   }
 })
 
@@ -242,6 +245,7 @@ const changeMode = (new_mode: EditMode) => {
 <template>
   <div class="pageeditor" :data-editmode="mode">
     <dialogue-container
+      v-if="loaded"
       :dialogues="dialogues"
       :canvas-scroll-x="canvasScrollX"
       :canvas-scroll-y="canvasScrollY"

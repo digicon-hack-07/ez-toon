@@ -25,7 +25,11 @@ const emit = defineEmits<{
 
 const dialogue_container = ref()
 
-const dialogues_dummy = ref(new Map<string, string>())
+const dialogues_dummy = ref(new Map<string, string>(
+  props.dialogues.map(dialogue => {
+    return [dialogue.id, dialogue.dialogue]
+  })
+))
 
 const dialogue_select = (e: FocusEvent) => {
   if (e.target instanceof HTMLElement) {
