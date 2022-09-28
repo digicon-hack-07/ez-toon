@@ -20,3 +20,9 @@ type Dialogue struct {
 type DialoguePageRepository interface {
 	SelectDialogues(ctx context.Context, pageID ulid.ULID) ([]*Dialogue, error)
 }
+
+type DialogueRepository interface {
+	InsertDialogue(ctx context.Context, id ulid.ULID, pageID ulid.ULID, dialogue string, top float64, bottom float64, left float64, right float64) (*Dialogue, error)
+	UpdateDialogue(ctx context.Context, id ulid.ULID, dialogue string, top float64, bottom float64, left float64, right float64) (*Dialogue, error)
+	DeleteDialogue(ctx context.Context, id ulid.ULID) error
+}
