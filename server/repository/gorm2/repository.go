@@ -4,6 +4,8 @@ import (
 	"database/sql"
 	"fmt"
 
+	"github.com/digicon-hack-07/ez-toon/server/config"
+	"github.com/digicon-hack-07/ez-toon/server/repository"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )
@@ -20,11 +22,28 @@ type Config struct {
 	Database string
 }
 
+func GetGorm2Config(c *config.Config) *Config {
+	return &Config{
+		Hostname: c.MariaDBHostname,
+		Port:     c.MariaDBPort,
+		Database: c.MariaDBDatabase,
+		Username: c.MariaDBUsername,
+		Password: c.MariaDBPassword,
+	}
+}
+
 func NewGorm2Repository(c *Config) (*Repository, error) {
 	db, err := newDBConnection(c)
 	if err != nil {
 		return nil, fmt.Errorf("failed to connect to db :%w", err)
 	}
+
+	db.AutoMigrate(
+		repository.Project{},
+		repository.Page{},
+		repository.Line{},
+		repository.Dialogue{},
+	)
 
 	return &Repository{
 		db: db,
