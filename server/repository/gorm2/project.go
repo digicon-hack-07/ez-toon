@@ -68,14 +68,14 @@ func (repo *Repository) UpdateProject(ctx context.Context, id ulid.ULID, name st
 		return nil, err
 	}
 
-	var project repository.Project
-	err = tx.Model(&project).Where("id = ?", id).Updates(repository.Project{
+	err = tx.Model(&repository.Project{}).Where("id = ?", id).Updates(repository.Project{
 		Name: name,
 	}).Error
 	if err != nil {
 		return nil, err
 	}
 
+	var project repository.Project
 	err = tx.Where("id = ?", id).First(&project).Error
 	if err != nil {
 		return nil, err
@@ -90,8 +90,7 @@ func (repo *Repository) DeleteProject(ctx context.Context, id ulid.ULID) error {
 		return err
 	}
 
-	var project repository.Project
-	err = tx.Where("id = ?", id).Delete(&project).Error
+	err = tx.Where("id = ?", id).Delete(&repository.Project{}).Error
 	if err != nil {
 		return err
 	}
