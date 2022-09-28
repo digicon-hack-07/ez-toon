@@ -1,38 +1,49 @@
 package content
 
-import "github.com/oklog/ulid/v2"
+import (
+	"github.com/digicon-hack-07/ez-toon/server/repository"
+	"github.com/oklog/ulid/v2"
+)
 
 type Point struct {
-	X        float64 `json:"x,omitempty"`
-	Y        float64 `json:"y,omitempty"`
-	Pressure float64 `json:"pressure,omitempty"`
+	X        float64 `json:"x"`
+	Y        float64 `json:"y"`
+	Pressure float64 `json:"pressure"`
 }
 
 type Line struct {
-	ID      ulid.ULID `json:"id,omitempty"`
-	PageID  ulid.ULID `json:"page_id,omitempty"`
-	PenSize int       `json:"penSize,omitempty"`
-	Points  []Point   `json:"points,omitempty"`
+	ID      ulid.ULID `json:"id"`
+	PageID  ulid.ULID `json:"page_id"`
+	PenSize int       `json:"penSize"`
+	Points  []Point   `json:"points"`
 }
 
 type Dialogue struct {
-	ID       ulid.ULID `json:"id,omitempty"`
-	PageID   ulid.ULID `json:"page_id,omitempty"`
-	Dialogue string    `json:"dialogue,omitempty"`
-	Top      float64   `json:"top,omitempty"`
-	Bottom   float64   `json:"bottom,omitempty"`
-	Left     float64   `json:"left,omitempty"`
-	Right    float64   `json:"right,omitempty"`
+	ID       ulid.ULID `json:"id"`
+	PageID   ulid.ULID `json:"page_id"`
+	Dialogue string    `json:"dialogue"`
+	Top      float64   `json:"top"`
+	Bottom   float64   `json:"bottom"`
+	Left     float64   `json:"left"`
+	Right    float64   `json:"right"`
 }
 
-type LineHandler struct{}
-
-func NewLineHandler() *LineHandler {
-	return &LineHandler{}
+type LineHandler struct {
+	repo repository.LineRepository
 }
 
-type DialogueHandler struct{}
+func NewLineHandler(repo repository.LineRepository) *LineHandler {
+	return &LineHandler{
+		repo: repo,
+	}
+}
 
-func NewDialogueHandler() *DialogueHandler {
-	return &DialogueHandler{}
+type DialogueHandler struct {
+	repo repository.DialogueRepository
+}
+
+func NewDialogueHandler(repo repository.DialogueRepository) *DialogueHandler {
+	return &DialogueHandler{
+		repo: repo,
+	}
 }

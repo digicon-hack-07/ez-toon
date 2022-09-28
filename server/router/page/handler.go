@@ -4,15 +4,15 @@ import (
 	"errors"
 	"net/http"
 
+	"github.com/digicon-hack-07/ez-toon/server/repository"
 	"github.com/labstack/echo/v4"
 	"github.com/oklog/ulid/v2"
 )
 
 type PostPageRequest struct {
-	ID        ulid.ULID `json:"id,omitempty"`
-	ProjectID ulid.ULID `json:"project_id,omitempty"`
-	Height    int       `json:"height,omitempty"`
-	Width     int       `json:"width,omitempty"`
+	ProjectID ulid.ULID `json:"project_id"`
+	Height    int       `json:"height"`
+	Width     int       `json:"width"`
 }
 
 type PostPageResponse Page
@@ -23,93 +23,104 @@ func (h *PageHandler) PostPage(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, err)
 	}
 
-	return c.JSON(http.StatusCreated, PostPageResponse{
-		ID:        ulid.Make(),
-		ProjectID: req.ProjectID,
-		Index:     1,
-		Height:    req.Height,
-		Width:     req.Width,
-	})
+	page, err := h.pageRepo.InsertPage(c.Request().Context(), ulid.Make(), req.ProjectID, req.Height, req.Width)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, err)
+	}
+
+	res := PostPageResponse{
+		ID:        page.ID,
+		ProjectID: page.ProjectID,
+		Index:     page.Index,
+		Height:    page.Height,
+		Width:     page.Width,
+	}
+
+	return c.JSON(http.StatusCreated, res)
 }
 
 type GetPageResponse PageWithContents
 
 func (h *PageHandler) GetPage(c echo.Context) error {
-	id := c.Param("pageID")
+	id, err := ulid.Parse(c.Param("pageID"))
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, err)
+	}
 
-	return c.JSON(http.StatusOK, GetPageResponse{
-		ID:        ulid.MustParse(id),
-		ProjectID: ulid.Make(),
-		Index:     0,
-		Height:    300,
-		Width:     400,
-		Lines: []Line{
-			{
-				ID:      ulid.Make(),
-				PenSize: 3,
-				Points: []Point{
-					{
-						X:        0,
-						Y:        0,
-						Pressure: 1.500,
-					},
-					{
-						X:        14.7,
-						Y:        22.3,
-						Pressure: 2.500,
-					},
-					{
-						X:        44.7,
-						Y:        35.2,
-						Pressure: 1.500,
-					},
-				},
-			},
-			{
-				ID:      ulid.Make(),
-				PenSize: 4,
-				Points: []Point{
-					{
-						X:        100.2,
-						Y:        353.6,
-						Pressure: 1.500,
-					},
-					{
-						X:        114.6,
-						Y:        373.3,
-						Pressure: 2.500,
-					},
-					{
-						X:        125.7,
-						Y:        367.3,
-						Pressure: 1.500,
-					},
-				},
-			},
-		},
-		Dialogues: []Dialogue{
-			{
-				ID:       ulid.Make(),
-				Dialogue: "あいうえおかきくけこ",
-				Top:      150,
-				Bottom:   50,
-				Left:     250,
-				Right:    100,
-			},
-		},
-	})
+	page, err := h.pageRepo.SelectPage(c.Request().Context(), id)
+	if err != nil {
+		if errors.Is(err, repository.ErrNotFound) {
+			return echo.NewHTTPError(http.StatusNotFound, err)
+		}
+		return echo.NewHTTPError(http.StatusInternalServerError, err)
+	}
+
+	lines, err := h.lineRepo.SelectLines(c.Request().Context(), id)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, err)
+	}
+
+	dials, err := h.dialRepo.SelectDialogues(c.Request().Context(), id)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, err)
+	}
+
+	resLines := make([]Line, 0, len(lines))
+	for _, line := range lines {
+		resPoints := make([]Point, 0, len(line.Points))
+		for _, point := range line.Points {
+			resPoints = append(resPoints, Point{
+				X:        point.X,
+				Y:        point.Y,
+				Pressure: point.Pressure,
+			})
+		}
+
+		resLines = append(resLines, Line{
+			ID:      line.ID,
+			PenSize: line.PenSize,
+			Points:  resPoints,
+		})
+	}
+
+	resDials := make([]Dialogue, 0, len(dials))
+	for _, dial := range dials {
+		resDials = append(resDials, Dialogue{
+			ID:       dial.ID,
+			Dialogue: dial.Dialogue,
+			Top:      dial.Top,
+			Bottom:   dial.Bottom,
+			Left:     dial.Left,
+			Right:    dial.Right,
+		})
+	}
+
+	res := GetPageResponse{
+		ID:        page.ID,
+		ProjectID: page.ProjectID,
+		Index:     page.Index,
+		Height:    page.Height,
+		Width:     page.Width,
+		Lines:     resLines,
+		Dialogues: resDials,
+	}
+
+	return c.JSON(http.StatusOK, res)
 }
 
 type PatchIndexRequest struct {
 	// Operationは"inc"(加算)か"dec"(減算)のみを許可する
-	Operation string `json:"operation,omitempty"`
+	Operation string `json:"operation"`
 }
 
 // 更新したページ一覧を返却する
 type PatchIndexResponse []Page
 
 func (h *PageHandler) PatchIndex(c echo.Context) error {
-	id := c.Param("pageID")
+	id, err := ulid.Parse(c.Param("pageID"))
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, err)
+	}
 
 	req := PatchIndexRequest{}
 	if err := c.Bind(&req); err != nil {
@@ -119,20 +130,28 @@ func (h *PageHandler) PatchIndex(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, errors.New("invalid operation"))
 	}
 
-	return c.JSON(http.StatusOK, PatchIndexResponse{
-		{
-			ID:        ulid.Make(),
-			ProjectID: ulid.Make(),
-			Index:     0,
-			Height:    300,
-			Width:     400,
-		},
-		{
-			ID:        ulid.MustParse(id),
-			ProjectID: ulid.Make(),
-			Index:     1,
-			Height:    500,
-			Width:     600,
-		},
-	})
+	page, err := h.pageRepo.UpdateIndex(c.Request().Context(), id, req.Operation)
+	if err != nil {
+		if errors.Is(err, repository.ErrNotFound) {
+			return echo.NewHTTPError(http.StatusNotFound, err)
+		}
+		return echo.NewHTTPError(http.StatusInternalServerError, err)
+	}
+
+	pages, err := h.pageRepo.SelectProjectPages(c.Request().Context(), page.ProjectID)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, err)
+	}
+
+	res := []Page{}
+	for _, page := range pages {
+		res = append(res, Page{
+			ID:     page.ID,
+			Index:  page.Index,
+			Height: page.Height,
+			Width:  page.Width,
+		})
+	}
+
+	return c.JSON(http.StatusOK, res)
 }
