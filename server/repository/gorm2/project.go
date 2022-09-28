@@ -41,8 +41,12 @@ func (repo *Repository) InsertProject(ctx context.Context, id ulid.ULID, name st
 		return nil, err
 	}
 
+	project = repository.Project{}
 	err = tx.Where("id = ?", id).First(&project).Error
 	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, repository.ErrNotFound
+		}
 		return nil, err
 	}
 
