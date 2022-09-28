@@ -10,7 +10,6 @@ import (
 )
 
 type PostPageRequest struct {
-	ID        ulid.ULID `json:"id"`
 	ProjectID ulid.ULID `json:"project_id"`
 	Height    int       `json:"height"`
 	Width     int       `json:"width"`
