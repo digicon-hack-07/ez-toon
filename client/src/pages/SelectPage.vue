@@ -18,8 +18,9 @@
           <img src="/pencil.svg" :class="$style.pencilImage" />
         </span>
       </h1>
+      <button :class="$style.button" @click="remove">削除</button>
     </div>
-    <transition-group :move-class="$style.listMove" tag="div">
+    <transition-group :move-class="$style.listMove" tag="span">
       <open-page
         v-for="page in pageList"
         :key="page.id"
@@ -30,16 +31,20 @@
         @right="incrementIndex"
       />
     </transition-group>
+    <create-page
+      :index="pageList.length"
+      :project-id="(route.params.id as string)"
+    ></create-page>
   </div>
 </template>
 
 <script lang="ts" setup>
 import axios from 'axios'
 import { nextTick, onMounted, ref } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import OpenPage from '../components/menu/OpenPage.vue'
 import type { Page } from '../lib/page'
-import type { Project } from '../lib/project'
+import CreatePage from '../components/menu/CreatePage.vue'
 const route = useRoute()
 const name = ref()
 const nameInput = ref<HTMLInputElement>()
@@ -48,8 +53,18 @@ const pages = route.query.pages
 const id = ref<number>(5)
 const isNameSelect = ref(false)
 const pageList = ref<Page[]>([])
-const projectData = ref<Project>()
+const router = useRouter()
 
+if (Array.isArray(route.params.id) || !route.params.id) {
+  router.push('/')
+}
+
+const remove = async () => {
+  const res = await axios.delete('/api/projects/' + route.params.id)
+  if (res.status / 100 < 2 && res.status / 100 >= 3) {
+    router.push('/')
+  }
+}
 const unSelect = async () => {
   isNameSelect.value = false
   const res = await axios.patch('/api/projects/' + route.params.id, {
@@ -171,5 +186,11 @@ onMounted(async () => {
   justify-content: center;
   margin-top: 1.5rem;
   font-size: 1.5rem;
+}
+
+.button {
+    position: absolute;
+    top:3rem;
+    right: 3rem;
 }
 </style>

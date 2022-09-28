@@ -12,19 +12,13 @@
 import axios from 'axios';
 import { useRouter } from 'vue-router'
 import type { Page } from '../../lib/page';
-import type { Project } from '../../lib/project';
 import Thumbnail from './Thumbnail.vue'
 const router = useRouter()
 
 const createAndOpenNewProject = async () => {
   const now = new Date(Date.now()).toISOString()
-  const projectData : Project = {
-    id: "00000000000000000000000000",
-    name: "untitled",
-    thumbnail: "/noImage.svg",
-    pages: 1,
-    created_at: now,
-    updated_at: now
+  const projectData = {
+    name: "untitled"
   }
 
   const pageData : Page = {
