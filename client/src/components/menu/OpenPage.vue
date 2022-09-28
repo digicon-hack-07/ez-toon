@@ -22,7 +22,7 @@ const props = withDefaults(
   {
     pageNumber: 1,
     url: '/',
-    thumnailImage: '/vite.svg'
+    thumnailImage: '/noImage.svg'
   }
 )
 

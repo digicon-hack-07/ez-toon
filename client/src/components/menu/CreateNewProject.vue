@@ -21,7 +21,7 @@ const createAndOpenNewProject = async () => {
   const projectData : Project = {
     id: "00000000000000000000000000",
     name: "untitled",
-    thumbnail: "/vite.svg",
+    thumbnail: "/noImage.svg",
     pages: 1,
     created_at: now,
     updated_at: now
@@ -31,8 +31,8 @@ const createAndOpenNewProject = async () => {
     project_id: "",
     id: "00000000000000000000000000",
     index: 1,
-    height: 600,
-    width: 400
+    height: 1000,
+    width: 707
   }
 
   const res = await axios.post('/api/projects', projectData)

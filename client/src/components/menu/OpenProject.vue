@@ -24,7 +24,7 @@ const props = withDefaults(
   {
     projectName: 'noname',
     url: '/',
-    thumnailImage: '/vite.svg',
+    thumnailImage: '/noImage.svg',
     pages: 0
   }
 )

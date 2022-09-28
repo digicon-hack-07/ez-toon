@@ -2,7 +2,12 @@
 <template>
   <div :class="$style.thumbnail">
     <div :class="$style.area">
-      <img :src="image" :class="$style.image" />
+      <div v-if="isImageExists">
+        <img :src="image" :class="$style.image" />
+      </div>
+      <div v-else>
+        <img :src="'/noImage.svg'" :class="$style.image" />
+      </div>
       <p
         ref="nameRef"
         :class="[$style.name, isHidden ? $style.overflowName : '']"
@@ -12,8 +17,16 @@
       <span :class="[isHidden ? $style.overflow : $style.hide]">...</span>
       <p v-if="isShowDate" :class="$style.name">{{ dateString }}</p>
       <span v-if="isShowArrow" :class="$style.arrowSpace">
-        <img src="/leftArrow.svg" :class="$style.leftArrow" @click.stop="$emit('left')" />
-        <img src="/rightArrow.svg" :class="$style.rightArrow" @click.stop="$emit('right')"/>
+        <img
+          src="/leftArrow.svg"
+          :class="$style.leftArrow"
+          @click.stop="$emit('left')"
+        />
+        <img
+          src="/rightArrow.svg"
+          :class="$style.rightArrow"
+          @click.stop="$emit('right')"
+        />
       </span>
     </div>
   </div>
@@ -21,7 +34,6 @@
 
 <script lang="ts" setup>
 import { computed, nextTick, onMounted, ref, watch } from 'vue'
-
 
 const isHidden = ref<boolean>(false)
 
@@ -36,7 +48,7 @@ const props = withDefaults(
   }>(),
   {
     name: 'noname',
-    image: '/vite.svg',
+    image: '/noImage.svg',
     isShowDate: false,
     isShowArrow: false
   }
@@ -45,6 +57,7 @@ interface Emits {
   (e: 'left'): void
   (e: 'right'): void
 }
+const isImageExists = ref(true)
 
 const emit = defineEmits<Emits>()
 
@@ -56,13 +69,19 @@ const formatDate = (dt: Date) => {
   var d = dt.getDate()
   var h = dt.getHours()
   var min = dt.getMinutes()
-  return y + '/' + m + '/' + d + ' ' + h + ":" + min
+  return y + '/' + m + '/' + d + ' ' + h + ':' + min
 }
 
 onMounted(() => {
   const fontSize = getComputedStyle(document.documentElement).fontSize
   const remHeight = (nameRef.value?.clientHeight ?? 0) / parseFloat(fontSize)
   isHidden.value = remHeight > 3
+  const img = new Image()
+  img.src = props.image
+  img.onerror = () => {
+    isImageExists.value = false
+  }
+
   //alert(remHeight)
 })
 

@@ -25,7 +25,7 @@
         :key="page.id"
         :page-number="page.index + 1"
         :url="'/page/' + page.id"
-        :thumnail-image="'/vite.svg'"
+        :thumnail-image="'/noImage.svg'"
         @left="decrementIndex"
         @right="incrementIndex"
       />
@@ -137,11 +137,6 @@ const incrementIndex = (index: number) => {
 onMounted(async () => {
   const res = await axios.get('/api/projects/' + route.params.id)
   pageList.value = res.data.pages
-  for (let i = 0; i < pageList.value.length; i++) {
-    if (!pageList.value[i].index) {
-      pageList.value[i].index = 0
-    }
-  }
   name.value = res.data.name
 })
 </script>
