@@ -10,6 +10,7 @@ import { type Line } from '../../lib/line'
 import DialogueSubTool from './DialogueSubTool.vue'
 import MoveSubTool from './MoveSubTool.vue'
 import { drawLine } from '../../lib/renderer/path'
+import DialogueContainer from './DialogueContainer.vue'
 
 const canvascontainer = ref<HTMLCanvasElement>()
 const workcanvas = ref<HTMLCanvasElement>()
@@ -75,58 +76,15 @@ watch(canvasScale, () => {
 const lines: Line[] = []
 const dialogues = ref<Dialogue[]>([])
 const dialogue_selected = ref<string | null>(null)
-const dialogues_dummy = ref(new Map<string, string>())
-
-const dialogues_display = computed(() => {
-  return dialogues.value.map(dialogue => {
-    return {
-      id: dialogue.id,
-      style: {
-        left: `${canvasScrollX.value + dialogue.left * canvasScale.value}px`,
-        top: `${canvasScrollY.value + dialogue.top * canvasScale.value}px`,
-        width: `${dialogue.right - dialogue.left}px`,
-        height: `${dialogue.bottom - dialogue.top}px`,
-        fontSize: `${dialogue.fontSize}px`,
-        transform: `scale(${canvasScale.value})`
-      },
-      str: dialogue.dialogue
-    }
-  })
-})
-const dialogues_handle_display = computed(() => {
-  return dialogues.value.map(dialogue => {
-    return {
-      id: dialogue.id,
-      style: {
-        left: `${
-          canvasScrollX.value + dialogue.right * canvasScale.value + 4
-        }px`,
-        top: `${
-          canvasScrollY.value + dialogue.top * canvasScale.value - 12 - 4
-        }px`,
-        width: `12px`,
-        height: `12px`
-      }
-    }
-  })
-})
-const dialogue_update = (e: Event) => {
-  const tgt = e.target
-  if (!tgt) return
-  if (e instanceof InputEvent && tgt instanceof HTMLElement) {
-    const dialogue = dialogues.value.find(p => {
-      return p.id == tgt.dataset.id
+const dialogue_update = (id: string, text: string) => {
+  const dialogue = dialogues.value.find(p => {
+      return p.id == id
     })
-    if (!dialogue || e.data === null) return
-    dialogue.dialogue = tgt.innerText
-  }
+    if (!dialogue) return
+    dialogue.dialogue = text
 }
-const dialogue_select = (e: FocusEvent) => {
-  if (e.target instanceof HTMLElement) {
-    const id = e.target.dataset.id
-    if (!id) return
-    dialogue_selected.value = id
-  }
+const dialogue_select = (id: string) => {
+  dialogue_selected.value = id
 }
 const dialogue_delete = () => {
   dialogues.value = dialogues.value.filter(p => {
@@ -206,28 +164,14 @@ const changeMode = (new_mode: EditMode) => {
 
 <template>
   <div class="pageeditor" :data-editmode="mode">
-    <div class="dialogue-container">
-      <div
-        v-for="dialogue_display in dialogues_display"
-        :key="dialogue_display.id"
-        class="dialogue"
-        contenteditable="true"
-        :style="dialogue_display.style"
-        :data-id="dialogue_display.id"
-        @input="dialogue_update"
-        @focus="dialogue_select"
-      >
-        {{ dialogues_dummy.get(dialogue_display.id) }}
-      </div>
-      <div v-if="mode == 'dialogue'">
-        <div
-          v-for="dialogue_handle in dialogues_handle_display"
-          :key="dialogue_handle.id"
-          class="dialoguehandle"
-          :style="dialogue_handle.style"
-        ></div>
-      </div>
-    </div>
+    <dialogue-container
+      :dialogues="dialogues"
+      :canvas-scroll-x="canvasScrollX"
+      :canvas-scroll-y="canvasScrollY"
+      :canvas-scale="canvasScale"
+      :is-active="mode == 'dialogue'"
+      @select-dialogue="dialogue_select"
+      @update-dialogue="dialogue_update"></dialogue-container>
     <div ref="canvascontainer" class="canvas-container">
       <canvas ref="canvas" class="store-canvas" :style="canvasCss"></canvas>
       <canvas ref="workcanvas" :style="canvasCss"></canvas>
@@ -306,30 +250,6 @@ const changeMode = (new_mode: EditMode) => {
 }
 .dialogue-container {
   position: relative;
-}
-.dialogue {
-  position: absolute;
-  border: 2px solid #999; /* 小さいと縮小時にブラウザのレンダリングがバグりやすい */
-  writing-mode: vertical-rl;
-  line-height: 1.2;
-  word-break: break-all;
-  font-family: 'EzTooN-SourceHanSerif', serif;
-  text-align: start;
-  transform-origin: top left;
-}
-.dialogue:active,
-.dialogue:focus,
-.dialogue:focus-visible,
-.dialogue div:active,
-.dialogue div:focus,
-.dialogue div:focus-visible {
-  outline: none;
-}
-.dialoguehandle {
-  position: absolute;
-  background-color: #0099ff;
-  border: 2px solid #bbb;
-  box-sizing: border-box;
 }
 .pageeditor[data-editmode='dialogue'] .dialogue-container {
   z-index: 9999;
