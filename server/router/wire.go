@@ -19,6 +19,7 @@ var SuperSet = wire.NewSet(
 	gorm2.GetSQLDb,
 
 	wire.Bind(new(repository.ProjectRepository), new(*gorm2.Repository)),
+	wire.Bind(new(repository.ProjectPageRepository), new(*gorm2.Repository)),
 
 	project.NewProjectHandler,
 	page.NewPageHandler,

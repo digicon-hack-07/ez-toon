@@ -33,11 +33,13 @@ type ProjectWithPages struct {
 }
 
 type ProjectHandler struct {
-	repo repository.ProjectRepository
+	prjRepo  repository.ProjectRepository
+	pageRepo repository.ProjectPageRepository
 }
 
-func NewProjectHandler(repo repository.ProjectRepository) *ProjectHandler {
+func NewProjectHandler(prjRepo repository.ProjectRepository, pageRepo repository.ProjectPageRepository) *ProjectHandler {
 	return &ProjectHandler{
-		repo: repo,
+		prjRepo:  prjRepo,
+		pageRepo: pageRepo,
 	}
 }
