@@ -23,13 +23,29 @@ func (h *PageHandler) PostPage(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, err)
 	}
 
-	return c.JSON(http.StatusCreated, PostPageResponse{
-		ID:        ulid.Make(),
-		ProjectID: req.ProjectID,
-		Index:     1,
-		Height:    req.Height,
-		Width:     req.Width,
-	})
+	id, err := ulid.Parse(c.Param("pageID"))
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, err)
+	}
+	prjID, err := ulid.Parse(c.Param("projectID"))
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, err)
+	}
+
+	page, err := h.pageRepo.InsertPage(c.Request().Context(), id, prjID, req.Height, req.Width)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, err)
+	}
+
+	res := PostPageResponse{
+		ID:        page.ID,
+		ProjectID: page.ProjectID,
+		Index:     page.Index,
+		Height:    page.Height,
+		Width:     page.Width,
+	}
+
+	return c.JSON(http.StatusCreated, res)
 }
 
 type GetPageResponse PageWithContents
