@@ -29,7 +29,7 @@ func (repo *Repository) SelectProjectPages(ctx context.Context, projectID ulid.U
 	}
 
 	var pages []*repository.Page
-	err = tx.Where("project_id = ?", projectID).Order("index asc").Find(&pages).Error
+	err = tx.Where("project_id = ?", projectID).Order("`index` ASC").Find(&pages).Error
 	if err != nil {
 		return nil, err
 	}
