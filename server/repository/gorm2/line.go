@@ -2,9 +2,11 @@ package gorm2
 
 import (
 	"context"
+	"errors"
 
 	"github.com/digicon-hack-07/ez-toon/server/repository"
 	"github.com/oklog/ulid/v2"
+	"gorm.io/gorm"
 )
 
 func (repo *Repository) SelectLines(ctx context.Context, pageID ulid.ULID) ([]*repository.Line, error) {
@@ -56,6 +58,9 @@ func (repo *Repository) DeleteLine(ctx context.Context, id ulid.ULID) error {
 
 	err = tx.Where("id = ?", id).Delete(&repository.Line{}).Error
 	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return repository.ErrNotFound
+		}
 		return err
 	}
 

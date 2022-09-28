@@ -1,8 +1,10 @@
 package content
 
 import (
+	"errors"
 	"net/http"
 
+	"github.com/digicon-hack-07/ez-toon/server/repository"
 	"github.com/labstack/echo/v4"
 	"github.com/oklog/ulid/v2"
 )
@@ -21,17 +23,42 @@ func (h *LineHandler) PostLine(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, err)
 	}
 
-	return c.JSON(http.StatusCreated, PostLineResponse{
-		ID:      ulid.Make(),
-		PageID:  req.PageID,
-		PenSize: req.PenSize,
+	points := make([]repository.Point, len(req.Points))
+	for _, p := range req.Points {
+		points = append(points, repository.Point{
+			X:        p.X,
+			Y:        p.Y,
+			Pressure: p.Pressure,
+		})
+	}
+
+	line, err := h.repo.InsertLine(c.Request().Context(), ulid.Make(), req.PageID, req.PenSize, points)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, err)
+	}
+
+	res := PostLineResponse{
+		ID:      line.ID,
+		PageID:  line.PageID,
+		PenSize: line.PenSize,
 		Points:  req.Points,
-	})
+	}
+
+	return c.JSON(http.StatusCreated, res)
 }
 
 func (h *LineHandler) DeleteLine(c echo.Context) error {
-	id := c.Param("lineID")
-	c.Logger().Debug(id)
+	id, err := ulid.Parse(c.Param("lineID"))
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, err)
+	}
+
+	if err := h.repo.DeleteLine(c.Request().Context(), id); err != nil {
+		if errors.Is(err, repository.ErrNotFound) {
+			return echo.NewHTTPError(http.StatusNotFound, err)
+		}
+		return echo.NewHTTPError(http.StatusInternalServerError, err)
+	}
 
 	return c.NoContent(http.StatusNoContent)
 }
