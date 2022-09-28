@@ -3,6 +3,7 @@ package gorm2
 import (
 	"context"
 	"errors"
+	"time"
 
 	"github.com/digicon-hack-07/ez-toon/server/repository"
 	"github.com/oklog/ulid/v2"
@@ -41,14 +42,17 @@ func (repo *Repository) InsertProject(ctx context.Context, id ulid.ULID, name st
 		return nil, err
 	}
 
-	project = repository.Project{}
-	err = tx.Where("id = ?", id).First(&project).Error
-	if err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, repository.ErrNotFound
-		}
-		return nil, err
-	}
+	// project = repository.Project{}
+	// err = tx.Where("id = ?", id).First(&project).Error
+	// if err != nil {
+	// 	if errors.Is(err, gorm.ErrRecordNotFound) {
+	// 		return nil, repository.ErrNotFound
+	// 	}
+	// 	return nil, err
+	// }
+
+	project.CreatedAt = time.Now()
+	project.UpdatedAt = time.Now()
 
 	return &project, nil
 }
