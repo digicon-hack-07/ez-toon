@@ -81,6 +81,9 @@ func (repo *Repository) SelectPage(ctx context.Context, id ulid.ULID) (*reposito
 	var page repository.Page
 	err = tx.Where("id = ?", id).First(&page).Error
 	if err != nil {
+		if errors.Is(err, repository.ErrNotFound) {
+			return nil, repository.ErrNotFound
+		}
 		return nil, err
 	}
 
