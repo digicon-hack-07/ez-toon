@@ -88,7 +88,7 @@ func (repo *Repository) SelectPage(ctx context.Context, id ulid.ULID) (*reposito
 	return &page, nil
 }
 
-func (repo *Repository) PatchIndex(ctx context.Context, id ulid.ULID, operation string) (*repository.Page, error) {
+func (repo *Repository) UpdateIndex(ctx context.Context, id ulid.ULID, operation string) (*repository.Page, error) {
 	tx, err := repo.getTX(ctx)
 	if err != nil {
 		return nil, err

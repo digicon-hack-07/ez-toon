@@ -23,5 +23,5 @@ type ProjectPageRepository interface {
 type PageRepository interface {
 	InsertPage(ctx context.Context, id ulid.ULID, projectID ulid.ULID, height int, width int) (*Page, error)
 	SelectPage(ctx context.Context, id ulid.ULID) (*Page, error)
-	PatchIndex(ctx context.Context, id ulid.ULID, operation string) (*Page, error)
+	UpdateIndex(ctx context.Context, id ulid.ULID, operation string) (*Page, error)
 }
