@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue';
+import { computed, ref } from 'vue'
 import { type Dialogue } from '../../lib/dialogue'
 
 const props = defineProps<{
-  dialogues: Dialogue[],
-  canvasScrollX: number,
-  canvasScrollY: number,
-  canvasScale: number,
+  dialogues: Dialogue[]
+  canvasScrollX: number
+  canvasScrollY: number
+  canvasScale: number
   isActive: boolean
 }>()
 
@@ -21,7 +21,7 @@ const dialogue_select = (e: FocusEvent) => {
   if (e.target instanceof HTMLElement) {
     const id = e.target.dataset.id
     if (!id) return
-    emit("selectDialogue", id)
+    emit('selectDialogue', id)
   }
 }
 
@@ -63,10 +63,9 @@ const dialogue_update = (e: Event) => {
   if (!tgt) return
   if (e instanceof InputEvent && tgt instanceof HTMLElement) {
     if (!tgt.dataset.id) return
-    emit("updateDialogue", tgt.dataset.id, tgt.innerText)
+    emit('updateDialogue', tgt.dataset.id, tgt.innerText)
   }
 }
-
 </script>
 
 <template>

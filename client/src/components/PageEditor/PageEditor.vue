@@ -77,11 +77,9 @@ const lines: Line[] = []
 const dialogues = ref<Dialogue[]>([])
 const dialogue_selected = ref<string | null>(null)
 const dialogue_update = (id: string, text: string) => {
-  const dialogue = dialogues.value.find(p => {
-      return p.id == id
-    })
-    if (!dialogue) return
-    dialogue.dialogue = text
+  const dialogue = dialogues.value.find(p => p.id == id)
+  if (!dialogue) return
+  dialogue.dialogue = text
 }
 const dialogue_select = (id: string) => {
   dialogue_selected.value = id
@@ -115,31 +113,31 @@ const zoomOut = () => {
 
 function getModeHandler(): ToolHandlerInterface {
   switch (mode.value) {
-    case 'move':
-      return new MoveToolHandler(canvasScrollX, canvasScrollY)
-    case 'dialogue':
-      if (!canvas.value) throw new Error('canvas not loaded')
-      return new DialogueToolHandler(
-        canvas.value,
-        canvasScale,
-        dialogues,
-        props.pageID
-      )
-    case 'pen':
-      if (!canvas.value) throw new Error('canvas not loaded')
-      if (!ctx.value || !workctx.value)
-        throw new Error('canvas context not loaded')
-      return new PenToolHandler(
-        canvas.value,
-        canvasScale,
-        ctx.value,
-        workctx.value,
-        lines
-      )
-    case 'eraser':
-      if (!canvas.value) throw new Error('canvas not loaded')
-      if (!ctx.value) throw new Error('canvas context not loaded')
-      return new EraserToolHandler(canvas.value, ctx.value, canvasScale, lines)
+  case 'move':
+    return new MoveToolHandler(canvasScrollX, canvasScrollY)
+  case 'dialogue':
+    if (!canvas.value) throw new Error('canvas not loaded')
+    return new DialogueToolHandler(
+      canvas.value,
+      canvasScale,
+      dialogues,
+      props.pageID
+    )
+  case 'pen':
+    if (!canvas.value) throw new Error('canvas not loaded')
+    if (!ctx.value || !workctx.value)
+      throw new Error('canvas context not loaded')
+    return new PenToolHandler(
+      canvas.value,
+      canvasScale,
+      ctx.value,
+      workctx.value,
+      lines
+    )
+  case 'eraser':
+    if (!canvas.value) throw new Error('canvas not loaded')
+    if (!ctx.value) throw new Error('canvas context not loaded')
+    return new EraserToolHandler(canvas.value, ctx.value, canvasScale, lines)
   }
 }
 let handler: ToolHandlerInterface | null
@@ -171,7 +169,8 @@ const changeMode = (new_mode: EditMode) => {
       :canvas-scale="canvasScale"
       :is-active="mode == 'dialogue'"
       @select-dialogue="dialogue_select"
-      @update-dialogue="dialogue_update"></dialogue-container>
+      @update-dialogue="dialogue_update"
+    ></dialogue-container>
     <div ref="canvascontainer" class="canvas-container">
       <canvas ref="canvas" class="store-canvas" :style="canvasCss"></canvas>
       <canvas ref="workcanvas" :style="canvasCss"></canvas>
