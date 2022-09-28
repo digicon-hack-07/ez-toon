@@ -34,22 +34,87 @@ const canvasScale = ref<number>(0.5)
 type EditMode = 'move' | 'pen' | 'dialogue' | 'eraser'
 const mode = ref<EditMode>('pen')
 
+type GetPageData = {
+  width: number
+  height: number
+  dialogues: {
+    id: string
+    dialogue: string
+    left: number
+    top: number
+    right: number
+    bottom: number
+  }[]
+  lines: {
+    id: string
+    penSize: number
+    points: {
+      x: number
+      y: number
+      pressure: number
+    }[]
+  }[]
+}
+
 onMounted(() => {
-  if (canvas.value && workcanvas.value && canvascontainer.value) {
-    canvas.value.width = pageWidth.value * canvasScale.value
-    canvas.value.height = pageHeight.value * canvasScale.value
-    ctx.value = canvas.value.getContext('2d') ?? undefined
+  fetch(`/api/pages/${props.pageId}`)
+    .then(res => res.json())
+    .then((res: GetPageData) => {
+      pageWidth.value = res.width
+      pageHeight.value = res.height
+      dialogues.value = res.dialogues.map(dialogue => {
+        return {
+          pageID: props.pageId,
+          id: dialogue.id,
+          left: dialogue.left,
+          top: dialogue.top,
+          right: dialogue.right,
+          bottom: dialogue.bottom,
+          dialogue: dialogue.dialogue,
+          color: '#000000',
+          fontName: '',
+          fontSize: 24
+        }
+      })
+      lines.push(
+        ...res.lines.map(line => {
+          return {
+            pageID: props.pageId,
+            id: line.id,
+            color: '#606060',
+            brushSize: line.penSize,
+            path: line.points.map(point => {
+              return {
+                x: point.x,
+                y: point.y,
+                force: point.pressure
+              }
+            })
+          }
+        })
+      )
 
-    workcanvas.value.width = pageWidth.value * canvasScale.value
-    workcanvas.value.height = pageHeight.value * canvasScale.value
-    workctx.value = workcanvas.value.getContext('2d') ?? undefined
+      if (canvas.value && workcanvas.value && canvascontainer.value) {
+        canvas.value.width = pageWidth.value * canvasScale.value
+        canvas.value.height = pageHeight.value * canvasScale.value
+        ctx.value = canvas.value.getContext('2d') ?? undefined
 
-    canvasScrollX.value =
-      canvascontainer.value.clientWidth / 2 - canvas.value.clientWidth / 2
-    canvasScrollY.value =
-      canvascontainer.value.clientHeight / 2 - canvas.value.clientHeight / 2
-    handler = getModeHandler()
-  }
+        workcanvas.value.width = pageWidth.value * canvasScale.value
+        workcanvas.value.height = pageHeight.value * canvasScale.value
+        workctx.value = workcanvas.value.getContext('2d') ?? undefined
+
+        canvasScrollX.value =
+          canvascontainer.value.clientWidth / 2 - canvas.value.clientWidth / 2
+        canvasScrollY.value =
+          canvascontainer.value.clientHeight / 2 - canvas.value.clientHeight / 2
+        handler = getModeHandler()
+      }
+      if (ctx.value) {
+        for (const line of lines) {
+          drawLine(ctx.value, canvasScale.value, line)
+        }
+      }
+    })
 })
 
 const canvasCss = computed(() => {
@@ -81,7 +146,13 @@ const dialogue_update = (id: string, text: string) => {
   if (!dialogue) return
   dialogue.dialogue = text
 }
-const dialogue_move = (id: string, left: number, top: number, right: number, bottom: number) => {
+const dialogue_move = (
+  id: string,
+  left: number,
+  top: number,
+  right: number,
+  bottom: number
+) => {
   const dialogue = dialogues.value.find(p => p.id == id)
   if (!dialogue) return
   dialogue.left = left
