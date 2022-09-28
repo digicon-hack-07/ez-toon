@@ -132,7 +132,7 @@ const dialogue_handler_pointerup = (e: PointerEvent) => {
 </script>
 
 <template>
-  <div class="dialogue-container" ref="dialogue_container">
+  <div ref="dialogue_container" class="dialogue-container">
     <div
       v-for="dialogue_display in dialogues_display"
       :key="dialogue_display.id"
