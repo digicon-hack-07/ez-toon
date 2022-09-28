@@ -162,7 +162,11 @@ const dialogue_update = (id: string, text: string,
       'Content-Type': 'application/json'
     },
     body: JSON.stringify({
-      // TODO
+      dialogue: text,
+      top: top,
+      bottom: bottom,
+      left: left,
+      right: right
     })
   })
 }

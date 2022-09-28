@@ -78,7 +78,11 @@ export class DialogueToolHandler implements ToolHandlerInterface {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        // TODO: Data
+        dialogue: '',
+        top: dialogue.top,
+        bottom: dialogue.bottom,
+        left: dialogue.left,
+        right: dialogue.right
       })
     })
     .then(res => res.json())
