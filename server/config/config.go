@@ -15,7 +15,7 @@ type Config struct {
 }
 
 func GetConfig() (*Config, error) {
-	viper.SetDefault("MariaDB_Hostname", "mariadb")
+	viper.SetDefault("MariaDB_Hostname", "localhost")
 	viper.SetDefault("MariaDB_Port", 3306)
 	viper.SetDefault("MariaDB_Database", "ez-toon")
 	viper.SetDefault("MariaDB_Username", "root")
