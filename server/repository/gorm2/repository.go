@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 
+	"github.com/digicon-hack-07/ez-toon/server/config"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )
@@ -18,6 +19,16 @@ type Config struct {
 	Username string
 	Password string
 	Database string
+}
+
+func GetGorm2Config(c *config.Config) *Config {
+	return &Config{
+		Hostname: c.MariaDBHostname,
+		Port:     c.MariaDBPort,
+		Database: c.MariaDBDatabase,
+		Username: c.MariaDBUsername,
+		Password: c.MariaDBPassword,
+	}
 }
 
 func NewGorm2Repository(c *Config) (*Repository, error) {

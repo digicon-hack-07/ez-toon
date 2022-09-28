@@ -3,7 +3,6 @@ package config
 import (
 	"fmt"
 
-	"github.com/digicon-hack-07/ez-toon/server/repository/gorm2"
 	"github.com/spf13/viper"
 )
 
@@ -31,14 +30,4 @@ func GetConfig() (*Config, error) {
 	}
 
 	return &c, nil
-}
-
-func ProvideGorm2Config(c *Config) *gorm2.Config {
-	return &gorm2.Config{
-		Hostname: c.MariaDBHostname,
-		Port:     c.MariaDBPort,
-		Database: c.MariaDBDatabase,
-		Username: c.MariaDBUsername,
-		Password: c.MariaDBPassword,
-	}
 }
