@@ -1,5 +1,7 @@
 export type Page = {
     id : string
-    projectID : string
+    project_id : string
     index : number
+    height : number
+    width : number
 }

@@ -54,7 +54,9 @@ const formatDate = (dt: Date) => {
   var y = ('' + dt.getFullYear()).slice(-2)
   var m = dt.getMonth() + 1
   var d = dt.getDate()
-  return y + '/' + m + '/' + d
+  var h = dt.getHours()
+  var min = dt.getMinutes()
+  return y + '/' + m + '/' + d + ' ' + h + ":" + min
 }
 
 onMounted(() => {

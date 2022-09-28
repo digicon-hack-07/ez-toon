@@ -38,10 +38,10 @@ const openPage =  () => {
   router.push(props.url)
 }
 const incrementIndex = () => {
-  emit('right', props.pageNumber)
+  emit('right', props.pageNumber - 1)
 }
 const decrementIndex = () => {
-  emit('left', props.pageNumber)
+  emit('left', props.pageNumber - 1)
 }
 </script>
 

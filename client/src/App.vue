@@ -1,9 +1,6 @@
 <template>
-   <main>
-    <div :class="$style.container">
-      <header :class="$style.header">
-        <router-link to="/">Menu</router-link>
-      </header>
+  <main>
+    <div :class="$style.viewer">
       <router-view />
     </div>
   </main>
@@ -17,14 +14,14 @@
 </script>
 
 <style module>
-.container {
+.viewer {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  max-width: 100%;
+  max-height: 100%;
   margin: auto;
-  text-align: center;
-}
-.header {
-  height:2rem;
-  margin-bottom: 1rem;
-  display: flex;
-  justify-content: center;
 }
 </style>

@@ -11,13 +11,14 @@
 <script lang="ts" setup>
 import axios from 'axios';
 import { useRouter } from 'vue-router'
+import type { Page } from '../../lib/page';
 import type { Project } from '../../lib/project';
 import Thumbnail from './Thumbnail.vue'
 const router = useRouter()
 
 const createAndOpenNewProject = async () => {
   const now = new Date(Date.now()).toISOString()
-  const data : Project = {
+  const projectData : Project = {
     id: "00000000000000000000000000",
     name: "untitled",
     thumbnail: "/vite.svg",
@@ -26,9 +27,21 @@ const createAndOpenNewProject = async () => {
     updated_at: now
   }
 
-  const res = await axios.post('/api/projects', data)
+  const pageData : Page = {
+    project_id: "",
+    id: "00000000000000000000000000",
+    index: 1,
+    height: 600,
+    width: 400
+  }
+
+  const res = await axios.post('/api/projects', projectData)
   if(res.status === 201){
-    router.push("/project/" + res.data.id)
+    pageData.project_id = res.data.id
+    const pageRes = await axios.post('/api/pages', pageData)
+    if(pageRes.status === 201){
+      router.push("/page/" + pageRes.data.id)
+    }
   }
 }
 </script>
