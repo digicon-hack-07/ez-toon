@@ -1,6 +1,6 @@
 <template>
   <header :class="$style.header">
-    <router-link to="/">Menu</router-link>|
+    <!-- <router-link to="/">Menu</router-link>| -->
     <router-link :to="'/project/' + projectID">Project</router-link>
   </header>
   <div :class="$style.editor">
