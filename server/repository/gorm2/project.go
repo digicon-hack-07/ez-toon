@@ -47,7 +47,7 @@ func (repo *Repository) CreateProject(ctx context.Context, id ulid.ULID, name st
 	return &project, nil
 }
 
-func (repo *Repository) GetProject(ctx context.Context, id string) (*repository.Project, error) {
+func (repo *Repository) SelectProject(ctx context.Context, id ulid.ULID) (*repository.Project, error) {
 	tx, err := repo.getTX(ctx)
 	if err != nil {
 		return nil, err
@@ -62,7 +62,7 @@ func (repo *Repository) GetProject(ctx context.Context, id string) (*repository.
 	return &project, nil
 }
 
-func (repo *Repository) UpdateProject(ctx context.Context, id string, name string) (*repository.Project, error) {
+func (repo *Repository) UpdateProject(ctx context.Context, id ulid.ULID, name string) (*repository.Project, error) {
 	tx, err := repo.getTX(ctx)
 	if err != nil {
 		return nil, err
@@ -76,10 +76,15 @@ func (repo *Repository) UpdateProject(ctx context.Context, id string, name strin
 		return nil, err
 	}
 
+	err = tx.Where("id = ?", id).First(&project).Error
+	if err != nil {
+		return nil, err
+	}
+
 	return &project, nil
 }
 
-func (repo *Repository) DeleteProject(ctx context.Context, id string) error {
+func (repo *Repository) DeleteProject(ctx context.Context, id ulid.ULID) error {
 	tx, err := repo.getTX(ctx)
 	if err != nil {
 		return err
