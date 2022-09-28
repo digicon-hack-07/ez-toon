@@ -15,6 +15,7 @@ func (repo *Repository) SelectProjects(ctx context.Context) ([]*repository.Proje
 	if err != nil {
 		return nil, err
 	}
+	defer tx.Rollback()
 
 	var projects []*repository.Project
 	err = tx.Order("updated_at desc").Find(&projects).Error
@@ -22,6 +23,7 @@ func (repo *Repository) SelectProjects(ctx context.Context) ([]*repository.Proje
 		return nil, err
 	}
 
+	tx.Commit()
 	return projects, nil
 }
 
@@ -30,6 +32,7 @@ func (repo *Repository) InsertProject(ctx context.Context, id ulid.ULID, name st
 	if err != nil {
 		return nil, err
 	}
+	defer tx.Rollback()
 
 	project := repository.Project{
 		ID:        id,
@@ -54,6 +57,7 @@ func (repo *Repository) InsertProject(ctx context.Context, id ulid.ULID, name st
 	project.CreatedAt = time.Now()
 	project.UpdatedAt = time.Now()
 
+	tx.Commit()
 	return &project, nil
 }
 
@@ -62,6 +66,7 @@ func (repo *Repository) SelectProject(ctx context.Context, id ulid.ULID) (*repos
 	if err != nil {
 		return nil, err
 	}
+	defer tx.Rollback()
 
 	var project repository.Project
 	err = tx.Where("id = ?", id).First(&project).Error
@@ -72,6 +77,7 @@ func (repo *Repository) SelectProject(ctx context.Context, id ulid.ULID) (*repos
 		return nil, err
 	}
 
+	tx.Commit()
 	return &project, nil
 }
 
@@ -80,6 +86,7 @@ func (repo *Repository) UpdateProject(ctx context.Context, id ulid.ULID, name st
 	if err != nil {
 		return nil, err
 	}
+	defer tx.Rollback()
 
 	err = tx.Model(&repository.Project{}).Where("id = ?", id).Updates(repository.Project{
 		Name: name,
@@ -97,6 +104,7 @@ func (repo *Repository) UpdateProject(ctx context.Context, id ulid.ULID, name st
 		return nil, err
 	}
 
+	tx.Commit()
 	return &project, nil
 }
 
@@ -114,5 +122,6 @@ func (repo *Repository) DeleteProject(ctx context.Context, id ulid.ULID) error {
 		return err
 	}
 
+	tx.Commit()
 	return nil
 }

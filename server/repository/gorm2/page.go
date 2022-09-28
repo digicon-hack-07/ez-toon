@@ -20,6 +20,7 @@ func (repo *Repository) SelectProjectPageNum(ctx context.Context, projectID ulid
 		return 0, err
 	}
 
+	tx.Commit()
 	return int(count), nil
 }
 
@@ -28,6 +29,7 @@ func (repo *Repository) SelectProjectPages(ctx context.Context, projectID ulid.U
 	if err != nil {
 		return nil, err
 	}
+	defer tx.Rollback()
 
 	var pages []*repository.Page
 	err = tx.Where("project_id = ?", projectID).Order("`index` ASC").Find(&pages).Error
@@ -35,6 +37,7 @@ func (repo *Repository) SelectProjectPages(ctx context.Context, projectID ulid.U
 		return nil, err
 	}
 
+	tx.Commit()
 	return pages, nil
 }
 
@@ -43,6 +46,7 @@ func (repo *Repository) InsertPage(ctx context.Context, id ulid.ULID, projectID 
 	if err != nil {
 		return nil, err
 	}
+	defer tx.Rollback()
 
 	lastIndex := 0
 	err = tx.Table("pages").Select("`index`").Where("project_id = ?", projectID).Order("`index` DESC").Limit(1).Scan(&lastIndex).Error
@@ -63,6 +67,7 @@ func (repo *Repository) InsertPage(ctx context.Context, id ulid.ULID, projectID 
 		return nil, err
 	}
 
+	tx.Commit()
 	return &page, nil
 }
 
@@ -71,6 +76,7 @@ func (repo *Repository) SelectPage(ctx context.Context, id ulid.ULID) (*reposito
 	if err != nil {
 		return nil, err
 	}
+	defer tx.Rollback()
 
 	var page repository.Page
 	err = tx.Where("id = ?", id).First(&page).Error
@@ -78,6 +84,7 @@ func (repo *Repository) SelectPage(ctx context.Context, id ulid.ULID) (*reposito
 		return nil, err
 	}
 
+	tx.Commit()
 	return &page, nil
 }
 
@@ -86,6 +93,7 @@ func (repo *Repository) PatchIndex(ctx context.Context, id ulid.ULID, operation 
 	if err != nil {
 		return nil, err
 	}
+	defer tx.Rollback()
 
 	var page repository.Page
 	err = tx.Where("id = ?", id).First(&page).Error
@@ -118,5 +126,6 @@ func (repo *Repository) PatchIndex(ctx context.Context, id ulid.ULID, operation 
 		return nil, errors.New("invalid operation")
 	}
 
+	tx.Commit()
 	return &page, nil
 }
