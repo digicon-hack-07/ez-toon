@@ -19,7 +19,7 @@ const workctx = ref<CanvasRenderingContext2D>()
 const ctx = ref<CanvasRenderingContext2D>()
 
 interface Props {
-  pageID: string
+  pageId: string
 }
 
 const props = defineProps<Props>()
@@ -129,7 +129,7 @@ function getModeHandler(): ToolHandlerInterface {
       canvas.value,
       canvasScale,
       dialogues,
-      props.pageID
+      props.pageId
     )
   case 'pen':
     if (!canvas.value) throw new Error('canvas not loaded')
