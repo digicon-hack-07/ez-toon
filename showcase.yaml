@@ -1,0 +1,10 @@
+type: runtime
+use_mariadb: true
+startup: make init && make build
+entrypoint: ./ez-toon
+http_proxy: 8080
+https: hard
+cname:
+  - ez-toon.trap.games
+branch:
+  main: null
