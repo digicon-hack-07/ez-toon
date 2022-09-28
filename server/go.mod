@@ -3,12 +3,13 @@ module github.com/digicon-hack-07/ez-toon/server
 go 1.19
 
 require (
-	github.com/gorilla/sessions v1.2.1
+	github.com/google/wire v0.5.0
 	github.com/labstack/echo-contrib v0.13.0
 	github.com/labstack/echo/v4 v4.9.0
 	github.com/labstack/gommon v0.3.1
 	github.com/oklog/ulid/v2 v2.1.0
 	github.com/spf13/viper v1.13.0
+	github.com/srinathgs/mysqlstore v0.0.0-20200417050510-9cbb9420fc4c
 	gorm.io/driver/mysql v1.3.6
 	gorm.io/gorm v1.23.10
 )
@@ -19,6 +20,7 @@ require (
 	github.com/golang-jwt/jwt v3.2.2+incompatible // indirect
 	github.com/gorilla/context v1.1.1 // indirect
 	github.com/gorilla/securecookie v1.1.1 // indirect
+	github.com/gorilla/sessions v1.2.1 // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect
 	github.com/jinzhu/inflection v1.0.0 // indirect
 	github.com/jinzhu/now v1.1.5 // indirect
