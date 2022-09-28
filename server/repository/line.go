@@ -23,3 +23,8 @@ type Line struct {
 type LinePageRepository interface {
 	SelectLines(ctx context.Context, pageID ulid.ULID) ([]*Line, error)
 }
+
+type LineRepository interface {
+	InsertLine(ctx context.Context, id ulid.ULID, pageID ulid.ULID, penSize int, points []Point) (*Line, error)
+	DeleteLine(ctx context.Context, id ulid.ULID) error
+}

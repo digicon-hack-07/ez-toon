@@ -1,6 +1,9 @@
 package content
 
-import "github.com/oklog/ulid/v2"
+import (
+	"github.com/digicon-hack-07/ez-toon/server/repository"
+	"github.com/oklog/ulid/v2"
+)
 
 type Point struct {
 	X        float64 `json:"x"`
@@ -25,10 +28,14 @@ type Dialogue struct {
 	Right    float64   `json:"right"`
 }
 
-type LineHandler struct{}
+type LineHandler struct {
+	repo repository.LineRepository
+}
 
-func NewLineHandler() *LineHandler {
-	return &LineHandler{}
+func NewLineHandler(repo repository.LineRepository) *LineHandler {
+	return &LineHandler{
+		repo: repo,
+	}
 }
 
 type DialogueHandler struct{}
