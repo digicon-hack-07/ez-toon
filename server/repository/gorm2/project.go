@@ -2,9 +2,11 @@ package gorm2
 
 import (
 	"context"
+	"errors"
 
 	"github.com/digicon-hack-07/ez-toon/server/repository"
 	"github.com/oklog/ulid/v2"
+	"gorm.io/gorm"
 )
 
 func (repo *Repository) SelectProjects(ctx context.Context) ([]*repository.Project, error) {
@@ -22,7 +24,7 @@ func (repo *Repository) SelectProjects(ctx context.Context) ([]*repository.Proje
 	return projects, nil
 }
 
-func (repo *Repository)InsertProject(ctx context.Context, id ulid.ULID, name string, thumbnail string) (*repository.Project, error) {
+func (repo *Repository) InsertProject(ctx context.Context, id ulid.ULID, name string, thumbnail string) (*repository.Project, error) {
 	tx, err := repo.getTX(ctx)
 	if err != nil {
 		return nil, err
@@ -56,6 +58,9 @@ func (repo *Repository) SelectProject(ctx context.Context, id ulid.ULID) (*repos
 	var project repository.Project
 	err = tx.Where("id = ?", id).First(&project).Error
 	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, repository.ErrNotFound
+		}
 		return nil, err
 	}
 
@@ -72,6 +77,9 @@ func (repo *Repository) UpdateProject(ctx context.Context, id ulid.ULID, name st
 		Name: name,
 	}).Error
 	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, repository.ErrNotFound
+		}
 		return nil, err
 	}
 
@@ -92,6 +100,9 @@ func (repo *Repository) DeleteProject(ctx context.Context, id ulid.ULID) error {
 
 	err = tx.Where("id = ?", id).Delete(&repository.Project{}).Error
 	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return repository.ErrNotFound
+		}
 		return err
 	}
 
