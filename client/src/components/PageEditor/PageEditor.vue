@@ -148,7 +148,8 @@ const dialogue_update = (id: string, text: string,
   left: number,
   top: number,
   right: number,
-  bottom: number) => {
+  bottom: number,
+  unsettle: boolean) => {
   const dialogue = dialogues.value.find(p => p.id == id)
   if (!dialogue) return
   dialogue.dialogue = text
@@ -156,6 +157,7 @@ const dialogue_update = (id: string, text: string,
   dialogue.right = right
   dialogue.top = top
   dialogue.bottom = bottom
+  if(!unsettle)
   fetch(`/api/dialogues/${id}`, {
     method: 'PATCH',
     headers: {
