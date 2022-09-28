@@ -2,6 +2,9 @@ package repository
 
 import (
 	"context"
+	"database/sql/driver"
+	"encoding/json"
+	"errors"
 
 	"github.com/oklog/ulid/v2"
 )
@@ -10,6 +13,24 @@ type Point struct {
 	X        float64
 	Y        float64
 	Pressure float64
+}
+
+func (p *Point) Scan(value interface{}) error {
+	b, ok := value.(string)
+	if !ok {
+		return errors.New("failed to scan Point")
+	}
+
+	return json.Unmarshal([]byte(b), p)
+}
+
+func (p Point) Value() (driver.Value, error) {
+	b, err := json.Marshal(p)
+	if err != nil {
+		return nil, err
+	}
+
+	return string(b), nil
 }
 
 type Line struct {
