@@ -91,10 +91,10 @@ func (h *PageHandler) GetPage(c echo.Context) error {
 			{
 				ID:       ulid.Make(),
 				Dialogue: "あいうえおかきくけこ",
-				Top:      150,
-				Bottom:   50,
-				Left:     250,
-				Right:    100,
+				Top:      50,
+				Bottom:   150,
+				Left:     100,
+				Right:    250,
 			},
 		},
 	})
