@@ -40,8 +40,8 @@ func (p Points) Value() (driver.Value, error) {
 }
 
 type Line struct {
-	ID      ulid.ULID `gorm:"type:binary(16);not null;primaryKey"`
-	PageID  ulid.ULID `gorm:"type:binary(16);not null"`
+	ID      ulid.ULID `gorm:"type:char(26);not null;primaryKey"`
+	PageID  ulid.ULID `gorm:"type:char(26);not null"`
 	PenSize int       `gorm:"type:int;not null"`
 	Points  Points    `gorm:"type:text;not null"`
 	Page    Page      `gorm:"foreignKey:PageID;references:ID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE"`
