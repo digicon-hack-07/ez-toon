@@ -10,13 +10,15 @@ export class PenToolHandler implements ToolHandlerInterface {
   workctx: CanvasRenderingContext2D
   lines: Line[]
   canvasScale: Ref<number>
+  pageID: string
 
   constructor(
     canvas: HTMLElement,
     canvasScale: Ref<number>,
     ctx: CanvasRenderingContext2D,
     workctx: CanvasRenderingContext2D,
-    lines: Line[]
+    lines: Line[],
+    pageID: string
   ) {
     this.canvas = canvas
     this.canvasScale = canvasScale
@@ -24,6 +26,7 @@ export class PenToolHandler implements ToolHandlerInterface {
     this.workctx = workctx
     this.working_lines = new Map<number, Line>()
     this.lines = lines
+    this.pageID = pageID
   }
   pointerdown(e: PointerEvent): void {
     const bx = this.canvas.getClientRects().item(0)?.left
@@ -32,7 +35,7 @@ export class PenToolHandler implements ToolHandlerInterface {
     this.working_lines.set(e.pointerId, {
       brushSize: 5,
       color: '#606060',
-      id: '', // TODO: generate ULID
+      id: `tmp${e.pointerId}`,
       pageID: '', // TODO: pageID
       path: [
         {
@@ -68,7 +71,7 @@ export class PenToolHandler implements ToolHandlerInterface {
   pointerup(e: PointerEvent): void {
     const line = this.working_lines.get(e.pointerId)
     if (!line) return
-    if (line.path.length > 2){
+    if (line.path.length > 2) {
       this.workctx.clearRect(
         0,
         0,
@@ -76,6 +79,27 @@ export class PenToolHandler implements ToolHandlerInterface {
         this.workctx.canvas.height
       )
       drawLine(this.ctx, this.canvasScale.value, line)
+      fetch(`/api/lines`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          page_id: this.pageID,
+          penSize: line.brushSize,
+          points: line.path.map(point => {
+            return {
+              x: point.x,
+              y: point.y,
+              pressure: point.force
+            }
+          })
+        })
+      })
+        .then(res => res.json())
+        .then(res => {
+          line.id = res.id
+        })
       this.lines.push(line)
     }
     this.working_lines.delete(e.pointerId)

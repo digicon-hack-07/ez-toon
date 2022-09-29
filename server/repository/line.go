@@ -10,9 +10,9 @@ import (
 )
 
 type Point struct {
-	X        float64
-	Y        float64
-	Pressure float64
+	X        float64 `json:"x"`
+	Y        float64 `json:"y"`
+	Pressure float64 `json:"pressure"`
 }
 
 type Points []Point

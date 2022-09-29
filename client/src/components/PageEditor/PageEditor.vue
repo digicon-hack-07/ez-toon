@@ -23,6 +23,7 @@ interface Props {
 }
 
 const props = defineProps<Props>()
+const loaded = ref(false)
 
 const pageWidth = ref(707)
 const pageHeight = ref(1000)
@@ -34,22 +35,88 @@ const canvasScale = ref<number>(0.5)
 type EditMode = 'move' | 'pen' | 'dialogue' | 'eraser'
 const mode = ref<EditMode>('pen')
 
+type GetPageData = {
+  width: number
+  height: number
+  dialogues: {
+    id: string
+    dialogue: string
+    left: number
+    top: number
+    right: number
+    bottom: number
+  }[]
+  lines: {
+    id: string
+    penSize: number
+    points: {
+      x: number
+      y: number
+      pressure: number
+    }[]
+  }[]
+}
+
 onMounted(() => {
-  if (canvas.value && workcanvas.value && canvascontainer.value) {
-    canvas.value.width = pageWidth.value * canvasScale.value
-    canvas.value.height = pageHeight.value * canvasScale.value
-    ctx.value = canvas.value.getContext('2d') ?? undefined
+  fetch(`/api/pages/${props.pageId}`)
+    .then(res => res.json())
+    .then((res: GetPageData) => {
+      pageWidth.value = res.width
+      pageHeight.value = res.height
+      dialogues.value = res.dialogues.map(dialogue => {
+        return {
+          pageID: props.pageId,
+          id: dialogue.id,
+          left: dialogue.left,
+          top: dialogue.top,
+          right: dialogue.right,
+          bottom: dialogue.bottom,
+          dialogue: dialogue.dialogue,
+          color: '#000000',
+          fontName: '',
+          fontSize: 24
+        }
+      })
+      lines.push(
+        ...res.lines.map(line => {
+          return {
+            pageID: props.pageId,
+            id: line.id,
+            color: '#606060',
+            brushSize: line.penSize,
+            path: line.points.map(point => {
+              return {
+                x: point.x,
+                y: point.y,
+                force: point.pressure
+              }
+            })
+          }
+        })
+      )
 
-    workcanvas.value.width = pageWidth.value * canvasScale.value
-    workcanvas.value.height = pageHeight.value * canvasScale.value
-    workctx.value = workcanvas.value.getContext('2d') ?? undefined
+      if (canvas.value && workcanvas.value && canvascontainer.value) {
+        canvas.value.width = pageWidth.value * canvasScale.value
+        canvas.value.height = pageHeight.value * canvasScale.value
+        ctx.value = canvas.value.getContext('2d') ?? undefined
 
-    canvasScrollX.value =
-      canvascontainer.value.clientWidth / 2 - canvas.value.clientWidth / 2
-    canvasScrollY.value =
-      canvascontainer.value.clientHeight / 2 - canvas.value.clientHeight / 2
-    handler = getModeHandler()
-  }
+        workcanvas.value.width = pageWidth.value * canvasScale.value
+        workcanvas.value.height = pageHeight.value * canvasScale.value
+        workctx.value = workcanvas.value.getContext('2d') ?? undefined
+
+        canvasScrollX.value =
+          canvascontainer.value.clientWidth / 2 - pageWidth.value * canvasScale.value / 2
+        canvasScrollY.value =
+          canvascontainer.value.clientHeight / 2 - pageHeight.value * canvasScale.value / 2
+        handler = getModeHandler()
+      }
+      if (ctx.value) {
+        for (const line of lines) {
+          drawLine(ctx.value, canvasScale.value, line)
+        }
+      }
+      loaded.value = true
+    })
 })
 
 const canvasCss = computed(() => {
@@ -57,7 +124,8 @@ const canvasCss = computed(() => {
     left: `${canvasScrollX.value}px`,
     top: `${canvasScrollY.value}px`,
     height: `${Math.floor(pageHeight.value * canvasScale.value)}px`,
-    width: `${Math.floor(pageWidth.value * canvasScale.value)}px`
+    width: `${Math.floor(pageWidth.value * canvasScale.value)}px`,
+    display: `${loaded.value ? 'inherit' : 'none'}`
   }
 })
 
@@ -76,18 +144,36 @@ watch(canvasScale, () => {
 const lines: Line[] = []
 const dialogues = ref<Dialogue[]>([])
 const dialogue_selected = ref<string | null>(null)
-const dialogue_update = (id: string, text: string) => {
+const dialogue_update = (
+  id: string,
+  text: string,
+  left: number,
+  top: number,
+  right: number,
+  bottom: number,
+  unsettle: boolean
+) => {
   const dialogue = dialogues.value.find(p => p.id == id)
   if (!dialogue) return
   dialogue.dialogue = text
-}
-const dialogue_move = (id: string, left: number, top: number, right: number, bottom: number) => {
-  const dialogue = dialogues.value.find(p => p.id == id)
-  if (!dialogue) return
   dialogue.left = left
   dialogue.right = right
   dialogue.top = top
   dialogue.bottom = bottom
+  if (!unsettle)
+    fetch(`/api/dialogues/${id}`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        dialogue: text,
+        top: top,
+        bottom: bottom,
+        left: left,
+        right: right
+      })
+    })
 }
 const dialogue_select = (id: string) => {
   dialogue_selected.value = id
@@ -95,6 +181,9 @@ const dialogue_select = (id: string) => {
 const dialogue_delete = () => {
   dialogues.value = dialogues.value.filter(p => {
     return p.id != dialogue_selected.value
+  })
+  fetch(`/api/dialogues/${dialogue_selected.value}`, {
+    method: 'DELETE'
   })
 }
 
@@ -140,7 +229,8 @@ function getModeHandler(): ToolHandlerInterface {
       canvasScale,
       ctx.value,
       workctx.value,
-      lines
+      lines,
+      props.pageId
     )
   case 'eraser':
     if (!canvas.value) throw new Error('canvas not loaded')
@@ -171,6 +261,7 @@ const changeMode = (new_mode: EditMode) => {
 <template>
   <div class="pageeditor" :data-editmode="mode">
     <dialogue-container
+      v-if="loaded"
       :dialogues="dialogues"
       :canvas-scroll-x="canvasScrollX"
       :canvas-scroll-y="canvasScrollY"
@@ -178,7 +269,6 @@ const changeMode = (new_mode: EditMode) => {
       :is-active="mode == 'dialogue'"
       @select-dialogue="dialogue_select"
       @update-dialogue="dialogue_update"
-      @move-dialogue="dialogue_move"
     ></dialogue-container>
     <div ref="canvascontainer" class="canvas-container">
       <canvas ref="canvas" class="store-canvas" :style="canvasCss"></canvas>
