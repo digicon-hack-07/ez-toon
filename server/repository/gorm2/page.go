@@ -110,7 +110,7 @@ func (repo *Repository) UpdateIndex(ctx context.Context, id ulid.ULID, operation
 
 	switch operation {
 	case "inc":
-		err = tx.Model(&page).Update("index", page.Index+1).Error
+		err = tx.Model(&repository.Page{}).Where("id = ?", id).Update("index", page.Index+1).Error
 		if err != nil {
 			return nil, err
 		}
@@ -122,7 +122,7 @@ func (repo *Repository) UpdateIndex(ctx context.Context, id ulid.ULID, operation
 		}
 
 	case "dec":
-		err = tx.Model(&page).Update("index", page.Index-1).Error
+		err = tx.Model(&repository.Page{}).Where("id = ?", id).Update("index", page.Index-1).Error
 		if err != nil {
 			return nil, err
 		}
