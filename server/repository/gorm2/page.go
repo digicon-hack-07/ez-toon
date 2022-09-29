@@ -5,7 +5,7 @@ import (
 	"errors"
 
 	"github.com/digicon-hack-07/ez-toon/server/repository"
-	"github.com/oklog/ulid/v2"
+	"github.com/digicon-hack-07/ez-toon/server/utils/ulid"
 	"gorm.io/gorm"
 )
 

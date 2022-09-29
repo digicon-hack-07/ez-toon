@@ -3,12 +3,12 @@ package repository
 import (
 	"context"
 
-	"github.com/oklog/ulid/v2"
+	"github.com/digicon-hack-07/ez-toon/server/utils/ulid"
 )
 
 type Dialogue struct {
-	ID       ulid.ULID `gorm:"type:binary(16);not null;primaryKey"`
-	PageID   ulid.ULID `gorm:"type:binary(16);not null"`
+	ID       ulid.ULID `gorm:"type:char(26);not null;primaryKey"`
+	PageID   ulid.ULID `gorm:"type:char(26);not null"`
 	Dialogue string    `gorm:"type:text;not null"`
 	Top      float64   `gorm:"type:float;not null"`
 	Bottom   float64   `gorm:"type:float;not null"`
