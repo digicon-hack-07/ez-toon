@@ -71,7 +71,7 @@ export class PenToolHandler implements ToolHandlerInterface {
   pointerup(e: PointerEvent): void {
     const line = this.working_lines.get(e.pointerId)
     if (!line) return
-    if (line.path.length > 2){
+    if (line.path.length > 2) {
       this.workctx.clearRect(
         0,
         0,
@@ -96,10 +96,10 @@ export class PenToolHandler implements ToolHandlerInterface {
           })
         })
       })
-      .then(res => res.json())
-      .then(res => {
-        line.id = res.id
-      })
+        .then(res => res.json())
+        .then(res => {
+          line.id = res.id
+        })
       this.lines.push(line)
     }
     this.working_lines.delete(e.pointerId)
