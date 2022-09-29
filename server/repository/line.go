@@ -6,7 +6,7 @@ import (
 	"encoding/json"
 	"errors"
 
-	"github.com/oklog/ulid/v2"
+	"github.com/digicon-hack-07/ez-toon/server/utils/ulid"
 )
 
 type Point struct {

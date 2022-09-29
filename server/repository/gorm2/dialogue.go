@@ -5,7 +5,7 @@ import (
 	"errors"
 
 	"github.com/digicon-hack-07/ez-toon/server/repository"
-	"github.com/oklog/ulid/v2"
+	"github.com/digicon-hack-07/ez-toon/server/utils/ulid"
 	"gorm.io/gorm"
 )
 
@@ -77,10 +77,10 @@ func (repo *Repository) UpdateDialogue(
 
 	err = tx.Model(&repository.Dialogue{}).Where("id = ?", id).Updates(repository.Dialogue{
 		Dialogue: dialogue,
-		Top: top,
-		Bottom: bottom,
-		Left: left,
-		Right: right,
+		Top:      top,
+		Bottom:   bottom,
+		Left:     left,
+		Right:    right,
 	}).Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {

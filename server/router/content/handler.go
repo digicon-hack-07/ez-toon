@@ -5,8 +5,8 @@ import (
 	"net/http"
 
 	"github.com/digicon-hack-07/ez-toon/server/repository"
+	"github.com/digicon-hack-07/ez-toon/server/utils/ulid"
 	"github.com/labstack/echo/v4"
-	"github.com/oklog/ulid/v2"
 )
 
 type PostLineRequest struct {

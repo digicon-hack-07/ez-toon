@@ -4,7 +4,7 @@ import (
 	"context"
 	"time"
 
-	"github.com/oklog/ulid/v2"
+	"github.com/digicon-hack-07/ez-toon/server/utils/ulid"
 )
 
 type Project struct {
