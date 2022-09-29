@@ -13,9 +13,11 @@ build-server:
 
 .PHONY: build
 build: build-client build-server
+	rm -rf public
 	cp -r client/dist public
 
 .PHONY: run
 run: build-client
+	rm -rf server/public
 	cp -r client/dist server/public
 	cd server && go run *.go
