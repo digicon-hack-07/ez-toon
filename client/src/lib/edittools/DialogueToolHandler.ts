@@ -78,6 +78,7 @@ export class DialogueToolHandler implements ToolHandlerInterface {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
+        page_id: this.pageID,
         dialogue: '',
         top: dialogue.top,
         bottom: dialogue.bottom,
