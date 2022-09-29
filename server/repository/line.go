@@ -17,13 +17,17 @@ type Point struct {
 
 type Points []Point
 
-func (p *Points) Scan(value interface{}) error {
-	b, ok := value.(string)
-	if !ok {
-		return errors.New("failed to scan Point")
+func (p Points) Scan(value interface{}) error {
+	switch v := value.(type) {
+	case nil:
+		return nil
+	case string:
+		return json.Unmarshal([]byte(v), &p)
+	case []byte:
+		return json.Unmarshal(v, &p)
 	}
 
-	return json.Unmarshal([]byte(b), p)
+	return errors.New("invalid type")
 }
 
 func (p Points) Value() (driver.Value, error) {
