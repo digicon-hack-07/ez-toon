@@ -105,9 +105,9 @@ onMounted(() => {
         workctx.value = workcanvas.value.getContext('2d') ?? undefined
 
         canvasScrollX.value =
-          canvascontainer.value.clientWidth / 2 - canvas.value.clientWidth / 2
+          canvascontainer.value.clientWidth / 2 - pageWidth.value * canvasScale.value / 2
         canvasScrollY.value =
-          canvascontainer.value.clientHeight / 2 - canvas.value.clientHeight / 2
+          canvascontainer.value.clientHeight / 2 - pageHeight.value * canvasScale.value / 2
         handler = getModeHandler()
       }
       if (ctx.value) {
