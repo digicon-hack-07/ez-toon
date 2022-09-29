@@ -26,7 +26,7 @@ func (repo *Repository) SelectLines(ctx context.Context, pageID ulid.ULID) ([]*r
 	return lines, nil
 }
 
-func (repo *Repository) InsertLine(ctx context.Context, id ulid.ULID, pageID ulid.ULID, penSize int, points []repository.Point) (*repository.Line, error) {
+func (repo *Repository) InsertLine(ctx context.Context, id ulid.ULID, pageID ulid.ULID, penSize int, points repository.Points) (*repository.Line, error) {
 	tx, err := repo.getTX(ctx)
 	if err != nil {
 		return nil, err

@@ -52,6 +52,6 @@ type LinePageRepository interface {
 }
 
 type LineRepository interface {
-	InsertLine(ctx context.Context, id ulid.ULID, pageID ulid.ULID, penSize int, points []Point) (*Line, error)
+	InsertLine(ctx context.Context, id ulid.ULID, pageID ulid.ULID, penSize int, points Points) (*Line, error)
 	DeleteLine(ctx context.Context, id ulid.ULID) error
 }
