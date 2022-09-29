@@ -77,6 +77,10 @@ func (repo *Repository) UpdateDialogue(
 
 	err = tx.Model(&repository.Dialogue{}).Where("id = ?", id).Updates(repository.Dialogue{
 		Dialogue: dialogue,
+		Top: top,
+		Bottom: bottom,
+		Left: left,
+		Right: right,
 	}).Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
