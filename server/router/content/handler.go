@@ -23,7 +23,7 @@ func (h *LineHandler) PostLine(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, err)
 	}
 
-	points := make(repository.Points, len(req.Points))
+	points := make(repository.Points, 0, len(req.Points))
 	for _, p := range req.Points {
 		points = append(points, repository.Point{
 			X:        p.X,
