@@ -226,7 +226,8 @@ function getModeHandler(): ToolHandlerInterface {
       canvasScale,
       ctx.value,
       workctx.value,
-      lines
+      lines,
+      props.pageId
     )
   case 'eraser':
     if (!canvas.value) throw new Error('canvas not loaded')

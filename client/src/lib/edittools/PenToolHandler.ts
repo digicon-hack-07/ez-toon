@@ -10,13 +10,15 @@ export class PenToolHandler implements ToolHandlerInterface {
   workctx: CanvasRenderingContext2D
   lines: Line[]
   canvasScale: Ref<number>
+  pageID: string
 
   constructor(
     canvas: HTMLElement,
     canvasScale: Ref<number>,
     ctx: CanvasRenderingContext2D,
     workctx: CanvasRenderingContext2D,
-    lines: Line[]
+    lines: Line[],
+    pageID: string
   ) {
     this.canvas = canvas
     this.canvasScale = canvasScale
@@ -24,6 +26,7 @@ export class PenToolHandler implements ToolHandlerInterface {
     this.workctx = workctx
     this.working_lines = new Map<number, Line>()
     this.lines = lines
+    this.pageID = pageID
   }
   pointerdown(e: PointerEvent): void {
     const bx = this.canvas.getClientRects().item(0)?.left
@@ -82,7 +85,15 @@ export class PenToolHandler implements ToolHandlerInterface {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          // TODO
+          page_id: this.pageID,
+          penSize: line.brushSize,
+          points: line.path.map(point => {
+            return {
+              x: point.x,
+              y: point.y,
+              pressure: point.force
+            }
+          })
         })
       })
       .then(res => res.json())
