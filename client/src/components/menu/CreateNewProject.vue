@@ -21,10 +21,9 @@ const createAndOpenNewProject = async () => {
     name: "untitled"
   }
 
-  const pageData : Page = {
+  const pageData = {
     project_id: "",
     id: "00000000000000000000000000",
-    index: 1,
     height: 1000,
     width: 707
   }
