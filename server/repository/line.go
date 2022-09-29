@@ -17,14 +17,14 @@ type Point struct {
 
 type Points []Point
 
-func (p Points) Scan(value interface{}) error {
+func (p *Points) Scan(value interface{}) error {
 	switch v := value.(type) {
 	case nil:
 		return nil
 	case string:
-		return json.Unmarshal([]byte(v), &p)
+		return json.Unmarshal([]byte(v), p)
 	case []byte:
-		return json.Unmarshal(v, &p)
+		return json.Unmarshal(v, p)
 	}
 
 	return errors.New("invalid type")
