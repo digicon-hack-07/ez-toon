@@ -1,23 +1,30 @@
 package router
 
 import (
+	"database/sql"
 	"net/http"
 
 	"github.com/digicon-hack-07/ez-toon/server/router/content"
 	"github.com/digicon-hack-07/ez-toon/server/router/page"
 	"github.com/digicon-hack-07/ez-toon/server/router/project"
-	"github.com/gorilla/sessions"
 	"github.com/labstack/echo-contrib/session"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/labstack/gommon/log"
+	"github.com/srinathgs/mysqlstore"
 )
 
 type Router struct {
 	e *echo.Echo
 }
 
-func NewRouter() *Router {
+func NewRouter(
+	db *sql.DB,
+	prj *project.ProjectHandler,
+	page *page.PageHandler,
+	line *content.LineHandler,
+	dial *content.DialogueHandler,
+) (*Router, error) {
 	e := echo.New()
 	e.Debug = true
 	e.Logger.SetLevel(log.DEBUG)
@@ -26,12 +33,11 @@ func NewRouter() *Router {
 		Format: "${time_rfc3339} method = ${method} | uri = ${uri} | status = ${status} ${error}\n",
 	}))
 
-	e.Use(session.Middleware(sessions.NewCookieStore([]byte("secret"))))
-
-	prj := project.NewProjectHandler()
-	page := page.NewPageHandler()
-	line := content.NewLineHandler()
-	dial := content.NewDialogueHandler()
+	store, err := mysqlstore.NewMySQLStoreFromConnection(db, "sessions", "/", 60*60*24*14, []byte("secret-key"))
+	if err != nil {
+		return nil, err
+	}
+	e.Use(session.Middleware(store))
 
 	api := e.Group("/api")
 	{
@@ -71,7 +77,7 @@ func NewRouter() *Router {
 
 	e.Static("/", "public")
 
-	return &Router{e: e}
+	return &Router{e: e}, nil
 }
 
 func (r *Router) Start() {

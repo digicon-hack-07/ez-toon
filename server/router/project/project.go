@@ -3,36 +3,43 @@ package project
 import (
 	"time"
 
-	"github.com/oklog/ulid/v2"
+	"github.com/digicon-hack-07/ez-toon/server/repository"
+	"github.com/digicon-hack-07/ez-toon/server/utils/ulid"
 )
 
 type Project struct {
-	ID         ulid.ULID `json:"id,omitempty"`
-	Name       string    `json:"name,omitempty"`
-	TotalPages int       `json:"pages,omitempty"`
-	Thumbnail  string    `json:"thumbnail,omitempty"`
-	CreatedAt  time.Time `json:"created_at,omitempty"`
-	UpdatedAt  time.Time `json:"updated_at,omitempty"`
+	ID         ulid.ULID `json:"id"`
+	Name       string    `json:"name"`
+	TotalPages int       `json:"pages"`
+	Thumbnail  string    `json:"thumbnail"`
+	CreatedAt  time.Time `json:"created_at"`
+	UpdatedAt  time.Time `json:"updated_at"`
 }
 
 type Page struct {
-	ID     ulid.ULID `json:"id,omitempty"`
-	Index  int       `json:"index,omitempty"`
-	Height int       `json:"height,omitempty"`
-	Width  int       `json:"width,omitempty"`
+	ID     ulid.ULID `json:"id"`
+	Index  int       `json:"index"`
+	Height int       `json:"height"`
+	Width  int       `json:"width"`
 }
 
 type ProjectWithPages struct {
-	ID        ulid.ULID `json:"id,omitempty"`
-	Name      string    `json:"name,omitempty"`
-	Pages     []Page    `json:"pages,omitempty"`
-	Thumbnail string    `json:"thumbnail,omitempty"`
-	CreatedAt time.Time `json:"created_at,omitempty"`
-	UpdatedAt time.Time `json:"updated_at,omitempty"`
+	ID        ulid.ULID `json:"id"`
+	Name      string    `json:"name"`
+	Pages     []Page    `json:"pages"`
+	Thumbnail string    `json:"thumbnail"`
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
 }
 
-type ProjectHandler struct{}
+type ProjectHandler struct {
+	prjRepo  repository.ProjectRepository
+	pageRepo repository.ProjectPageRepository
+}
 
-func NewProjectHandler() *ProjectHandler {
-	return &ProjectHandler{}
+func NewProjectHandler(prjRepo repository.ProjectRepository, pageRepo repository.ProjectPageRepository) *ProjectHandler {
+	return &ProjectHandler{
+		prjRepo:  prjRepo,
+		pageRepo: pageRepo,
+	}
 }
