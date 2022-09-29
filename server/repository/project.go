@@ -8,7 +8,7 @@ import (
 )
 
 type Project struct {
-	ID        ulid.ULID `gorm:"type:char(26);not null;primaryKey"`
+	ID        ulid.ULID `gorm:"type:binary(16);not null;primaryKey"`
 	Name      string    `gorm:"type:varchar(255);not null"`
 	Thumbnail string    `gorm:"type:varchar(255);not null"`
 	CreatedAt time.Time `gorm:"type:DATETIME;not null;default:CURRENT_TIMESTAMP"`
