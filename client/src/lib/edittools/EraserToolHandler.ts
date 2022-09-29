@@ -34,14 +34,24 @@ export class EraserToolHandler implements ToolHandlerInterface {
     const nowX = (e.x - bx) / this.canvasScale.value
     const nowY = (e.y - by) / this.canvasScale.value
 
-    const erased = this.lines.filter(line => {
+    const erasing = new Set<string>()
+    for (const line of this.lines) {
       for (const v of line.path) {
-        if ((v.x - nowX) * (v.x - nowX) + (v.y - nowY) * (v.y - nowY) < 25) // TODO: variable size
-          return false
+        if ((v.x - nowX) * (v.x - nowX) + (v.y - nowY) * (v.y - nowY) < 25) {
+          // TODO: variable size
+          erasing.add(line.id)
+          break
+        }
       }
-      return true
-    })
-    if (this.lines.length != erased.length) {
+    }
+
+    if (erasing.size > 0) {
+      erasing.forEach(id => {
+        fetch(`/api/lines/${id}`, {
+          method: 'DELETE'
+        })
+      })
+      const erased = this.lines.filter(line => !erasing.has(line.id))
       this.lines.length = 0
       for (const line of erased) this.lines.push(line)
       this.ctx.clearRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height)
