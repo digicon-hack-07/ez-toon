@@ -14,7 +14,12 @@ export class DialogueToolHandler implements ToolHandlerInterface {
   pageID: string
   canvasScale: Ref<number>
 
-  constructor(canvas: HTMLElement, canvasScale: Ref<number>, dialogues: Ref<Dialogue[]>, pageID: string) {
+  constructor(
+    canvas: HTMLElement,
+    canvasScale: Ref<number>,
+    dialogues: Ref<Dialogue[]>,
+    pageID: string
+  ) {
     this.canvas = canvas
     this.canvasScale = canvasScale
     this.dialogues = dialogues
@@ -49,13 +54,23 @@ export class DialogueToolHandler implements ToolHandlerInterface {
     if (bx === undefined || by === undefined) return
     if (!this.draggingData || this.draggingData.pointerId != e.pointerId) return
     {
-      const left = Math.min(e.clientX - bx, this.draggingData.beginX) / this.canvasScale.value
-      const right = Math.max(e.clientX - bx, this.draggingData.beginX) / this.canvasScale.value
-      const top = Math.min(e.clientY - by, this.draggingData.beginY) / this.canvasScale.value
-      const bottom = Math.max(e.clientY - by, this.draggingData.beginY) / this.canvasScale.value
+      const left =
+        Math.min(e.clientX - bx, this.draggingData.beginX) /
+        this.canvasScale.value
+      const right =
+        Math.max(e.clientX - bx, this.draggingData.beginX) /
+        this.canvasScale.value
+      const top =
+        Math.min(e.clientY - by, this.draggingData.beginY) /
+        this.canvasScale.value
+      const bottom =
+        Math.max(e.clientY - by, this.draggingData.beginY) /
+        this.canvasScale.value
 
-      const dialogue = this.dialogues.value.find(d => d.id == `tmp${e.pointerId}`)
-      if(!dialogue) return
+      const dialogue = this.dialogues.value.find(
+        d => d.id == `tmp${e.pointerId}`
+      )
+      if (!dialogue) return
       dialogue.left = left
       dialogue.top = top
       dialogue.right = right
@@ -66,9 +81,14 @@ export class DialogueToolHandler implements ToolHandlerInterface {
   pointerup(e: PointerEvent): void {
     if (!this.draggingData || this.draggingData.pointerId != e.pointerId) return
     const dialogue = this.dialogues.value.find(d => d.id == `tmp${e.pointerId}`)
-    if(!dialogue) return
-    if(dialogue.right - dialogue.left < 24 && dialogue.bottom - dialogue.top < 24){
-      const erased = this.dialogues.value.filter(d => d.id != `tmp${e.pointerId}`)
+    if (!dialogue) return
+    if (
+      dialogue.right - dialogue.left < 24 &&
+      dialogue.bottom - dialogue.top < 24
+    ) {
+      const erased = this.dialogues.value.filter(
+        d => d.id != `tmp${e.pointerId}`
+      )
       this.dialogues.value.length = 0
       this.dialogues.value.push(...erased)
     }
@@ -86,10 +106,10 @@ export class DialogueToolHandler implements ToolHandlerInterface {
         right: dialogue.right
       })
     })
-    .then(res => res.json())
-    .then(res => {
-      dialogue.id = res.id
-    })
+      .then(res => res.json())
+      .then(res => {
+        dialogue.id = res.id
+      })
     this.draggingData = null
     return
   }

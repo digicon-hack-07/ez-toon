@@ -144,12 +144,15 @@ watch(canvasScale, () => {
 const lines: Line[] = []
 const dialogues = ref<Dialogue[]>([])
 const dialogue_selected = ref<string | null>(null)
-const dialogue_update = (id: string, text: string,
+const dialogue_update = (
+  id: string,
+  text: string,
   left: number,
   top: number,
   right: number,
   bottom: number,
-  unsettle: boolean) => {
+  unsettle: boolean
+) => {
   const dialogue = dialogues.value.find(p => p.id == id)
   if (!dialogue) return
   dialogue.dialogue = text
@@ -157,20 +160,20 @@ const dialogue_update = (id: string, text: string,
   dialogue.right = right
   dialogue.top = top
   dialogue.bottom = bottom
-  if(!unsettle)
-  fetch(`/api/dialogues/${id}`, {
-    method: 'PATCH',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({
-      dialogue: text,
-      top: top,
-      bottom: bottom,
-      left: left,
-      right: right
+  if (!unsettle)
+    fetch(`/api/dialogues/${id}`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        dialogue: text,
+        top: top,
+        bottom: bottom,
+        left: left,
+        right: right
+      })
     })
-  })
 }
 const dialogue_select = (id: string) => {
   dialogue_selected.value = id
