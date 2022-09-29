@@ -114,7 +114,9 @@ func (repo *Repository) UpdateIndex(ctx context.Context, id ulid.ULID, operation
 		if err != nil {
 			return nil, err
 		}
-		err := tx.Model(&repository.Page{}).Where("project_id = ? AND `index` = ?", page.ProjectID, page.Index+1).Update("index", page.Index).Error
+		err := tx.Model(&repository.Page{}).
+			Where("project_id = ? AND `index` = ? AND id != ?", page.ProjectID, page.Index+1, id).
+			Update("index", page.Index).Error
 		if err != nil {
 			return nil, err
 		}
@@ -124,7 +126,9 @@ func (repo *Repository) UpdateIndex(ctx context.Context, id ulid.ULID, operation
 		if err != nil {
 			return nil, err
 		}
-		err := tx.Model(&repository.Page{}).Where("project_id = ? AND `index` = ?", page.ProjectID, page.Index-1).Update("index", page.Index).Error
+		err := tx.Model(&repository.Page{}).
+			Where("project_id = ? AND `index` = ? AND id != ?", page.ProjectID, page.Index-1, id).
+			Update("index", page.Index).Error
 		if err != nil {
 			return nil, err
 		}

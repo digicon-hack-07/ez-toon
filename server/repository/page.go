@@ -7,8 +7,8 @@ import (
 )
 
 type Page struct {
-	ID        ulid.ULID `gorm:"type:char(26);not null;primaryKey"`
-	ProjectID ulid.ULID `gorm:"type:char(26);not null"`
+	ID        ulid.ULID `gorm:"type:binary(16);not null;primaryKey"`
+	ProjectID ulid.ULID `gorm:"type:binary(16);not null"`
 	Index     int       `gorm:"type:int;not null"`
 	Height    int       `gorm:"type:int;not null"`
 	Width     int       `gorm:"type:int;not null"`

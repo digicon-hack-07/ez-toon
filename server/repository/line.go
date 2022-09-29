@@ -15,7 +15,9 @@ type Point struct {
 	Pressure float64
 }
 
-func (p *Point) Scan(value interface{}) error {
+type Points []Point
+
+func (p *Points) Scan(value interface{}) error {
 	b, ok := value.(string)
 	if !ok {
 		return errors.New("failed to scan Point")
@@ -24,7 +26,7 @@ func (p *Point) Scan(value interface{}) error {
 	return json.Unmarshal([]byte(b), p)
 }
 
-func (p Point) Value() (driver.Value, error) {
+func (p Points) Value() (driver.Value, error) {
 	b, err := json.Marshal(p)
 	if err != nil {
 		return nil, err
@@ -34,10 +36,10 @@ func (p Point) Value() (driver.Value, error) {
 }
 
 type Line struct {
-	ID      ulid.ULID `gorm:"primaryKey;type:char(26);not null"`
-	PageID  ulid.ULID `gorm:"type:char(26);not null"`
+	ID      ulid.ULID `gorm:"primaryKey;type:binary(16);not null"`
+	PageID  ulid.ULID `gorm:"type:binary(16);not null"`
 	PenSize int       `gorm:"type:int;not null"`
-	Points  []Point   `gorm:"type:text;not null"`
+	Points  Points    `gorm:"type:text;not null"`
 	Page    Page      `gorm:"foreignKey:PageID;references:ID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE"`
 }
 
