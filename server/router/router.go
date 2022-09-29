@@ -76,6 +76,7 @@ func NewRouter(
 	}
 
 	e.Static("/", "public")
+	e.File("/*", "public/index.html")
 
 	return &Router{e: e}, nil
 }
