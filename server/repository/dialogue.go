@@ -7,7 +7,7 @@ import (
 )
 
 type Dialogue struct {
-	ID       ulid.ULID `gorm:"primaryKey;type:binary(16);not null"`
+	ID       ulid.ULID `gorm:"type:binary(16);not null;primaryKey"`
 	PageID   ulid.ULID `gorm:"type:binary(16);not null"`
 	Dialogue string    `gorm:"type:text;not null"`
 	Top      float64   `gorm:"type:float;not null"`

@@ -8,6 +8,7 @@ import (
 	"github.com/digicon-hack-07/ez-toon/server/repository"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
 )
 
 type Repository struct {
@@ -53,7 +54,9 @@ func NewGorm2Repository(c *Config) (*Repository, error) {
 func newDBConnection(c *Config) (*gorm.DB, error) {
 	dsn := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s", c.Username, c.Password, c.Hostname, c.Port, c.Database) + "?parseTime=true&loc=Local&charset=utf8mb4"
 
-	db, err := gorm.Open(mysql.Open(dsn))
+	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{
+		Logger: logger.Default.LogMode(logger.Info),
+	})
 	if err != nil {
 		return nil, fmt.Errorf("failed to connect DB : %w", err)
 	}
