@@ -16,7 +16,7 @@
       </p>
       <span :class="[isHidden ? $style.overflow : $style.hide]">...</span>
       <p v-if="isShowDate" :class="$style.name">{{ dateString }}</p>
-      <span v-if="isShowArrow" :class="$style.arrowSpace">
+      <div v-if="isShowArrow" :class="$style.arrowSpace">
         <img
           src="/leftArrow.svg"
           :class="$style.leftArrow"
@@ -27,7 +27,7 @@
           :class="$style.rightArrow"
           @click.stop="$emit('right')"
         />
-      </span>
+      </div>
     </div>
   </div>
 </template>
@@ -59,7 +59,7 @@ interface Emits {
 }
 const isImageExists = ref(true)
 
-const emit = defineEmits<Emits>()
+defineEmits<Emits>()
 
 const nameRef = ref<HTMLElement>()
 
@@ -116,7 +116,7 @@ const dateString = computed(() => {
 }
 
 .thumbnail:hover {
-  background-color: darkgray;
+    background-color:#f0f0f0;
 }
 
 .name {
@@ -146,7 +146,7 @@ const dateString = computed(() => {
 }
 
 .thumbnail:hover .overflow {
-  background-color: darkgray;
+    background-color:#f0f0f0;
 }
 
 .area {
@@ -159,14 +159,25 @@ const dateString = computed(() => {
 
 .arrowSpace {
   width: 100%;
+  height: 3rem;
 }
 .leftArrow {
-  height: 1rem;
-  margin-right: 2rem;
+  height: 3rem;
+  margin-right: 1rem;
 }
 
 .rightArrow {
-  height: 1rem;
-  margin-left: 2rem;
+  height: 3rem;
+  margin-left: 1rem;
+}
+
+.leftArrow:hover{
+  filter: drop-shadow(0 0 0.5em #606060);
+  border-radius: 0.3rem;
+}
+
+.rightArrow:hover{
+  filter: drop-shadow(0 0 0.5em #606060);
+  border-radius: 0.3rem;
 }
 </style>

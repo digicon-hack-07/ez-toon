@@ -1,8 +1,9 @@
 <template>
-  <header :class="$style.header">
-    <router-link to="/">Menu</router-link>
-  </header>
   <div :class="$style.menu">
+    <header :class="$style.header">
+      <!-- <router-link to="/">Menu</router-link>| -->
+      <button :class="$style.back" @click="push"><img src="/leftArrow.svg"/></button>
+    </header>
     <div :class="$style.name">
       <h1 :style="{ margin: 0 }">
         <input
@@ -18,7 +19,7 @@
           <img src="/pencil.svg" :class="$style.pencilImage" />
         </span>
       </h1>
-      <button :class="$style.button" @click="remove">削除</button>
+      <button :class="$style.remove" @click="remove">削除</button>
     </div>
     <transition-group :move-class="$style.listMove" tag="span">
       <open-page
@@ -108,7 +109,6 @@ const decrementIndex = async (index: number) => {
     //     operation: 'inc'
     //   }
     // )
-    alert(JSON.stringify(pageList.value))
     for (let i = 0; i < pageListValue.length; i++) {
       if (pageListValue[i].index === index - 1) {
         pageList.value[i].index = index
@@ -119,8 +119,6 @@ const decrementIndex = async (index: number) => {
     pageList.value.sort((a, b) => {
       return a.index < b.index ? -1 : 1
     })
-
-    alert(JSON.stringify(pageList.value))
     //console.log(JSON.stringify(pageList.value))
   }
 }
@@ -169,6 +167,10 @@ onMounted(async () => {
   pageList.value = res.data.pages
   name.value = res.data.name
 })
+
+const push = () => {
+  router.push('/')
+}
 </script>
 
 <style module>
@@ -178,7 +180,8 @@ onMounted(async () => {
 
 .name {
   text-align: center;
-  margin: 0;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
 }
 
 .nameInput {
@@ -194,18 +197,34 @@ onMounted(async () => {
   transition: all 0.3s ease;
 }
 
-.header {
-  height: 2rem;
-  margin-bottom: 1rem;
-  display: flex;
-  justify-content: center;
-  margin-top: 1.5rem;
-  font-size: 1.5rem;
+
+.remove {
+  position: absolute;
+  top: 2rem;
+  right: 3rem;
+  color: crimson;
+}
+.remove:hover {
+  border-color: crimson;
 }
 
-.button {
+.header {
+  margin-bottom: 3rem;
+  justify-content: center;
+  margin-top: 1rem;
+  font-size: 1.5rem;
   position: absolute;
-  top: 3rem;
-  right: 3rem;
+  z-index: 1;
+  left: 2rem;
 }
+
+.back {
+  position: absolute;
+  width: 4rem;
+  height: 4rem;
+  padding: 0.5rem;
+  vertical-align: middle;
+  border-radius: 0.3rem;
+}
+
 </style>
