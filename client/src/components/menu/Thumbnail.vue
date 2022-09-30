@@ -64,11 +64,11 @@ const emit = defineEmits<Emits>()
 const nameRef = ref<HTMLElement>()
 
 const formatDate = (dt: Date) => {
-  var y = ('' + dt.getFullYear()).slice(-2)
+  var y = ('' + dt.getFullYear())
   var m = dt.getMonth() + 1
   var d = dt.getDate()
-  var h = dt.getHours()
-  var min = dt.getMinutes()
+  var h = ('00' + dt.getHours()).slice(-2);
+  var min = ('00' + dt.getMinutes()).slice(-2);
   return y + '/' + m + '/' + d + ' ' + h + ':' + min
 }
 
