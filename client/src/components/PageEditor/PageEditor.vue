@@ -11,6 +11,7 @@ import DialogueSubTool from './DialogueSubTool.vue'
 import MoveSubTool from './MoveSubTool.vue'
 import { drawLine } from '../../lib/renderer/path'
 import DialogueContainer from './DialogueContainer.vue'
+import PenSubTool from './PenSubTool.vue'
 
 const canvascontainer = ref<HTMLCanvasElement>()
 const workcanvas = ref<HTMLCanvasElement>()
@@ -143,6 +144,9 @@ watch(canvasScale, () => {
 
 const lines: Line[] = []
 const brushSize = ref(5)
+const brushsize_change = (size: number) => {
+  brushSize.value = size
+}
 
 const dialogues = ref<Dialogue[]>([])
 const dialogue_selected = ref<string | null>(null)
@@ -293,6 +297,11 @@ const changeMode = (new_mode: EditMode) => {
         v-if="mode == 'dialogue'"
         @delete-dialogue="dialogue_delete"
       ></dialogue-sub-tool>
+      <pen-sub-tool
+        v-if="mode == 'pen'"
+        :pen-size="brushSize"
+        @change-pen-size="brushsize_change"
+      ></pen-sub-tool>
     </div>
     <div class="button-container">
       <button :data-active="mode == 'move'" @click="changeMode('move')">
