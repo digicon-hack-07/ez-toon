@@ -176,8 +176,8 @@ const dialogue_resizehandler_pointerdown = (e: PointerEvent) => {
     handlerDragInfo.set(e.pointerId, {
       beginX: e.clientX,
       beginY: e.clientY,
-      targetBeginX: dialogue.right,
-      targetBeginY: dialogue.top,
+      targetBeginX: dialogue.left,
+      targetBeginY: dialogue.bottom,
       id: id,
       targetW: dialogue.right - dialogue.left,
       targetH: dialogue.bottom - dialogue.top
@@ -189,11 +189,10 @@ const dialogue_resizehandler_pointermove = (e: PointerEvent) => {
   if (!drag) return
   const dialogue = props.dialogues.find(p => p.id == drag.id)
   if (!dialogue) return
-  const top = (e.clientY - drag.beginY) / props.canvasScale + drag.targetBeginY
-  const right =
-    (e.clientX - drag.beginX) / props.canvasScale + drag.targetBeginX
-  const left = right - drag.targetW
-  const bottom = top + drag.targetH
+  const top = dialogue.top
+  const right = dialogue.right
+  const left = Math.min((e.clientX - drag.beginX) / props.canvasScale + drag.targetBeginX, dialogue.right - 24)
+  const bottom = Math.max((e.clientY - drag.beginY) / props.canvasScale + drag.targetBeginY, dialogue.top + 24)
   emit('updateDialogue', drag.id, dialogue.dialogue, left, top, right, bottom, true)
 }
 const dialogue_resizehandler_pointerup = (e: PointerEvent) => {
@@ -204,11 +203,10 @@ const dialogue_resizehandler_pointerup = (e: PointerEvent) => {
     if (!drag) return
     const dialogue = props.dialogues.find(p => p.id == drag.id)
     if (!dialogue) return
-    const top = (e.clientY - drag.beginY) / props.canvasScale + drag.targetBeginY
-    const right =
-      (e.clientX - drag.beginX) / props.canvasScale + drag.targetBeginX
-    const left = right - drag.targetW
-    const bottom = top + drag.targetH
+    const top = dialogue.top
+    const right = dialogue.right
+    const left = Math.min((e.clientX - drag.beginX) / props.canvasScale + drag.targetBeginX, dialogue.right - 24)
+    const bottom = Math.max((e.clientY - drag.beginY) / props.canvasScale + drag.targetBeginY, dialogue.top + 24)
     emit('updateDialogue', drag.id, dialogue.dialogue, left, top, right, bottom, false)
 
     handlerDragInfo.delete(e.pointerId)
