@@ -2,7 +2,7 @@
   <div :class="$style.editor">
     <header :class="$style.header">
       <!-- <router-link to="/">Menu</router-link>| -->
-      <router-link :to="'/project/' + projectID">Project</router-link>
+      <a @click="push">Project</a>
     </header>
     <div :class="$style.editor">
       <page-editor :page-id="pageID"></page-editor>
@@ -25,6 +25,9 @@ if (Array.isArray(route.params.id) || !route.params.id) {
   router.push('/')
 } else {
   pageID.value = route.params.id
+}
+const push = () => {
+  router.push('/project/' + projectID.value)
 }
 
 onMounted(async () => {

@@ -20,10 +20,9 @@ const props = defineProps<{
   }>()
 const createAndOpenNewPage = async () => {
   const now = new Date(Date.now()).toISOString()
-  const pageData: Page = {
+  const pageData = {
     project_id: props.projectId,
     id: '00000000000000000000000000',
-    index: props.index,
     height: 1000,
     width: 707
   }
