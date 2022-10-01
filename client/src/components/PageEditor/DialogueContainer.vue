@@ -69,6 +69,23 @@ const dialogues_handle_display = computed(() => {
     }
   })
 })
+const dialogues_resizehandle_display = computed(() => {
+  return props.dialogues.map(dialogue => {
+    return {
+      id: dialogue.id,
+      style: {
+        left: `calc(${
+          props.canvasScrollX + dialogue.left * props.canvasScale - 4
+        }px - 1rem)`,
+        top: `${
+          props.canvasScrollY + dialogue.bottom * props.canvasScale + 4
+        }px`,
+        width: `1rem`,
+        height: `1rem`
+      }
+    }
+  })
+})
 const dialogue_update = (e: Event) => {
   const tgt = e.target
   if (!tgt) return
@@ -146,6 +163,58 @@ const dialogue_handler_pointerup = (e: PointerEvent) => {
     tgt.releasePointerCapture(e.pointerId)
   }
 }
+const dialogue_resizehandler_pointerdown = (e: PointerEvent) => {
+  const tgt = e.target
+  if (!tgt) return
+  if (tgt instanceof HTMLElement) {
+    if (!tgt.dataset.id) return
+    const id = tgt.dataset.id
+    const dialogue = props.dialogues.find(p => p.id == id)
+    if (!dialogue) return
+
+    tgt.setPointerCapture(e.pointerId)
+    handlerDragInfo.set(e.pointerId, {
+      beginX: e.clientX,
+      beginY: e.clientY,
+      targetBeginX: dialogue.right,
+      targetBeginY: dialogue.top,
+      id: id,
+      targetW: dialogue.right - dialogue.left,
+      targetH: dialogue.bottom - dialogue.top
+    })
+  }
+}
+const dialogue_resizehandler_pointermove = (e: PointerEvent) => {
+  const drag = handlerDragInfo.get(e.pointerId)
+  if (!drag) return
+  const dialogue = props.dialogues.find(p => p.id == drag.id)
+  if (!dialogue) return
+  const top = (e.clientY - drag.beginY) / props.canvasScale + drag.targetBeginY
+  const right =
+    (e.clientX - drag.beginX) / props.canvasScale + drag.targetBeginX
+  const left = right - drag.targetW
+  const bottom = top + drag.targetH
+  emit('updateDialogue', drag.id, dialogue.dialogue, left, top, right, bottom, true)
+}
+const dialogue_resizehandler_pointerup = (e: PointerEvent) => {
+  const tgt = e.target
+  if (!tgt) return
+  if (tgt instanceof HTMLElement) {
+    const drag = handlerDragInfo.get(e.pointerId)
+    if (!drag) return
+    const dialogue = props.dialogues.find(p => p.id == drag.id)
+    if (!dialogue) return
+    const top = (e.clientY - drag.beginY) / props.canvasScale + drag.targetBeginY
+    const right =
+      (e.clientX - drag.beginX) / props.canvasScale + drag.targetBeginX
+    const left = right - drag.targetW
+    const bottom = top + drag.targetH
+    emit('updateDialogue', drag.id, dialogue.dialogue, left, top, right, bottom, false)
+
+    handlerDragInfo.delete(e.pointerId)
+    tgt.releasePointerCapture(e.pointerId)
+  }
+}
 </script>
 
 <template>
@@ -172,6 +241,16 @@ const dialogue_handler_pointerup = (e: PointerEvent) => {
         @pointerdown="dialogue_handler_pointerdown"
         @pointermove="dialogue_handler_pointermove"
         @pointerup="dialogue_handler_pointerup"
+      ></div>
+      <div
+        v-for="dialogue_handle in dialogues_resizehandle_display"
+        :key="dialogue_handle.id"
+        class="dialoguehandle"
+        :style="dialogue_handle.style"
+        :data-id="dialogue_handle.id"
+        @pointerdown="dialogue_resizehandler_pointerdown"
+        @pointermove="dialogue_resizehandler_pointermove"
+        @pointerup="dialogue_resizehandler_pointerup"
       ></div>
     </div>
   </div>
