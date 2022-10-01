@@ -11,6 +11,7 @@ export class PenToolHandler implements ToolHandlerInterface {
   lines: Line[]
   canvasScale: Ref<number>
   pageID: string
+  brushSize: Ref<number>
 
   constructor(
     canvas: HTMLElement,
@@ -18,7 +19,8 @@ export class PenToolHandler implements ToolHandlerInterface {
     ctx: CanvasRenderingContext2D,
     workctx: CanvasRenderingContext2D,
     lines: Line[],
-    pageID: string
+    pageID: string,
+    brushSize: Ref<number>
   ) {
     this.canvas = canvas
     this.canvasScale = canvasScale
@@ -27,13 +29,14 @@ export class PenToolHandler implements ToolHandlerInterface {
     this.working_lines = new Map<number, Line>()
     this.lines = lines
     this.pageID = pageID
+    this.brushSize = brushSize
   }
   pointerdown(e: PointerEvent): void {
     const bx = this.canvas.getClientRects().item(0)?.left
     const by = this.canvas.getClientRects().item(0)?.top
     if (bx === undefined || by === undefined) return
     this.working_lines.set(e.pointerId, {
-      brushSize: 5,
+      brushSize: this.brushSize.value,
       color: '#606060',
       id: `tmp${e.pointerId}`,
       pageID: '', // TODO: pageID

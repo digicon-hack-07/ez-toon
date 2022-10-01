@@ -142,6 +142,8 @@ watch(canvasScale, () => {
 })
 
 const lines: Line[] = []
+const brushSize = ref(5)
+
 const dialogues = ref<Dialogue[]>([])
 const dialogue_selected = ref<string | null>(null)
 const dialogue_update = (
@@ -230,7 +232,8 @@ function getModeHandler(): ToolHandlerInterface {
       ctx.value,
       workctx.value,
       lines,
-      props.pageId
+      props.pageId,
+      brushSize
     )
   case 'eraser':
     if (!canvas.value) throw new Error('canvas not loaded')
