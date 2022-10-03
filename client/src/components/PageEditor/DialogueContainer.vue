@@ -243,9 +243,7 @@ const dialogue_resizehandler_pointerup = (e: PointerEvent) => {
         @pointerdown="dialogue_handler_pointerdown"
         @pointermove="dialogue_handler_pointermove"
         @pointerup="dialogue_handler_pointerup"
-      >
-        <div class="dialoguehandle-disp"></div>
-      </div>
+      ></div>
       <div
         v-for="dialogue_handle in dialogues_resizehandle_display"
         :key="dialogue_handle.id"
@@ -284,12 +282,8 @@ const dialogue_resizehandler_pointerup = (e: PointerEvent) => {
   position: absolute;
   touch-action: none;
   cursor: move;
-  
-  background-color: #0099ff;
-  border: 2px solid #bbb;
-  box-sizing: border-box;
 }
-/* .dialoguehandle::before {
+.dialoguehandle::before {
   content: "";
   display: block;
   background-color: #0099ff;
@@ -299,5 +293,5 @@ const dialogue_resizehandler_pointerup = (e: PointerEvent) => {
   height: 1rem;
   margin: 0.5rem auto;
   touch-action: none;
-} */
+}
 </style>
