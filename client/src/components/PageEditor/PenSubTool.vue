@@ -93,15 +93,15 @@ const changePenSize = (value: number) => {
       @pointerup.stop="framePointerUp"
     >
       <div
-        @pointerdown.stop="handlePointerDown"
-        @pointermove.stop="handlePointerMove"
-        @pointerup.stop="handlePointerUp"
         :style="{
           left: `calc(1rem + ${
             ((penSize - minPenSize) / (maxPenSize - minPenSize)) * 12
           }rem)`
         }"
         class="slider-handle"
+        @pointerdown.stop="handlePointerDown"
+        @pointermove.stop="handlePointerMove"
+        @pointerup.stop="handlePointerUp"
       ></div>
     </div>
   </div>
