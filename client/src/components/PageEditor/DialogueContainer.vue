@@ -2,6 +2,9 @@
 import { computed, ref } from 'vue'
 import { type Dialogue } from '../../lib/dialogue'
 
+const handleSize = 1
+const minDialogueSize = 24
+
 const props = defineProps<{
   dialogues: Dialogue[]
   canvasScrollX: number
@@ -62,9 +65,9 @@ const dialogues_handle_display = computed(() => {
         }px`,
         top: `calc(${
           props.canvasScrollY + dialogue.top * props.canvasScale - 4
-        }px - 1rem)`,
-        width: `1rem`,
-        height: `1rem`
+        }px - ${handleSize}rem)`,
+        width: `${handleSize}rem`,
+        height: `${handleSize}rem`
       }
     }
   })
@@ -76,12 +79,12 @@ const dialogues_resizehandle_display = computed(() => {
       style: {
         left: `calc(${
           props.canvasScrollX + dialogue.left * props.canvasScale - 4
-        }px - 1rem)`,
+        }px - ${handleSize}rem)`,
         top: `${
           props.canvasScrollY + dialogue.bottom * props.canvasScale + 4
         }px`,
-        width: `1rem`,
-        height: `1rem`
+        width: `${handleSize}rem`,
+        height: `${handleSize}rem`
       }
     }
   })
@@ -191,8 +194,8 @@ const dialogue_resizehandler_pointermove = (e: PointerEvent) => {
   if (!dialogue) return
   const top = dialogue.top
   const right = dialogue.right
-  const left = Math.min((e.clientX - drag.beginX) / props.canvasScale + drag.targetBeginX, dialogue.right - 24)
-  const bottom = Math.max((e.clientY - drag.beginY) / props.canvasScale + drag.targetBeginY, dialogue.top + 24)
+  const left = Math.min((e.clientX - drag.beginX) / props.canvasScale + drag.targetBeginX, dialogue.right - minDialogueSize)
+  const bottom = Math.max((e.clientY - drag.beginY) / props.canvasScale + drag.targetBeginY, dialogue.top + minDialogueSize)
   emit('updateDialogue', drag.id, dialogue.dialogue, left, top, right, bottom, true)
 }
 const dialogue_resizehandler_pointerup = (e: PointerEvent) => {
@@ -205,8 +208,8 @@ const dialogue_resizehandler_pointerup = (e: PointerEvent) => {
     if (!dialogue) return
     const top = dialogue.top
     const right = dialogue.right
-    const left = Math.min((e.clientX - drag.beginX) / props.canvasScale + drag.targetBeginX, dialogue.right - 24)
-    const bottom = Math.max((e.clientY - drag.beginY) / props.canvasScale + drag.targetBeginY, dialogue.top + 24)
+    const left = Math.min((e.clientX - drag.beginX) / props.canvasScale + drag.targetBeginX, dialogue.right - minDialogueSize)
+    const bottom = Math.max((e.clientY - drag.beginY) / props.canvasScale + drag.targetBeginY, dialogue.top + minDialogueSize)
     emit('updateDialogue', drag.id, dialogue.dialogue, left, top, right, bottom, false)
 
     handlerDragInfo.delete(e.pointerId)
