@@ -1,8 +1,9 @@
 <template>
   <div :class="$style.menu">
     <header :class="$style.header">
-      <!-- <router-link to="/">Menu</router-link>| -->
-      <button :class="$style.back" @click="push"><img src="/leftArrow.svg"/></button>
+      <button :class="$style.back" @click="push">
+        <img src="/leftArrow.svg" />
+      </button>
     </header>
     <div :class="$style.name">
       <h1 :style="{ margin: 0 }">
@@ -97,28 +98,31 @@ const decrementIndex = async (index: number) => {
     const pageListValue = pageList.value
     // alert(JSON.stringify(pageList.value))
     //axios.patch('/api/pages/' + pageListValue[index - 1].id,{operation: 'inc'})
-    await axios.patch(
+    const res = await axios.patch(
       '/api/pages/' + pageListValue[index - 1].id + '/index',
       {
         operation: 'dec'
       }
     )
+    if (res.status === 200) {
+      pageList.value = res.data
+    }
     // await axios.patch(
     //   '/api/pages/' + pageListValue[index - 2].id + '/index',
     //   {
     //     operation: 'inc'
     //   }
     // )
-    for (let i = 0; i < pageListValue.length; i++) {
-      if (pageListValue[i].index === index - 1) {
-        pageList.value[i].index = index
-      } else if (pageListValue[i].index === index) {
-        pageList.value[i].index = index - 1
-      }
-    }
-    pageList.value.sort((a, b) => {
-      return a.index < b.index ? -1 : 1
-    })
+    // for (let i = 0; i < pageListValue.length; i++) {
+    //   if (pageListValue[i].index === index - 1) {
+    //     pageList.value[i].index = index
+    //   } else if (pageListValue[i].index === index) {
+    //     pageList.value[i].index = index - 1
+    //   }
+    // }
+    // pageList.value.sort((a, b) => {
+    //   return a.index < b.index ? -1 : 1
+    // })
     //console.log(JSON.stringify(pageList.value))
   }
 }
@@ -129,18 +133,16 @@ const incrementIndex = async (index: number) => {
     pageList.value.some(v => v.index === index) &&
     pageList.value.some(v => v.index === index + 1)
   ) {
-    
     //ここにAPI操作を書く
     //console.log(JSON.stringify(pageList.value))
     const pageListValue = pageList.value
     //axios.patch('/api/pages/' + pageListValue[index + 1].id,{operation: 'dec'})
-    console.log(JSON.stringify(pageList.value))
-    await axios.patch(
-      '/api/pages/' + pageListValue[index - 1].id + '/index',
-      {
-        operation: 'inc'
-      }
-    )
+    const res = await axios.patch('/api/pages/' + pageListValue[index - 1].id + '/index', {
+      operation: 'inc'
+    })
+    if (res.status === 200) {
+      pageList.value = res.data
+    }
     // await axios.patch(
     //   '/api/pages/' + pageListValue[index].id + '/index',
     //   {
@@ -148,16 +150,16 @@ const incrementIndex = async (index: number) => {
     //   }
     // )
 
-    for (let i = 0; i < pageListValue.length; i++) {
-      if (pageListValue[i].index === index) {
-        pageList.value[i].index = index + 1
-      } else if (pageListValue[i].index === index + 1) {
-        pageList.value[i].index = index
-      }
-    }
-    pageList.value.sort((a, b) => {
-      return a.index < b.index ? -1 : 1
-    })
+    // for (let i = 0; i < pageListValue.length; i++) {
+    //   if (pageListValue[i].index === index) {
+    //     pageList.value[i].index = index + 1
+    //   } else if (pageListValue[i].index === index + 1) {
+    //     pageList.value[i].index = index
+    //   }
+    // }
+    // pageList.value.sort((a, b) => {
+    //   return a.index < b.index ? -1 : 1
+    // })
     //axios.get('/api/projects/' + route.params.id)
   }
 }
@@ -197,7 +199,6 @@ const push = () => {
   transition: all 0.3s ease;
 }
 
-
 .remove {
   position: absolute;
   top: 2rem;
@@ -226,5 +227,4 @@ const push = () => {
   vertical-align: middle;
   border-radius: 0.3rem;
 }
-
 </style>
