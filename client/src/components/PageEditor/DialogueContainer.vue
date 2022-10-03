@@ -2,7 +2,7 @@
 import { computed, ref } from 'vue'
 import { type Dialogue } from '../../lib/dialogue'
 
-const handleSize = 2
+const handleSize = 3
 const handleDisplaySize = 1
 const minDialogueSize = 24
 
@@ -291,7 +291,7 @@ const dialogue_resizehandler_pointerup = (e: PointerEvent) => {
   box-sizing: border-box;
   width: 1rem;
   height: 1rem;
-  margin: 0.5rem auto;
+  margin: 1rem auto;
   touch-action: none;
 }
 </style>
