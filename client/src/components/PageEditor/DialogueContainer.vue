@@ -2,7 +2,8 @@
 import { computed, ref } from 'vue'
 import { type Dialogue } from '../../lib/dialogue'
 
-const handleSize = 1
+const handleSize = 2
+const handleDisplaySize = 1
 const minDialogueSize = 24
 
 const props = defineProps<{
@@ -60,12 +61,12 @@ const dialogues_handle_display = computed(() => {
     return {
       id: dialogue.id,
       style: {
-        left: `${
+        left: `calc(${
           props.canvasScrollX + dialogue.right * props.canvasScale + 4
-        }px`,
+        }px - ${handleSize / 2 - handleDisplaySize / 2}rem)`,
         top: `calc(${
           props.canvasScrollY + dialogue.top * props.canvasScale - 4
-        }px - ${handleSize}rem)`,
+        }px - ${handleDisplaySize / 2 + handleSize / 2}rem)`,
         width: `${handleSize}rem`,
         height: `${handleSize}rem`
       }
@@ -79,10 +80,10 @@ const dialogues_resizehandle_display = computed(() => {
       style: {
         left: `calc(${
           props.canvasScrollX + dialogue.left * props.canvasScale - 4
-        }px - ${handleSize}rem)`,
-        top: `${
+        }px - ${handleDisplaySize / 2 + handleSize / 2}rem)`,
+        top: `calc(${
           props.canvasScrollY + dialogue.bottom * props.canvasScale + 4
-        }px`,
+        }px + ${handleDisplaySize / 2 - handleSize / 2}rem)`,
         width: `${handleSize}rem`,
         height: `${handleSize}rem`
       }
@@ -115,7 +116,7 @@ const handlerDragInfo = new Map<
 >()
 
 const dialogue_handler_pointerdown = (e: PointerEvent) => {
-  const tgt = e.target
+  const tgt = e.currentTarget
   if (!tgt) return
   if (tgt instanceof HTMLElement) {
     if (!tgt.dataset.id) return
@@ -148,7 +149,7 @@ const dialogue_handler_pointermove = (e: PointerEvent) => {
   emit('updateDialogue', drag.id, dialogue.dialogue, left, top, right, bottom, true)
 }
 const dialogue_handler_pointerup = (e: PointerEvent) => {
-  const tgt = e.target
+  const tgt = e.currentTarget
   if (!tgt) return
   if (tgt instanceof HTMLElement) {
     const drag = handlerDragInfo.get(e.pointerId)
@@ -167,7 +168,7 @@ const dialogue_handler_pointerup = (e: PointerEvent) => {
   }
 }
 const dialogue_resizehandler_pointerdown = (e: PointerEvent) => {
-  const tgt = e.target
+  const tgt = e.currentTarget
   if (!tgt) return
   if (tgt instanceof HTMLElement) {
     if (!tgt.dataset.id) return
@@ -199,7 +200,7 @@ const dialogue_resizehandler_pointermove = (e: PointerEvent) => {
   emit('updateDialogue', drag.id, dialogue.dialogue, left, top, right, bottom, true)
 }
 const dialogue_resizehandler_pointerup = (e: PointerEvent) => {
-  const tgt = e.target
+  const tgt = e.currentTarget
   if (!tgt) return
   if (tgt instanceof HTMLElement) {
     const drag = handlerDragInfo.get(e.pointerId)
@@ -242,7 +243,9 @@ const dialogue_resizehandler_pointerup = (e: PointerEvent) => {
         @pointerdown="dialogue_handler_pointerdown"
         @pointermove="dialogue_handler_pointermove"
         @pointerup="dialogue_handler_pointerup"
-      ></div>
+      >
+        <div class="dialoguehandle-disp"></div>
+      </div>
       <div
         v-for="dialogue_handle in dialogues_resizehandle_display"
         :key="dialogue_handle.id"
@@ -267,6 +270,7 @@ const dialogue_resizehandler_pointerup = (e: PointerEvent) => {
   font-family: 'EzTooN-SourceHanSerif', serif;
   text-align: start;
   transform-origin: top left;
+  box-sizing: border-box;
 }
 .dialogue:active,
 .dialogue:focus,
@@ -278,10 +282,22 @@ const dialogue_resizehandler_pointerup = (e: PointerEvent) => {
 }
 .dialoguehandle {
   position: absolute;
+  touch-action: none;
+  cursor: move;
+  
   background-color: #0099ff;
   border: 2px solid #bbb;
   box-sizing: border-box;
-  touch-action: none;
-  cursor: move;
 }
+/* .dialoguehandle::before {
+  content: "";
+  display: block;
+  background-color: #0099ff;
+  border: 2px solid #bbb;
+  box-sizing: border-box;
+  width: 1rem;
+  height: 1rem;
+  margin: 0.5rem auto;
+  touch-action: none;
+} */
 </style>
