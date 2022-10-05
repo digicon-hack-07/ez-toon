@@ -23,6 +23,15 @@ function lineIntersect(
   const q = (l2ax - l2bx) * (l1by - l2ay) - (l2ay - l2by) * (l1bx - l2ax)
   if (p * q > 0) return false
 
+  if (s == t || p == q)
+    // s = t = 0, p = q = 0
+    return (
+      Math.min(l1ax, l1bx) <= Math.max(l2ax, l2bx) &&
+      Math.min(l2ax, l2bx) <= Math.max(l1ax, l1bx) &&
+      Math.min(l1ay, l1by) <= Math.max(l2ay, l2by) &&
+      Math.min(l2ay, l2by) <= Math.max(l1ay, l1by)
+    )
+
   return true
 }
 
