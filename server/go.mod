@@ -4,7 +4,7 @@ go 1.19
 
 require (
 	github.com/google/wire v0.5.0
-	github.com/labstack/echo-contrib v0.13.0
+	github.com/labstack/echo-contrib v0.13.1
 	github.com/labstack/echo/v4 v4.10.0
 	github.com/labstack/gommon v0.4.0
 	github.com/oklog/ulid/v2 v2.1.0
